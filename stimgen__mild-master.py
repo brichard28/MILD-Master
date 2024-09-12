@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 import scipy.signal
-#from pysndfile.sndio import read as sfread
-#from pysndfile.sndio import write as sfwrite
+from pysndfile.sndio import read as sfread
+from pysndfile.sndio import write as sfwrite
 import psylab
 import ir
 #import spyral
 import ild
-from soundfile import read
-from soundfile import write
+#from soundfile import read
+#from soundfile import write
 import random
 
 __doc__ = """
@@ -25,12 +25,12 @@ def main(subjectID):
     exp = 'mild-master'
 
     # IMPORTANT: ind=0 of each variable should always be the practice condition
-    variables = {
-        "side":      ['l',    'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',      ],
-        "itd":       ['0',    '50',     '50',     '500',    '500',    '0',      '0',      '0',      '0',      ],
-        "az":        ['0',    '0',      '0',      '0',      '0',      '15',      '15',      '15',      '15',      ],
-        "mag":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '1',      '1',      ],
-                }
+    # variables = {
+    #     "side":      ['l',    'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',      ],
+    #     "itd":       ['0',    '50',     '50',     '500',    '500',    '0',      '0',      '0',      '0',      ],
+    #     "az":        ['0',    '0',      '0',      '0',      '0',      '15',      '15',      '15',      '15',      ],
+    #     "mag":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '1',      '1',      ],
+    #             }
     
     # variables for testing various ild azimuths
     # variables = {
@@ -40,13 +40,20 @@ def main(subjectID):
     #     "mag":       ['0',    '0', '1',      '0',      '1',      '0',      '1',      '0',      '1',      '0',      '1'],
     #             }
     
+    # variables for ITD pilot
+    variables = {
+        "side":      ['l',    'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',      ],
+        "itd":       ['0',    '50',     '50',     '100',    '100',    '200',    '200',    '400',    '400',      ],
+        "az":        ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
+        "mag":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
+                }
     
         #"masker":    ['none', 'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp', ],
         #"ild":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
 
     fs = 44100          # fs
-    n = 1             # # of trials
-    ntokens = 14         # # of tokens in a trial
+    n = 60             # # of trials
+    ntokens = 12         # # of tokens in a trial
     snr = 0
     t_path = './stim/bashdashgash'
     m_path = './stim/bashdashgash'
@@ -74,7 +81,7 @@ def main(subjectID):
  tm_delay  |________|
  tt_delay             |______|
     """
-    loc_cue_isi = 2.0
+    loc_cue_isi = 1.5
     loc_cue_word = 'bash'
 
     pract_atten = 20
@@ -82,19 +89,19 @@ def main(subjectID):
     # Read in tokens
     t_toks = []
     for token in t_s:
-        #this_t_data,fs,_enc = sfread(os.path.join(t_path, t_name, token+".wav"))
-        #t_toks.append(this_t_data)
-        
-        this_t_data, fs = read(os.path.join(t_path, t_name, token+".wav"))
+        this_t_data,fs,_enc = sfread(os.path.join(t_path, t_name, token+".wav"))
         t_toks.append(this_t_data[:,0])
+        
+        #this_t_data, fs = read(os.path.join(t_path, t_name, token+".wav"))
+        #t_toks.append(this_t_data[:,0])
 
     m_toks = []
     for token in m_s:
-        #this_m_data,fs,_enc = sfread(os.path.join(m_path, m_name, token+".wav"))
-        #m_toks.append(this_m_data)
-        
-        this_m_data, fs = read(os.path.join(m_path, m_name, token+".wav"))
+        this_m_data,fs,_enc = sfread(os.path.join(m_path, m_name, token+".wav"))
         m_toks.append(this_m_data[:,0])
+        
+        #this_m_data, fs = read(os.path.join(m_path, m_name, token+".wav"))
+        #m_toks.append(this_m_data[:,0])
 
     # Get location cue
     cue_data = t_toks[t_s.index(loc_cue_word)]
@@ -214,8 +221,8 @@ def main(subjectID):
             t_data = np.array(())
             m2_data = np.array(())
             # Create order of bash-dash-gashs
-            min_number_bashs = 3
-            max_number_bashs = 5
+            min_number_bashs = 2
+            max_number_bashs = 4
             n_close_idx = 2
             bash_index = 0
             # First, create just dashs and gashs 
@@ -231,7 +238,7 @@ def main(subjectID):
             # Generate bash indices for masker that are never within n_close_idx of a target bash
             valid_bash_indices_masker = False
             while not valid_bash_indices_masker:
-                bash_indices_masker = np.random.randint(1, high = len(m2_inds), size=len(bash_indices_target))
+                bash_indices_masker = np.random.randint(1, high = len(m2_inds), size=6 - len(bash_indices_target))
                 if (np.diff(bash_indices_masker) >= n_close_idx).all() and not (bash_indices_target == bash_indices_masker).any():
                     valid_bash_indices_masker = True
             # Assign bash indices to existing inds
@@ -494,8 +501,8 @@ def main(subjectID):
             if pract:
                 sig_out = psylab.signal.atten(sig_out, pract_atten)
 
-            #sfwrite(this_sf_filepath_out, sig_out, fs, format='wav')
-            write(this_sf_filepath_out, sig_out, fs)
+            sfwrite(this_sf_filepath_out, sig_out, fs, format='wav')
+            #write(this_sf_filepath_out, sig_out, fs)
             t_str += ','.join([','.join(map(str, i)) for i in zip(t_words, t_times)]) + "\n"
             m_str += ','.join([','.join(map(str, i)) for i in zip(m2_words, m2_times)]) + "\n"
 
