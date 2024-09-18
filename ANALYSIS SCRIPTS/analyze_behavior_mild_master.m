@@ -5,7 +5,7 @@
 
 BehaviorTable = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx','Format','auto');
 
-subject_ID = char('itd_pilot1','itd_pilot2','itd_pilot3','itdpilot_4_5'); %
+subject_ID = char('itd_pilot1','itd_pilot2','itd_pilot3','itdpilot_4_5','itd_pilot5'); %
 num_conditions = 8;
 
 all_hits = zeros(size(subject_ID,1),num_conditions);
