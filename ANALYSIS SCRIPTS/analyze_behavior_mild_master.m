@@ -5,7 +5,8 @@
 
 BehaviorTable = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx','Format','auto');
 
-subject_ID = char('itd_pilot1','itd_pilot2','itd_pilot3','itdpilot_4_5','itd_pilot5'); %
+%subject_ID = char('itd_pilot1','itd_pilot2','itd_pilot3','itdpilot_4_5','itd_pilot5'); % itd pilot
+subject_ID = char('ildpilot1','ildpilot2');
 num_conditions = 8;
 
 all_hits = zeros(size(subject_ID,1),num_conditions);
@@ -14,14 +15,23 @@ all_objects = zeros(size(subject_ID,1),num_conditions);
 all_num_target_bash = zeros(size(subject_ID,1),num_conditions);
 all_num_masker_bash = zeros(size(subject_ID,1),num_conditions);
 
-all_maskers = {'side=r_itd=100_az=0_mag=0',...
-'side=l_itd=50_az=0_mag=0',...
-'side=l_itd=100_az=0_mag=0',...
-'side=l_itd=200_az=0_mag=0',...
-'side=r_itd=400_az=0_mag=0',...
-'side=r_itd=200_az=0_mag=0',...
-'side=r_itd=50_az=0_mag=0',...
-'side=l_itd=400_az=0_mag=0'}; % we will maintain this order throughout
+% all_maskers = {'side=r_itd=100_az=0_mag=0',...
+% 'side=l_itd=50_az=0_mag=0',...
+% 'side=l_itd=100_az=0_mag=0',...
+% 'side=l_itd=200_az=0_mag=0',...
+% 'side=r_itd=400_az=0_mag=0',...
+% 'side=r_itd=200_az=0_mag=0',...
+% 'side=r_itd=50_az=0_mag=0',...
+% 'side=l_itd=400_az=0_mag=0'}; % itd pilot
+
+all_maskers = {'side=r_itd=0_az=10_mag=1',...
+'side=l_itd=0_az=10_mag=0',...
+'side=l_itd=0_az=10_mag=1',...
+'side=l_itd=0_az=60_mag=0',...
+'side=r_itd=0_az=60_mag=1',...
+'side=r_itd=0_az=60_mag=0',...
+'side=r_itd=0_az=10_mag=0',...
+'side=l_itd=0_az=60_mag=1'}; % ild pilot
 
 fs = 44100;
 cue_dur = 1.5;
@@ -142,29 +152,29 @@ end
 
 %% NEW ORDER = itd50 noise, itd500 noise, ildnat noise, ild10 noise, itd50 speech, itd500 speech, ildnat speech, ild10 speech
 all_hits_collapsed_left_and_right = [];
-all_hits_collapsed_left_and_right(1,:) = sum(all_hits(:,[2,7]),2); % itd50
-all_hits_collapsed_left_and_right(2,:) = sum(all_hits(:,[1,3]),2); % itd100
-all_hits_collapsed_left_and_right(3,:) = sum(all_hits(:,[4,6]),2); % itd200
-all_hits_collapsed_left_and_right(4,:) = sum(all_hits(:,[5,8]),2); % itd400
+all_hits_collapsed_left_and_right(1,:) = sum(all_hits(:,[2,7]),2); % itd50 / ild10
+all_hits_collapsed_left_and_right(2,:) = sum(all_hits(:,[1,3]),2); % itd100 / ild10mag
+all_hits_collapsed_left_and_right(3,:) = sum(all_hits(:,[4,6]),2); % itd200 /ild60
+all_hits_collapsed_left_and_right(4,:) = sum(all_hits(:,[5,8]),2); % itd400 / ild60mag
 
 all_FAs_collapsed_left_and_right = [];
-all_FAs_collapsed_left_and_right(1,:) = sum(all_FAs(:,[2,7]),2); % itd50 noise
-all_FAs_collapsed_left_and_right(2,:) = sum(all_FAs(:,[1,3]),2); % itd500 noise
-all_FAs_collapsed_left_and_right(3,:) = sum(all_FAs(:,[4,6]),2); % ildnat noise
-all_FAs_collapsed_left_and_right(4,:) = sum(all_FAs(:,[5,8]),2);% ild10 noise
+all_FAs_collapsed_left_and_right(1,:) = sum(all_FAs(:,[2,7]),2); % itd50 / ild10
+all_FAs_collapsed_left_and_right(2,:) = sum(all_FAs(:,[1,3]),2); % itd100 / ild10mag
+all_FAs_collapsed_left_and_right(3,:) = sum(all_FAs(:,[4,6]),2); % itd200 /ild60
+all_FAs_collapsed_left_and_right(4,:) = sum(all_FAs(:,[5,8]),2); % itd400 / ild60mag
 
 all_num_target_bash_collapsed_left_and_right = [];
-all_num_target_bash_collapsed_left_and_right(1,:) = sum(all_num_target_bash(:,[2,7]),2);% itd50 noise
-all_num_target_bash_collapsed_left_and_right(2,:) = sum(all_num_target_bash(:,[1,3]),2); % itd500 noise
-all_num_target_bash_collapsed_left_and_right(3,:) = sum(all_num_target_bash(:,[4,6]),2);% ildnat noise
-all_num_target_bash_collapsed_left_and_right(4,:) = sum(all_num_target_bash(:,[5,8]),2);% ild10 noise
+all_num_target_bash_collapsed_left_and_right(1,:) = sum(all_num_target_bash(:,[2,7]),2); % itd50 / ild10
+all_num_target_bash_collapsed_left_and_right(2,:) = sum(all_num_target_bash(:,[1,3]),2); % itd100 / ild10mag
+all_num_target_bash_collapsed_left_and_right(3,:) = sum(all_num_target_bash(:,[4,6]),2); % itd200 /ild60
+all_num_target_bash_collapsed_left_and_right(4,:) = sum(all_num_target_bash(:,[5,8]),2); % itd400 / ild60mag
 
 
 all_num_masker_bash_collapsed_left_and_right = [];
-all_num_masker_bash_collapsed_left_and_right(1,:) = sum(all_num_masker_bash(:,[2,7]),2);% itd50 noise
-all_num_masker_bash_collapsed_left_and_right(2,:) = sum(all_num_masker_bash(:,[1,3]),2); % itd500 noise
-all_num_masker_bash_collapsed_left_and_right(3,:) = sum(all_num_masker_bash(:,[4,6]),2);% ildnat noise
-all_num_masker_bash_collapsed_left_and_right(4,:) = sum(all_num_masker_bash(:,[5,8]),2);% ild10 noise
+all_num_masker_bash_collapsed_left_and_right(1,:) = sum(all_num_masker_bash(:,[2,7]),2); % itd50 / ild10
+all_num_masker_bash_collapsed_left_and_right(2,:) = sum(all_num_masker_bash(:,[1,3]),2); % itd100 / ild10mag
+all_num_masker_bash_collapsed_left_and_right(3,:) = sum(all_num_masker_bash(:,[4,6]),2); % itd200 /ild60
+all_num_masker_bash_collapsed_left_and_right(4,:) = sum(all_num_masker_bash(:,[5,8]),2); % itd400 / ild60mag
 
 all_hit_rates = all_hits./all_num_target_bash;
 all_hit_rates_collapsed = all_hits_collapsed_left_and_right./all_num_target_bash_collapsed_left_and_right;
@@ -182,29 +192,35 @@ all_FA_rates_collapsed(all_FA_rates_collapsed == 0) = 0.001;
 %% D-prime calculation
 d_primes_all = norminv(all_hit_rates) - norminv(all_FA_rates);
 d_primes_collapsed = [];
-d_primes_collapsed(1,:) = mean(d_primes_all(:,[2,7]),2); % itd50 noise
-d_primes_collapsed(2,:) = mean(d_primes_all(:,[1,3]),2); % itd500 noise
-d_primes_collapsed(3,:) = mean(d_primes_all(:,[4,6]),2); % ildnat noise
-d_primes_collapsed(4,:) = mean(d_primes_all(:,[5,8]),2); % ild10 noise
+d_primes_collapsed(1,:) = mean(d_primes_all(:,[2,7]),2); % itd50 / ild10
+d_primes_collapsed(2,:) = mean(d_primes_all(:,[1,3]),2); % itd100 / ild10mag
+d_primes_collapsed(3,:) = mean(d_primes_all(:,[4,6]),2); % itd200 /ild60
+d_primes_collapsed(4,:) = mean(d_primes_all(:,[5,8]),2); % itd400 / ild60mag
 
 figure;
 subplot(1,3,1)
 plot(1:4,d_primes_collapsed,'-o')
 title("d'")
-xticklabels({'50','100','200','400'})
-xlabel('ITD (us)')
+%xticklabels({'50','100','200','400'})
+xticklabels({'10deg','10degMag','60deg','60degMag'})
+%xlabel('ITD (us)')
+xlabel('Natural ILD (deg)')
 subplot(1,3,2)
 plot(1:4,all_hit_rates_collapsed,'-o')
 ylim([0 1])
 title('Hit Rate')
-xticklabels({'50','100','200','400'})
-xlabel('ITD (us)')
+%xticklabels({'50','100','200','400'})
+xticklabels({'10deg','10degMag','60deg','60degMag'})
+%xlabel('ITD (us)')
+xlabel('Natural ILD (deg)')
 subplot(1,3,3)
 plot(1:4,all_FA_rates_collapsed,'-o')
 ylim([0 1])
 title('FA Rate')
-xticklabels({'50','100','200','400'})
-xlabel('ITD (us)')
+%xticklabels({'50','100','200','400'})
+xticklabels({'10deg','10degMag','60deg','60degMag'})
+%xlabel('ITD (us)')
+xlabel('Natural ILD (deg)')
 %% Save data
 save('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER_Behavior_Results.mat','d_primes_collapsed','d_primes_collapsed','all_hit_rates_collapsed','all_FA_rates_collapsed')
 

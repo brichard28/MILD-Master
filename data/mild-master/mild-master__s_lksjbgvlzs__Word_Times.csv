@@ -1,0 +1,10 @@
+0_practice,0__practice__l=gash-dash-dash-gash-dash-bash__r=bash-gash-bash-gash-gash-gash.wav,Target,gash,11025,dash,46305,dash,81585,gash,105840,dash,141120,bash,176400
+0_practice,0__practice__l=gash-dash-dash-gash-dash-bash__r=bash-gash-bash-gash-gash-gash.wav,Masker,bash,0,gash,35280,bash,70560,gash,116865,gash,152145,gash,187425
+0_side=l_itd=0_az=0_mag=0,0__side=l_itd=0_az=0_mag=0__l=gash-bash-dash-bash-gash-dash__r=gash-dash-gash-gash-gash-bash.wav,Target,gash,11025,bash,35280,dash,81585,bash,105840,gash,141120,dash,187425
+0_side=l_itd=0_az=0_mag=0,0__side=l_itd=0_az=0_mag=0__l=gash-bash-dash-bash-gash-dash__r=gash-dash-gash-gash-gash-bash.wav,Masker,gash,0,dash,46305,gash,70560,gash,116865,gash,152145,bash,176400
+0_side=l_itd=0_az=0_mag=1,0__side=l_itd=0_az=0_mag=1__l=gash-gash-dash-gash-bash-gash__r=bash-dash-bash-gash-dash-dash.wav,Target,gash,11025,gash,46305,dash,70560,gash,116865,bash,152145,gash,187425
+0_side=l_itd=0_az=0_mag=1,0__side=l_itd=0_az=0_mag=1__l=gash-gash-dash-gash-bash-gash__r=bash-dash-bash-gash-dash-dash.wav,Masker,bash,0,dash,35280,bash,81585,gash,105840,dash,141120,dash,176400
+0_side=r_itd=0_az=5_mag=0,0__side=r_itd=0_az=5_mag=0__l=bash-gash-dash-gash-dash-gash__r=dash-gash-bash-gash-bash-dash.wav,Masker,bash,0,gash,35280,dash,81585,gash,105840,dash,141120,gash,187425
+0_side=r_itd=0_az=5_mag=0,0__side=r_itd=0_az=5_mag=0__l=bash-gash-dash-gash-dash-gash__r=dash-gash-bash-gash-bash-dash.wav,Target,dash,11025,gash,46305,bash,70560,gash,116865,bash,152145,dash,176400
+0_side=l_itd=0_az=5_mag=1,0__side=l_itd=0_az=5_mag=1__l=bash-gash-dash-dash-dash-dash__r=dash-dash-bash-gash-bash-dash.wav,Target,bash,0,gash,46305,dash,81585,dash,116865,dash,141120,dash,187425
+0_side=l_itd=0_az=5_mag=1,0__side=l_itd=0_az=5_mag=1__l=bash-gash-dash-dash-dash-dash__r=dash-dash-bash-gash-bash-dash.wav,Masker,dash,11025,dash,35280,bash,70560,gash,105840,bash,152145,dash,176400

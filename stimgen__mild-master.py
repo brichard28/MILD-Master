@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 import scipy.signal
-from pysndfile.sndio import read as sfread
-from pysndfile.sndio import write as sfwrite
+#from pysndfile.sndio import read as sfread
+#from pysndfile.sndio import write as sfwrite
 import psylab
 import ir
 #import spyral
 import ild
-#from soundfile import read
-#from soundfile import write
+from soundfile import read
+from soundfile import write
 import random
 
 __doc__ = """
@@ -36,24 +36,31 @@ def main(subjectID):
     # variables = {
     #     "side":      ['l',    'l', 'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',     'r' ],
     #     "itd":       ['0',    '0', '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0'],
-    #     "az":        ['0',    '0', '0',      '10',      '10',      '20',      '20',      '30',     '30',      '70',    '70'  ],
+    #     "az":        ['0',    '0', '0',      '5',      '5',      '10',      '10',      '30',     '30', '60', '60'  ],
     #     "mag":       ['0',    '0', '1',      '0',      '1',      '0',      '1',      '0',      '1',      '0',      '1'],
     #             }
     
-    # variables for ITD pilot
     variables = {
-        "side":      ['l',    'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',      ],
-        "itd":       ['0',    '50',     '50',     '100',    '100',    '200',    '200',    '400',    '400',      ],
-        "az":        ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
-        "mag":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
+        "side":      ['l', 'l',    'l' ],
+        "itd":       ['0', '0',    '0'],
+        "az":        ['0', '5',    '60'],
+        "mag":       ['0', '1',    '1'],
                 }
+    
+    # variables for ITD pilot
+    # variables = {
+    #     "side":      ['l',    'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',      ],
+    #     "itd":       ['0',    '50',     '50',     '100',    '100',    '200',    '200',    '400',    '400',      ],
+    #     "az":        ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
+    #     "mag":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
+    #             }
     
         #"masker":    ['none', 'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp', ],
         #"ild":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
 
     fs = 44100          # fs
-    n = 60             # # of trials
-    ntokens = 12         # # of tokens in a trial
+    n = 1             # # of trials
+    ntokens = 7         # # of tokens in a trial
     snr = 0
     t_path = './stim/bashdashgash'
     m_path = './stim/bashdashgash'
@@ -84,24 +91,24 @@ def main(subjectID):
     loc_cue_isi = 1.5
     loc_cue_word = 'bash'
 
-    pract_atten = 20
+    pract_atten = 5
 
     # Read in tokens
     t_toks = []
     for token in t_s:
-        this_t_data,fs,_enc = sfread(os.path.join(t_path, t_name, token+".wav"))
-        t_toks.append(this_t_data[:,0])
-        
-        #this_t_data, fs = read(os.path.join(t_path, t_name, token+".wav"))
+        #this_t_data,fs,_enc = sfread(os.path.join(t_path, t_name, token+".wav"))
         #t_toks.append(this_t_data[:,0])
+        
+        this_t_data, fs = read(os.path.join(t_path, t_name, token+".wav"))
+        t_toks.append(this_t_data[:,0])
 
     m_toks = []
     for token in m_s:
-        this_m_data,fs,_enc = sfread(os.path.join(m_path, m_name, token+".wav"))
-        m_toks.append(this_m_data[:,0])
-        
-        #this_m_data, fs = read(os.path.join(m_path, m_name, token+".wav"))
+        #this_m_data,fs,_enc = sfread(os.path.join(m_path, m_name, token+".wav"))
         #m_toks.append(this_m_data[:,0])
+        
+        this_m_data, fs = read(os.path.join(m_path, m_name, token+".wav"))
+        m_toks.append(this_m_data[:,0])
 
     # Get location cue
     cue_data = t_toks[t_s.index(loc_cue_word)]
@@ -115,11 +122,11 @@ def main(subjectID):
 
     # ILD stuff
     ild_bands= psylab.signal.logspace(62.5,8000,8) # psylab.signal.frequency.logspace(70, 2240, 5+1) # 5 1-oct bands
-    ild_max_itd_us = 1000
+    ild_max_itd_us = 750
     ild_max_ild_db = 32
     ild_wsize = 882
     ild_stepsize = 882
-    ild_attack = 88
+    ild_attack = 882
     ild_exponent = 1.
 
     nofun = np.zeros(ild_max_itd_us)
@@ -161,7 +168,9 @@ def main(subjectID):
     conditions = list(zip(*list(variables.values())))
     cn = 1
     #for side,masker,itd,ild,az_mag,magnified,control in zip(sides,maskers,itds,ilds,az_mags,magnifieds,controls):
+    
     for condition in conditions:
+        all_itd_tracks = []
         for k,v in zip(list(variables.keys()), condition):
             levels[k] = v
         if pract:
@@ -221,8 +230,9 @@ def main(subjectID):
             t_data = np.array(())
             m2_data = np.array(())
             # Create order of bash-dash-gashs
-            min_number_bashs = 2
-            max_number_bashs = 4
+            min_number_bashs = 1
+            max_number_bashs = 2
+            total_number_bashs = min_number_bashs + max_number_bashs
             n_close_idx = 2
             bash_index = 0
             # First, create just dashs and gashs 
@@ -230,16 +240,19 @@ def main(subjectID):
             m2_inds = np.random.randint(1, high= 3, size=ntokens)
             
             # Next, find indices of bashs for target
+            possible_target_bash_indices = np.arange(0,len(t_inds))#np.arange(1,len(t_inds)-1) # cannot have bash on first or last one
             valid_bash_indices_target = False
             while not valid_bash_indices_target:
-                bash_indices_target = np.random.randint(1, high = len(t_inds), size=np.random.randint(min_number_bashs, high=max_number_bashs + 1))
+                bash_indices_target = np.sort(np.random.choice(possible_target_bash_indices, size=np.random.randint(min_number_bashs, high=max_number_bashs + 1), replace=False))
                 if (np.diff(bash_indices_target) >= n_close_idx).all():
                     valid_bash_indices_target = True
             # Generate bash indices for masker that are never within n_close_idx of a target bash
+            possible_masker_bash_indices = possible_target_bash_indices.copy()
+            possible_masker_bash_indices = np.delete(possible_masker_bash_indices, bash_indices_target - 1)
             valid_bash_indices_masker = False
             while not valid_bash_indices_masker:
-                bash_indices_masker = np.random.randint(1, high = len(m2_inds), size=6 - len(bash_indices_target))
-                if (np.diff(bash_indices_masker) >= n_close_idx).all() and not (bash_indices_target == bash_indices_masker).any():
+                bash_indices_masker = np.sort(np.random.choice(possible_masker_bash_indices, size= total_number_bashs - len(bash_indices_target), replace=False))
+                if (np.diff(np.sort(np.append(bash_indices_target,bash_indices_masker))) >= n_close_idx).all() and not np.isin(bash_indices_target,bash_indices_masker).any():
                     valid_bash_indices_masker = True
             # Assign bash indices to existing inds
             t_inds[bash_indices_target] = bash_index
@@ -293,11 +306,11 @@ def main(subjectID):
 
             # When side is r, the masker is now the target and visa versa
             if levels['side'] == 'r':
-                t_str = f"{k}_{this_sf_path_out_sub},Masker,"
-                m_str = f"{k}_{this_sf_path_out_sub},Target,"
+                t_str = f"{k}_{this_sf_path_out_sub},{filename},Masker,"
+                m_str = f"{k}_{this_sf_path_out_sub},{filename},Target,"
             else:
-                t_str = f"{k}_{this_sf_path_out_sub},Target,"
-                m_str = f"{k}_{this_sf_path_out_sub},Masker,"
+                t_str = f"{k}_{this_sf_path_out_sub},{filename},Target,"
+                m_str = f"{k}_{this_sf_path_out_sub},{filename},Masker,"
 
             # Done with stim creation; begin processing
 
@@ -459,18 +472,20 @@ def main(subjectID):
                             gain_l, gain_r = ild.gen_gain_tracks(tm_f_bp_l[:,i].shape[0], itd_track, ild_table_l, ild_table_r,
                                                 max_ild_db=ild_max_ild_db, max_itd_us=ild_max_itd_us, wsize=ild_wsize, stepsize=ild_stepsize,attack=ild_attack,
                                                 nr_cc=None)
+                            
+                            all_itd_tracks.append(itd_track)
             
                             # Apply gain track not to hrtf'd data, but to mag-spec'd data
                             # This allows magnified ILD cues to be applied without itd cues present
                             # Which is needed for unvocoded stimuli
-                            c_bp_g_l[:,i] = ild.apply_gain_track(c_m_bp_l[:,i], c_gain_l)
-                            c_bp_g_r[:,i] = ild.apply_gain_track(c_m_bp_r[:,i], c_gain_r)
-                            t_m_bp_g_l[:,i] = ild.apply_gain_track(t_m_bp_l[:,i], gain_l)
-                            t_m_bp_g_r[:,i] = ild.apply_gain_track(t_m_bp_r[:,i], gain_r)
+                            c_bp_g_l[:,i] = ild.apply_gain_track(c_m_bp_l[:,i], -1*c_gain_l)
+                            c_bp_g_r[:,i] = ild.apply_gain_track(c_m_bp_r[:,i], -1*c_gain_r)
+                            t_m_bp_g_l[:,i] = ild.apply_gain_track(t_m_bp_l[:,i], -1*gain_l)
+                            t_m_bp_g_r[:,i] = ild.apply_gain_track(t_m_bp_r[:,i], -1*gain_r)
                             #m1_m_bp_g_l[:,i] = ild.apply_gain_track(m1_m_bp_l[:,i], gain_l)
                             #m1_m_bp_g_r[:,i] = ild.apply_gain_track(m1_m_bp_r[:,i], gain_l)
-                            m2_m_bp_g_l[:,i] = ild.apply_gain_track(m2_m_bp_l[:,i], gain_l)
-                            m2_m_bp_g_r[:,i] = ild.apply_gain_track(m2_m_bp_r[:,i], gain_r)
+                            m2_m_bp_g_l[:,i] = ild.apply_gain_track(m2_m_bp_l[:,i], -1*gain_l)
+                            m2_m_bp_g_r[:,i] = ild.apply_gain_track(m2_m_bp_r[:,i], -1*gain_r)
 
                         c_data_l = c_bp_g_l.sum(axis=1)
                         c_data_r = c_bp_g_r.sum(axis=1)
@@ -480,6 +495,36 @@ def main(subjectID):
                         #m1_data_r = m1_m_bp_g_r.sum(axis=1)
                         m2_data_l = m2_m_bp_g_l.sum(axis=1)
                         m2_data_r = m2_m_bp_g_r.sum(axis=1)
+                from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+                def plot_acoustic_analysis(data, curr_ax, bands, time, plot_min, plot_max, curr_cmap):
+                    # Plot snr as a function of time and frequency band
+                    fs = 44100
+                    snr_map = curr_ax.imshow(data, cmap=curr_cmap, interpolation='nearest', aspect='auto', origin = 'lower', extent = (time[0],time[-1],-0.5, np.size(data,axis=0)-0.5), vmin=plot_min, vmax = plot_max)
+                    
+                    plt.colorbar(snr_map)
+                    divider = make_axes_locatable(curr_ax) 
+                    # Add frequency labels
+                    freq_labels = []
+                    for iband in range(0, len(bands) - 1):
+                        freq_labels.append(str(round(bands[iband])) + "-" + str(round(bands[iband+1])) + " Hz")
+                        # Add horizontal lines at boundaries
+                        curr_ax.axhline(y = iband + 0.5, xmin = time[0], xmax = time[-1], color = 'k',linestyle = '-')
+                        
+                        # plot data
+                        # this_data = data[iband,:]
+                        # this_data = (this_data - np.min(this_data))/(np.max(this_data) - np.min(this_data))
+                        # curr_ax.plot(this_data + iband*2)
+                        
+                        
+                    curr_ax.set_yticks(range(0, len(bands) - 1))
+                    curr_ax.get_yaxis().set_ticklabels(freq_labels)
+                fig, axes = plt.subplots(nrows=1,ncols=1)
+                curr_ax = axes
+                time = np.arange(np.shape(all_itd_tracks)[1])
+                import matplotlib
+                cmap_rwb = matplotlib.colors.LinearSegmentedColormap.from_list("", ["red","white","black"])
+                plot_acoustic_analysis(np.array(all_itd_tracks), curr_ax, ild_bands, time, -100, 100, cmap_rwb)
 
             ## Add location cue; combine target and masker
             #sig_l = np.concatenate((c_data_l, c_isi_data, t_data_l + m2_data_l))
@@ -501,8 +546,8 @@ def main(subjectID):
             if pract:
                 sig_out = psylab.signal.atten(sig_out, pract_atten)
 
-            sfwrite(this_sf_filepath_out, sig_out, fs, format='wav')
-            #write(this_sf_filepath_out, sig_out, fs)
+            #sfwrite(this_sf_filepath_out, sig_out, fs, format='wav')
+            write(this_sf_filepath_out, sig_out, fs)
             t_str += ','.join([','.join(map(str, i)) for i in zip(t_words, t_times)]) + "\n"
             m_str += ','.join([','.join(map(str, i)) for i in zip(m2_words, m2_times)]) + "\n"
 
