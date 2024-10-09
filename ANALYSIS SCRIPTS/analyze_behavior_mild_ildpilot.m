@@ -135,8 +135,8 @@ for isubject = 1:size(subject_ID,1) % For each subject...
         
        %% Hit and False Alarm Windows
 
-       threshold_window_start = 0.2; %0.2
-       threshold_window_end =  1.3; % 1.0
+       threshold_window_start = 0.1; %0.2
+       threshold_window_end =  0.8; % 1.0
        tVec = 0:1/44100:16;
        hit_windows = zeros(1,length(tVec)); % create an empty array to define hit windows
        lead_hit_windows = zeros(1,length(tVec));
@@ -424,81 +424,93 @@ lag_d_primes_collapsed(8,:) = mean(lag_d_primes_all(:,[15,16]),2); % itlag_d400 
 figure;
 subplot(1,3,1)
 hold on
-plot(1:8,d_primes_collapsed,'LineStyle','-','Color','k')
-errorbar(1:2:8,mean(d_primes_collapsed(1:2:8,:),2),std(d_primes_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-errorbar(2:2:8,mean(d_primes_collapsed(2:2:8,:),2),std(d_primes_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
-ylabel("d'")
+for i = [1,3,5,7]
+    plot(i:i+1,d_primes_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(d_primes_collapsed(1:2:8,:),2),std(d_primes_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(d_primes_collapsed(2:2:8,:),2),std(d_primes_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
+ylabel("d'",'FontSize',18)
 ylim([0 7])
 xticks(1:8)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
-legend({'Natural','Magnified'})
+xlabel('Natural ILD (deg)','FontSize',18)
+legend([p1(1),p2(1)], {'Natural','Magnified'})
 
 subplot(1,3,2)
 hold on
-plot(1:8,all_hit_rates_collapsed,'LineStyle','-','Color','k')
-errorbar(1:2:8,mean(all_hit_rates_collapsed(1:2:8,:),2),std(all_hit_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-errorbar(2:2:8,mean(all_hit_rates_collapsed(2:2:8,:),2),std(all_hit_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
+for i = [1,3,5,7]
+    plot(i:i+1,all_hit_rates_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(all_hit_rates_collapsed(1:2:8,:),2),std(all_hit_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(all_hit_rates_collapsed(2:2:8,:),2),std(all_hit_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 ylim([0 1])
-ylabel('Hit Rate')
+ylabel('Hit Rate','FontSize',18)
 xticks(1:8)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
-legend({'','Natural','Magnified'})
+xlabel('Natural ILD (deg)','FontSize',18)
+legend([p1(1),p2(1)], {'Natural','Magnified'})
 
 subplot(1,3,3)
 hold on
-plot(1:8,all_FA_rates_collapsed,'LineStyle','-','Color','k')
-errorbar(1:2:8,mean(all_FA_rates_collapsed(1:2:8,:),2),std(all_FA_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-errorbar(2:2:8,mean(all_FA_rates_collapsed(2:2:8,:),2),std(all_FA_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
+for i = [1,3,5,7]
+    plot(i:i+1,all_FA_rates_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(all_FA_rates_collapsed(1:2:8,:),2),std(all_FA_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(all_FA_rates_collapsed(2:2:8,:),2),std(all_FA_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 ylim([0 1])
-ylabel('FA Rate')
+ylabel('FA Rate','FontSize',18)
 xticks(1:8)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
-legend({'Natural','Magnified'})
+xlabel('Natural ILD (deg)','FontSize',18)
+legend([p1(1),p2(1)], {'Natural','Magnified'})
 
 
 % Lead vs. lag d-prime
 figure;
 subplot(2,3,1)
 hold on
-plot(1:8,lead_d_primes_collapsed,'LineStyle','-','Color','k')
-p1 = errorbar(1:2:8,mean(lead_d_primes_collapsed(1:2:8,:),2),std(lead_d_primes_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-p2 = errorbar(2:2:8,mean(lead_d_primes_collapsed(2:2:8,:),2),std(lead_d_primes_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
+for i = [1,3,5,7]
+    plot(i:i+1,lead_d_primes_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(lead_d_primes_collapsed(1:2:8,:),2),std(lead_d_primes_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(lead_d_primes_collapsed(2:2:8,:),2),std(lead_d_primes_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 xticks(1:8)
+ylabel("d'",'FontSize',18)
 ylim([0 7])
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
 xlabel('Natural ILD (deg)')
 legend([p1(1),p2(1)],{'Natural','Magnified'})
-title('lead','fontsize',18)
 %suptitle("d'")
 
 subplot(2,3,4)
 hold on
-plot(1:8,lag_d_primes_collapsed,'LineStyle','-','Color','k')
-p1 = errorbar(1:2:8,mean(lag_d_primes_collapsed(1:2:8,:),2),std(lag_d_primes_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r');
-p2 = errorbar(2:2:8,mean(lag_d_primes_collapsed(2:2:8,:),2),std(lag_d_primes_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b');
+for i = [1,3,5,7]
+    plot(i:i+1,lag_d_primes_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(lag_d_primes_collapsed(1:2:8,:),2),std(lag_d_primes_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(lag_d_primes_collapsed(2:2:8,:),2),std(lag_d_primes_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 xticks(1:8)
+ylabel("d'",'FontSize',18)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
 xlabel('Natural ILD (deg)')
 legend([p1(1),p2(1)],{'Natural','Magnified'})
-title('lag','fontsize',18)
 ylim([0,7])
 
 % lead vs. lag hit rate
 subplot(2,3,2)
 hold on
-plot(1:8,all_lead_hit_rates_collapsed,'LineStyle','-','Color','k')
-p1 = errorbar(1:2:8,mean(all_lead_hit_rates_collapsed(1:2:8,:),2),std(all_lead_hit_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-p2 = errorbar(2:2:8,mean(all_lead_hit_rates_collapsed(2:2:8,:),2),std(all_lead_hit_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
+for i = [1,3,5,7]
+    plot(i:i+1,all_lead_hit_rates_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(all_lead_hit_rates_collapsed(1:2:8,:),2),std(all_lead_hit_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(all_lead_hit_rates_collapsed(2:2:8,:),2),std(all_lead_hit_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 ylim([0 1])
-title('Hit Rate')
+ylabel("Hit Rate",'FontSize',18)
 xticks(1:8)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
@@ -508,46 +520,51 @@ title('lead','fontsize',18)
 
 subplot(2,3,5)
 hold on
-plot(1:8,all_lag_hit_rates_collapsed,'LineStyle','-','Color','k')
-errorbar(1:2:8,mean(all_lag_hit_rates_collapsed(1:2:8,:),2),std(all_lag_hit_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-errorbar(2:2:8,mean(all_lag_hit_rates_collapsed(2:2:8,:),2),std(all_lag_hit_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
+for i = [1,3,5,7]
+    plot(i:i+1,all_lag_hit_rates_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(all_lag_hit_rates_collapsed(1:2:8,:),2),std(all_lag_hit_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(all_lag_hit_rates_collapsed(2:2:8,:),2),std(all_lag_hit_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 ylim([0 1])
-title('Hit Rate')
+ylabel("Hit Rate",'FontSize',18)
 xticks(1:8)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
-legend({'','Natural','Magnified'})
+xlabel('Natural ILD (deg)','FontSize',18)
+legend([p1(1),p2(1)], {'Natural','Magnified'})
 title('lag','fontsize',18)
 %suptitle("Hit Rates")
 
 % lead vs. lag FA rate
 subplot(2,3,3)
 hold on
-plot(1:8,all_lead_FA_rates_collapsed,'LineStyle','-','Color','k')
-errorbar(1:2:8,mean(all_lead_FA_rates_collapsed(1:2:8,:),2),std(all_lead_FA_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-errorbar(2:2:8,mean(all_lead_FA_rates_collapsed(2:2:8,:),2),std(all_lead_FA_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
+for i = [1,3,5,7]
+    plot(i:i+1,all_lead_FA_rates_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(all_lead_FA_rates_collapsed(1:2:8,:),2),std(all_lead_FA_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(all_lead_FA_rates_collapsed(2:2:8,:),2),std(all_lead_FA_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 ylim([0 1])
-title('FA Rate')
+ylabel("FA Rate",'FontSize',18)
 xticks(1:8)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
-legend({'','Natural','Magnified'})
-title('lead','fontsize',18)
+xlabel('Natural ILD (deg)','FontSize',18)
+legend([p1(1),p2(1)], {'Natural','Magnified'})
 
 subplot(2,3,6)
 hold on
-plot(1:8,all_lag_FA_rates_collapsed,'LineStyle','-','Color','k')
-errorbar(1:2:8,mean(all_lag_FA_rates_collapsed(1:2:8,:),2),std(all_lag_FA_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r')
-errorbar(2:2:8,mean(all_lag_FA_rates_collapsed(2:2:8,:),2),std(all_lag_FA_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b')
+for i = [1,3,5,7]
+    plot(i:i+1,all_lag_FA_rates_collapsed(i:i+1,:),'LineStyle','-','Color','k')
+end
+p1 = errorbar(1:2:8,mean(all_lag_FA_rates_collapsed(1:2:8,:),2),std(all_lag_FA_rates_collapsed(1:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','r','MarkerFaceColor','r');
+p2 = errorbar(2:2:8,mean(all_lag_FA_rates_collapsed(2:2:8,:),2),std(all_lag_FA_rates_collapsed(2:2:8,:),[],2)/(sqrt(size(subject_ID,1))-1),'o','Color','b','MarkerFaceColor','b');
 ylim([0 1])
+ylabel("FA Rate",'FontSize',18)
 xticks(1:8)
 xticklabels({'5deg','5degMag','10deg','10degMag','20deg','20degMag','30deg','30degMag'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
-legend({'','Natural','Magnified'})
-title('lag','fontsize',18)
+xlabel('Natural ILD (deg)','FontSize',18)
+legend([p1(1),p2(1)], {'Natural','Magnified'})
 %suptitle("FA Rates")
 
 %% Save data

@@ -5,13 +5,13 @@
 % order = preprocessing, epoch, postprocessing, multsubjects
 %-------------------------------------------------------------------------------------------------------------------
 
-subID = '7050'; % Set current subject ID
+subID = 'fullpilot1'; % Set current subject ID
 % Excel sheet parameters
-range_A = 'A50'; % Excel sheet 
-range_B = 'B50';
+range_A = 'A1'; % Excel sheet 
+range_B = 'B1';
 badchannels = 'channelsremoved.xlsx';
 % Set directories
-whos_using = 'Maa'; % Choose user for directory stuff
+whos_using = 'Bon'; % Choose user for directory stuff
 if whos_using == 'Ben'
     addpath('/home/ben/Documents/MATLAB/eeglab2023.1');
     pre_pro_epoched_data_folder = '/home/ben/Documents/GitHub/fNIRSandGerbils/prepro_epoched_data/';
@@ -24,7 +24,7 @@ elseif whos_using == 'Ema'
     BDF_filename = ['C:\Users\ema36\OneDrive\Documents\LiMN Things\Gerbil BDFs\', subID, '.bdf'];
 elseif whos_using == 'Bon'
     addpath('C:\Users\benri\Documents\eeglab2023.1');
-    pre_pro_epoched_data_folder = 'C:\Users\benri\Documents\GitHub\fNIRSandGerbils\prepro_epoched_data\';
+    pre_pro_epoched_data_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
     addpath(pre_pro_epoched_data_folder)
     BDF_filename = ['C:\Users\benri\Downloads\', subID, '.bdf'];
 elseif whos_using == 'Maa'
@@ -50,26 +50,22 @@ EEG = eeg_checkset( EEG );
 
 %adding in channel locations 
 if whos_using == 'Ben'
-    EEG=pop_chanedit(EEG, 'load',{'/home/ben/Documents/GitHub/fNIRSandGerbils/chan_locs_cart.txt', 'filetype', 'sfp'});
-elseif whos_using == 'Ema'
-    EEG=pop_chanedit(EEG, 'load',{'C:\Users\ema36\OneDrive\Documents\LiMN Things\fNIRSandGerbils\chan_locs_cart.txt', 'filetype', 'sfp'});
+    EEG=pop_chanedit(EEG, 'load',{'/home/ben/Documents/GitHub/MILD-Master/chan_locs_cart.txt', 'filetype', 'sfp'});
 elseif whos_using == 'Bon'
-    EEG=pop_chanedit(EEG, 'load',{'C:\Users\benri\Documents\GitHub\fNIRSandGerbils\chan_locs_cart.txt', 'filetype', 'sfp'});
-elseif whos_using == 'Maa'
-    EEG=pop_chanedit(EEG, 'load',{'C:\Users\maana\Documents\GitHub\fNIRSandGerbils\chan_locs_cart.txt', 'filetype', 'sfp'});
+    EEG=pop_chanedit(EEG, 'load',{'C:\Users\benri\Documents\GitHub\MILD-Master\chan_locs_cart.txt', 'filetype', 'sfp'});
 end
 
 
 EEG = eeg_checkset( EEG );
 
 %downsampling to 256 Hz
-%EEG = pop_resample( EEG, 256);
-%[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 2, 'gui', 'off');
-%EEG = eeg_checkset( EEG );
+EEG = pop_resample( EEG, 256);
+[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 2, 'gui', 'off');
+EEG = eeg_checkset( EEG );
 
 %bandpass filter (order of 1)
 fs = EEG.srate;
-[b, a] = butter(1, [1, 30] / (fs / 2));
+[b, a] = butter(1, [1, 50] / (fs / 2));
 EEG.data = filtfilt(b, a, double(EEG.data')); 
 EEG.data = EEG.data';
 EEG = eeg_checkset( EEG );
