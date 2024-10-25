@@ -13,21 +13,27 @@ elseif all(whos_using == 'Bon')
     prepro_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
 end
 
-curr_subject_ID =  char('fullpilot1');
+curr_subject_ID =  char('fullpilot1','fullpilot2','fullpilot3');
 
 % Set analysis parameters
-erp_window_start_time = -100; % 100 ms before onset of word
+erp_window_start_time = -50; % 100 ms before onset of word
 erp_window_end_time = 750; % 750 ms after onset of word
 nsubjects = size(curr_subject_ID,1);
 word_length = 0.3;
 num_tot_trials = 240; % look into this
 frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
 fs = 256;
-cue_dur = 1.8;
+
 %% For each subject.....
 for isubject = 1:size(curr_subject_ID,1)
     subID = curr_subject_ID(isubject,:); % set subject ID
     disp(subID)
+
+    if subID == 'fullpilot1'
+        cue_dur = 1.8;
+    else
+        cue_dur = 2;
+    end
 
     % Load word onset times data
     WordTimesTable = readtable("C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master__s_" + strtrim(subID) + "__Word_Times.csv");
@@ -47,14 +53,11 @@ for isubject = 1:size(curr_subject_ID,1)
     this_subject_table = BehaviorTable(rows_this_subject,:);
 
     % Create empty arrays for ERPs
-    data_by_masker_onset = [];
     data_by_target_onset = [];
     data_by_button_press = [];
 
     data_by_lead_target_onset = [];
     data_by_lag_target_onset = [];
-    data_by_lead_masker_onset = [];
-    data_by_lag_masker_onset = [];
 
 
     % Create empty arrays for info for each ERP
@@ -63,9 +66,7 @@ for isubject = 1:size(curr_subject_ID,1)
     ERP_info_target = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
     ERP_info_button_press = struct('SubID',{},'Trial',{});
 
-    ERP_info_lead_masker = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
     ERP_info_lead_target = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
-    ERP_info_lag_masker = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
     ERP_info_lag_target = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
 
     % Load EEG for this subject
@@ -134,8 +135,8 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,end_time] = min(abs(resampled_audio_time - (resampled_search_time + erp_window_end_time)));%
 
 
-            if end_time - start_time == 345
-                end_time = end_time + 1;
+            if end_time - start_time == 333
+                end_time = end_time - 1;
             end
 
             % Reject epochs with amplitude above +/- 100 uV
@@ -163,16 +164,20 @@ for isubject = 1:size(curr_subject_ID,1)
 
         end
 
-        %% ISOLATE TARGET WORD ONSETS
-        % Within Target Onsets
+        %% ISOLATE WORD PAIR ONSETS
 
-        for ionset = 1:length(this_trial_target_times) % for each target word onset...
-            resampled_search_time = this_trial_target_times(ionset)*1000;
+        for ionset = 1:length(this_trial_target_times) % for each word pair onset, excluding the first
+            if this_trial_whether_target_lead(ionset) == 1
+                resampled_search_time = this_trial_target_times(ionset)*1000;
+            elseif this_trial_whether_target_lead(ionset) == 0
+                resampled_search_time = this_trial_masker_times(ionset)*1000;
+            end
+            
             [~,start_time] = min(abs(resampled_audio_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(resampled_audio_time - (resampled_search_time + erp_window_end_time)));%
 
-            if end_time - start_time == 218
-                end_time = end_time -1;
+            if end_time - start_time == 204
+                end_time = end_time + 1;
             end
 
 
@@ -237,80 +242,6 @@ for isubject = 1:size(curr_subject_ID,1)
             end
         end
 
-        %% ISOLATE MASKER WORD ONSETS
-        % Background Onsets (masker onsets)
-        for ionset = 1:length(this_trial_masker_times)
-
-            resampled_search_time = this_trial_masker_times(ionset)*1000;
-            [~,start_time] = min(abs(resampled_audio_time - (resampled_search_time + erp_window_start_time))); %
-            [~,end_time] = min(abs(resampled_audio_time - (resampled_search_time + erp_window_end_time)));%
-
-            %resampled_search_index = (masker_time(ionset) + (1*fs) - (0.1*fs));
-            %start_time = round(resampled_search_index);
-            %end_time = round(start_time + floor(((erp_window_end_time - erp_window_start_time)/1000)*fs));
-            if end_time - start_time == 218
-                end_time = end_time -1;
-            end
-
-            % Reject epochs with amplitude above +/- 100 uV
-            if any(abs(detrend(these_epochs(:,start_time:end_time,itrial))) > noise_thresh,'all')
-                disp('ERP rejected')
-                continue
-                %add variance here
-            end
-
-            this_erp = these_epochs(:,start_time:end_time,itrial);
-            data_by_masker_onset = cat(3, data_by_masker_onset,this_erp);
-
-            % add to lead or lag ERPs, depending
-            if this_trial_whether_target_lead(ionset) == 0
-                data_by_lead_masker_onset = cat(3,data_by_lead_masker_onset,this_erp);
-            elseif this_trial_whether_target_lead(ionset) == 1
-                data_by_lag_masker_onset = cat(3,data_by_lag_masker_onset,this_erp);
-            end
-
-            % Append Info
-            if ~isempty(ERP_info_masker)
-                ERP_info_masker.SubID = [ERP_info_masker.SubID; curr_subject_ID(isubject,:)];
-                ERP_info_masker.Trial = [ERP_info_masker.Trial, itrial];
-                ERP_info_masker.Word = [ERP_info_masker.Word; this_trial_masker_words(ionset)];
-                ERP_info_masker.Condition = [ERP_info_masker.Condition, conditions(itrial)];
-            else
-                ERP_info_masker(1).SubID = curr_subject_ID(isubject,:);
-                ERP_info_masker(1).Trial = itrial;
-                ERP_info_masker(1).Word = this_trial_masker_words(ionset);
-                ERP_info_masker(1).Condition = conditions(itrial);
-            end
-
-            % lead data
-
-            if ~isempty(ERP_info_lead_masker) && this_trial_whether_target_lead(ionset) == 0
-                ERP_info_lead_masker.SubID = [ERP_info_lead_masker.SubID; curr_subject_ID(isubject,:)];
-                ERP_info_lead_masker.Trial = [ERP_info_lead_masker.Trial, itrial];
-                ERP_info_lead_masker.Word = [ERP_info_lead_masker.Word; this_trial_masker_words(ionset)];
-                ERP_info_lead_masker.Condition = [ERP_info_lead_masker.Condition, conditions(itrial)];
-            elseif isempty(ERP_info_lead_masker) && this_trial_whether_target_lead(ionset) == 0
-                ERP_info_lead_masker(1).SubID = curr_subject_ID(isubject,:);
-                ERP_info_lead_masker(1).Trial = itrial;
-                ERP_info_lead_masker(1).Word = this_trial_masker_words(ionset);
-                ERP_info_lead_masker(1).Condition = conditions(itrial);
-            end
-
-            % lag data
-            if ~isempty(ERP_info_lag_masker) && this_trial_whether_target_lead(ionset) == 1
-                ERP_info_lag_masker.SubID = [ERP_info_lag_masker.SubID; curr_subject_ID(isubject,:)];
-                ERP_info_lag_masker.Trial = [ERP_info_lag_masker.Trial, itrial];
-                ERP_info_lag_masker.Word = [ERP_info_lag_masker.Word; this_trial_masker_words(ionset)];
-                ERP_info_lag_masker.Condition = [ERP_info_lag_masker.Condition, conditions(itrial)];
-            elseif isempty(ERP_info_lag_masker) && this_trial_whether_target_lead(ionset) == 1
-                ERP_info_lag_masker(1).SubID = curr_subject_ID(isubject,:);
-                ERP_info_lag_masker(1).Trial = itrial;
-                ERP_info_lag_masker(1).Word = this_trial_masker_words(ionset);
-                ERP_info_lag_masker(1).Condition = conditions(itrial);
-            end
-
-        end
-
     end
 
     %% Concatenate and baseline within each channel for this subject
@@ -330,266 +261,191 @@ for isubject = 1:size(curr_subject_ID,1)
     % all data
     data_by_button_press_baselined = nan(size(data_by_button_press));
     data_by_target_onset_baselined = nan(size(data_by_target_onset));
-    data_by_masker_onset_baselined = nan(size(data_by_masker_onset));
-    data_by_target_and_masker = cat(3,data_by_target_onset,data_by_masker_onset);
 
     % lead data
     data_by_lead_target_onset_baselined = nan(size(data_by_lead_target_onset));
-    data_by_lead_masker_onset_baselined = nan(size(data_by_lead_masker_onset));
-    data_by_lead_target_and_masker = cat(3,data_by_lead_target_onset,data_by_lead_masker_onset);
 
     % lag data
     data_by_lag_target_onset_baselined = nan(size(data_by_lag_target_onset));
-    data_by_lag_masker_onset_baselined = nan(size(data_by_lag_masker_onset));
-    data_by_lag_target_and_masker = cat(3,data_by_lag_target_onset,data_by_lag_masker_onset);
+
+    % BOFA
+    data_by_both_lead_and_lag = cat(3,data_by_lead_target_onset,data_by_lag_target_onset);
 
     for ichannel = 1:32
         % all data
         data_by_button_press_baselined(ichannel,:,:) = data_by_button_press(ichannel,:,:) - mean(data_by_button_press(ichannel,baseline_start_index_buttonpress:baseline_end_index_buttonpress,:),'all');
-        data_by_target_onset_baselined(ichannel,:,:) = data_by_target_onset(ichannel,:,:) - mean(data_by_target_and_masker(ichannel,baseline_start_index:baseline_end_index,:),'all');
-        data_by_masker_onset_baselined(ichannel,:,:) = data_by_masker_onset(ichannel,:,:) - mean(data_by_target_and_masker(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_target_onset_baselined(ichannel,:,:) = data_by_target_onset(ichannel,:,:) - mean(data_by_target_onset(ichannel,baseline_start_index:baseline_end_index,:),'all');
 
         % lead data
-        data_by_lead_target_onset_baselined(ichannel,:,:) = data_by_lead_target_onset(ichannel,:,:) - mean(data_by_lead_target_and_masker(ichannel,baseline_start_index:baseline_end_index,:),'all');
-        data_by_lead_masker_onset_baselined(ichannel,:,:) = data_by_lead_masker_onset(ichannel,:,:) - mean(data_by_lead_target_and_masker(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_lead_target_onset_baselined(ichannel,:,:) = data_by_lead_target_onset(ichannel,:,:) - mean(data_by_both_lead_and_lag(ichannel,baseline_start_index:baseline_end_index,:),'all');
 
         % lag data
-        data_by_lag_target_onset_baselined(ichannel,:,:) = data_by_lag_target_onset(ichannel,:,:) - mean(data_by_lag_target_and_masker(ichannel,baseline_start_index:baseline_end_index,:),'all');
-        data_by_lag_masker_onset_baselined(ichannel,:,:) = data_by_lag_masker_onset(ichannel,:,:) - mean(data_by_lag_target_and_masker(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_lag_target_onset_baselined(ichannel,:,:) = data_by_lag_target_onset(ichannel,:,:) - mean(data_by_both_lead_and_lag(ichannel,baseline_start_index:baseline_end_index,:),'all');
 
     end
 
     all_data_button_press(isubject,:,:) = squeeze(mean(data_by_button_press_baselined,3));
     all_data_target(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined,3));
-    all_data_masker(isubject,:,:) = squeeze(mean(data_by_masker_onset_baselined,3));
 
     all_data_lead_target(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined,3));
-    all_data_lead_masker(isubject,:,:) = squeeze(mean(data_by_lead_masker_onset_baselined,3));
 
     all_data_lag_target(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined,3));
-    all_data_lag_masker(isubject,:,:) = squeeze(mean(data_by_lag_masker_onset_baselined,3));
 
     %all_info_button_press(isubject).info = ERP_info_button_press;
     %all_info_target(isubject).info = ERP_info_target;
-    %all_info_masker(isubject).info = ERP_info_masker;
 
     % sort all data into conditions
     itd50_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[2,5]))),3));
-    itd50_by_masker_onset(isubject,:,:) = squeeze(mean(data_by_masker_onset_baselined(:,:,logical(ismember(ERP_info_masker(:).Condition,[2,5]))),3));
 
     itd500_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[1,6]))),3));
-    itd500_by_masker_onset(isubject,:,:) = squeeze(mean(data_by_masker_onset_baselined(:,:,logical(ismember(ERP_info_masker(:).Condition,[1,6]))),3));
 
     ild5_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[3,8]))),3));
-    ild5_by_masker_onset(isubject,:,:) = squeeze(mean(data_by_masker_onset_baselined(:,:,logical(ismember(ERP_info_masker(:).Condition,[3,8]))),3));
 
     ild5mag_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[4,7]))),3));
-    ild5mag_by_masker_onset(isubject,:,:) = squeeze(mean(data_by_masker_onset_baselined(:,:,logical(ismember(ERP_info_masker(:).Condition,[4,7]))),3));
 
     % sort lead data into conditions
     itd50_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[2,5]))),3));
-    itd50_by_lead_masker_onset(isubject,:,:) = squeeze(mean(data_by_lead_masker_onset_baselined(:,:,logical(ismember(ERP_info_lead_masker(:).Condition,[2,5]))),3));
-
     itd500_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[1,6]))),3));
-    itd500_by_lead_masker_onset(isubject,:,:) = squeeze(mean(data_by_lead_masker_onset_baselined(:,:,logical(ismember(ERP_info_lead_masker(:).Condition,[1,6]))),3));
-
     ild5_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[3,8]))),3));
-    ild5_by_lead_masker_onset(isubject,:,:) = squeeze(mean(data_by_lead_masker_onset_baselined(:,:,logical(ismember(ERP_info_lead_masker(:).Condition,[3,8]))),3));
-
     ild5mag_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[4,7]))),3));
-    ild5mag_by_lead_masker_onset(isubject,:,:) = squeeze(mean(data_by_lead_masker_onset_baselined(:,:,logical(ismember(ERP_info_lead_masker(:).Condition,[4,7]))),3));
 
     % sort lag data into conditions
     itd50_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[2,5]))),3));
-    itd50_by_lag_masker_onset(isubject,:,:) = squeeze(mean(data_by_lag_masker_onset_baselined(:,:,logical(ismember(ERP_info_lag_masker(:).Condition,[2,5]))),3));
-
     itd500_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[1,6]))),3));
-    itd500_by_lag_masker_onset(isubject,:,:) = squeeze(mean(data_by_lag_masker_onset_baselined(:,:,logical(ismember(ERP_info_lag_masker(:).Condition,[1,6]))),3));
-
     ild5_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[3,8]))),3));
-    ild5_by_lag_masker_onset(isubject,:,:) = squeeze(mean(data_by_lag_masker_onset_baselined(:,:,logical(ismember(ERP_info_lag_masker(:).Condition,[3,8]))),3));
-
     ild5mag_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[4,7]))),3));
-    ild5mag_by_lag_masker_onset(isubject,:,:) = squeeze(mean(data_by_lag_masker_onset_baselined(:,:,logical(ismember(ERP_info_lag_masker(:).Condition,[4,7]))),3));
 
 
 
     %% Plot all data frontocentral erp for each subject
-    figure;
-    subplot(1,4,1)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd50_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd50_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('50 us ITD','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-    ylabel('Voltage (uV)','FontSize',18)
+%     figure;
+%     subplot(1,4,1)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd50_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd50_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('50 us ITD','FontSize',18)
+%     xline(0)
+%     xline(250)
+%     legend([p1(1),p2(1)],{'Attend','Ignore'})
+%     ylim([-4,3])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+%     ylabel('Voltage (uV)','FontSize',18)
+% 
+%     subplot(1,4,2)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd500_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd500_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('500 us ITD','FontSize',18)
+%     xline(0)
+%     xline(250)
+%     legend([p1(1),p2(1)],{'Attend','Ignore'})
+%     ylim([-4,3])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+%     subplot(1,4,3)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild5_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild5_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ILD','FontSize',18)
+%     xline(0)
+%     xline(250)
+%     legend([p1(1),p2(1)],{'Attend','Ignore'})
+%     ylim([-4,3])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     subplot(1,4,4)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ILD + MAG','FontSize',18)
+%     xline(0)
+%     xline(250)
+%     legend([p1(1),p2(1)],{'Attend','Ignore'})
+%     ylim([-4,3])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     sgtitle(subID)
 
-    subplot(1,4,2)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd500_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd500_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('500 us ITD','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-
-    subplot(1,4,3)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    subplot(1,4,4)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD + MAG','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    sgtitle(subID)
-
-    %% Plot lead frontocentral ERP
+    %% Plot frontocentral ERPs
     figure;
     subplot(1,4,1)
     hold on
     p1 = plot(single_onset_time,squeeze(mean(itd50_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd50_by_lead_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    p2 = plot(single_onset_time,squeeze(mean(itd50_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
     title('50 us ITD','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
+    xline(0,'--r','LineWidth',2)
+    xline(250,'--b','LineWidth',2)
+    xline(600)
+    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
     ylim([-4,3])
-    xlim([-100,500])
+    xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
     ylabel('Voltage (uV)','FontSize',18)
 
     subplot(1,4,2)
     hold on
     p1 = plot(single_onset_time,squeeze(mean(itd500_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd500_by_lead_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    p2 = plot(single_onset_time,squeeze(mean(itd500_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
     title('500 us ITD','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
+    xline(0,'--r','LineWidth',2)
+    xline(250,'--b','LineWidth',2)
+    xline(600)
+    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
     ylim([-4,3])
-    xlim([-100,500])
+    xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
 
     subplot(1,4,3)
     hold on
     p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5_by_lead_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
     title('5 deg ILD','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
+    xline(0,'--r','LineWidth',2)
+    xline(250,'--b','LineWidth',2)
+    xline(600)
+    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
     ylim([-4,3])
-    xlim([-100,500])
+    xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
 
 
     subplot(1,4,4)
     hold on
     p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_lead_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
     title('5 deg ILD + MAG','FontSize',18)
-    xline(0)
-    xline(250)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
+    xline(0,'--r','LineWidth',2)
+    xline(250,'--b','LineWidth',2)
+    xline(600)
+    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
     ylim([-4,3])
-    xlim([-100,500])
+    xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
 
 
-    sgtitle([subID,' Lead ERPs'])
+    sgtitle([subID,' Frontocentral ERPs'])
 
 
-    %% Plot lag frontocentral ERP
-    figure;
-    subplot(1,4,1)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd50_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd50_by_lag_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('50 us ITD','FontSize',18)
-    xline(0)
-    xline(350)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-    ylabel('Voltage (uV)','FontSize',18)
 
-    subplot(1,4,2)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd500_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd500_by_lag_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('500 us ITD','FontSize',18)
-    xline(0)
-    xline(350)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-
-    subplot(1,4,3)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD','FontSize',18)
-    xline(0)
-    xline(350)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    subplot(1,4,4)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_lag_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD + MAG','FontSize',18)
-    xline(0)
-    xline(350)
-    legend([p1(1),p2(1)],{'Attend','Ignore'})
-    ylim([-4,3])
-    xlim([-100,500])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    sgtitle([subID,' lag ERPs'])
-
-
-    %% Plot whole trial EEG at Cz
+    %% Plot whole trial EEG at frontocentral channels in each condition
     [~,baseline_start_index_wholetrial] = min(abs(eeg_time + 1000));
     [~,baseline_end_index_wholetrial] = min(abs(eeg_time + 0));
     these_epochs = these_epochs - mean(these_epochs(:,baseline_start_index_wholetrial:baseline_end_index_wholetrial,:),[2,3]);
     
     figure;
-    subplot(size(curr_subject_ID,1),1,isubject)
-    plot(eeg_time,mean(these_epochs(32,:,:),[1,3]))
-    hold on;plot(eeg_time,mean(these_epochs(32,:,:),[1,3]))
+    %subplot(size(curr_subject_ID,1),1,isubject)
+    hold on;
+    p1 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[2,5])),[1,3])); % itd 50
+    p2 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[1,6])),[1,3])); % itd 500
+    p3 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[3,8])),[1,3])); % ild 5
+    p4 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[4,7])),[1,3])); % itd 5 + mag
+    
     %legend({'Scrambled','Unscrambled'})
     if isubject == size(curr_subject_ID,1)
         xlabel('Time (ms)','FontSize',18)
@@ -600,74 +456,144 @@ for isubject = 1:size(curr_subject_ID,1)
     xline(1800,'LineWidth',2)
     xline([1.8 2.05 2.4 2.65 3 3.25 3.6 3.85 4.2 4.45 4.8 5.05 5.4 5.65 6 6.25]*1000,'LineWidth',1)
     title(subID)
+    legend([p1(1),p2(1),p3(1),p4(1)],{'ITD50','ITD500','ILD5deg','ILD5degMag'})
 
+    %% Calculate spectrograms at each trial and channel
+    M = fs/10;
+    window=hamming(M,'periodic');
+    noverlap=floor(0.75*M);
+    Ndft=128;
+    all_spectrograms_this_subject = nan(Ndft/2 + 1, 619, 32, size(these_epochs,3));
+
+    for ichannel = 1:32
+        for itrial = 1:size(these_epochs,3) % find the spectrogram for each trial
+
+            this_data = mean(these_epochs(ichannel,:,itrial),[1,3]);
+            [this_spectrogram,f,t] = spectrogram(this_data,window,noverlap,Ndft,fs,'yaxis'); % will return frequency by time
+            all_spectrograms_this_subject(:,:,ichannel, itrial) = abs(this_spectrogram); % frequency x time x channel X trial
+        end
+    end
+    
     %% Plot spectrogram of the epoch at Frontocentral and Parietooccipital channels
-    % Frontocentral channels
-    figure;
-    M = fs/10;
-    window=hamming(M,'periodic');
-    noverlap=floor(0.75*M);
-    Ndft=128;
-    this_data = mean(these_epochs(frontocentral_channels,:,:),[1,3]);
-    spectrogram(this_data,window,noverlap,Ndft,fs,'yaxis')
-    ylim([0,30])
-    xlim([0,6])
-    xticklabels(0:1:16);
-    curr_tick_labels = xticklabels;
-    xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-    caxis([-40,5])
-    xline(1,'LineWidth',2)
-    xline(2.8,'LineWidth',2)
-    %yline(8,'LineWidth',2)
-    %yline(12,'LineWidth',2)
-    title('Frontocentral Channels','FontSize',18)
-
-    % Parietooccipital channels ATTTEND LEFT
-    parietooccipital_channels = 11:20;
-    figure;
-    M = fs/10;
-    window=hamming(M,'periodic');
-    noverlap=floor(0.75*M);
-    Ndft=128;
-    this_data = mean(these_epochs(parietooccipital_channels,:,:),[1,3]);
-    spectrogram(this_data,window,noverlap,Ndft,fs,'yaxis')
-    ylim([0,30])
-    xlim([0,6])
-    xticklabels(0:1:16);
-    curr_tick_labels = xticklabels;
-    xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-    caxis([-40,5])
-    xline(1,'LineWidth',2)
-    xline(2.8,'LineWidth',2)
-    yline(8,'LineWidth',2)
-    yline(12,'LineWidth',2)
-    title('Parietooccipital Channels','FontSize',18)
+%     % Frontocentral channels
+%     figure;
+%     hold on
+%     imagesc(t,f,squeeze(mean(all_spectrograms_this_subject(:,:,frontocentral_channels,:),[3,4])))
+%     ylim([0,30])
+%     xlim([0,6])
+%     xticklabels(0:1:16);
+%     curr_tick_labels = xticklabels;
+%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
+%     caxis([20,70])
+%     xline(1,'LineWidth',2)
+%     xline(2.8,'LineWidth',2)
+%     %yline(8,'LineWidth',2)
+%     %yline(12,'LineWidth',2)
+%     title('Frontocentral Channels','FontSize',18)
+%     xlabel('Time (s)','FontSize',18)
+%     ylabel('Frequency (Hz)','FontSize',18)
+% 
+%     % Parietooccipital channels BROKEN UP BY ATTEND
+%     parietooccipital_channels = 11:20;
+%     left_parietooccipital_channels = [11,12,14,15];
+%     right_parietooccipital_channels = [17,18,19,20];
+%     figure;
+%     subplot(2,2,1) % left hemisphere, attend left
+%     imagesc(t,f,squeeze(mean(all_spectrograms_this_subject(:,:,left_parietooccipital_channels,ismember(conditions,6)),[3,4])))
+%     set(gca,'YDir','normal')
+%     ylim([0,30])
+%     xlim([0,6])
+%     xticklabels(0:1:16);
+%     curr_tick_labels = xticklabels;
+%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
+%     caxis([20,50])
+%     xline(1,'LineWidth',2)
+%     xline(2.8,'LineWidth',2)
+%     yline(8,'LineWidth',2)
+%     yline(12,'LineWidth',2)
+%     title('Left Hem. Attend Left')
+%     xlabel('Time (s)','FontSize',18)
+%     ylabel('Frequency (Hz)','FontSize',18)
+% 
+%     subplot(2,2,2) % right hemisphere, attend left
+%     imagesc(t,f',squeeze(mean(all_spectrograms_this_subject(:,:,right_parietooccipital_channels,ismember(conditions,6)),[3,4])))
+%     set(gca,'YDir','normal')
+%     ylim([0,30])
+%     xlim([0,6])
+%     xticklabels(0:1:16);
+%     curr_tick_labels = xticklabels;
+%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
+%     caxis([20,50])
+%     xline(1,'LineWidth',2)
+%     xline(2.8,'LineWidth',2)
+%     yline(8,'LineWidth',2)
+%     yline(12,'LineWidth',2)
+%     title('Right Hem. Attend Left')
+%     xlabel('Time (s)','FontSize',18)
+%     ylabel('Frequency (Hz)','FontSize',18)
+% 
+%     subplot(2,2,3) % left hemisphere, attend right
+%     imagesc(t,f',squeeze(mean(all_spectrograms_this_subject(:,:,left_parietooccipital_channels,ismember(conditions,1)),[3,4])))
+%     set(gca,'YDir','normal')
+%     ylim([0,30])
+%     xlim([0,6])
+%     xticklabels(0:1:16);
+%     curr_tick_labels = xticklabels;
+%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
+%     caxis([20,50])
+%     xline(1,'LineWidth',2)
+%     xline(2.8,'LineWidth',2)
+%     yline(8,'LineWidth',2)
+%     yline(12,'LineWidth',2)
+%     title('Left Hem. Attend Right')
+%     xlabel('Time (s)','FontSize',18)
+%     ylabel('Frequency (Hz)','FontSize',18)
+% 
+%     subplot(2,2,4) % right hemisphere, attend right
+%     imagesc(t,f',squeeze(mean(all_spectrograms_this_subject(:,:,right_parietooccipital_channels,ismember(conditions,1)),[3,4])))
+%     set(gca,'YDir','normal')
+%     ylim([0,30])
+%     xlim([0,6])
+%     xticklabels(0:1:16);
+%     curr_tick_labels = xticklabels;
+%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
+%     caxis([20,50])
+%     xline(1,'LineWidth',2)
+%     xline(2.8,'LineWidth',2)
+%     yline(8,'LineWidth',2)
+%     yline(12,'LineWidth',2)
+%     title('Right Hem. Attend Right')
+%     xlabel('Time (s)','FontSize',18)
+%     ylabel('Frequency (Hz)','FontSize',18)
+% 
+% 
+%     sgtitle('Parietooccipital Channels ITD500 ONLY','FontSize',18)
 
      % what if I subtract the mean over the WHOLE trial (get rid of the
      % ERP?)
-     parietooccipital_channels = 11:20;
-    figure;
-    M = fs/10;
-    window=hamming(M,'periodic');
-    noverlap=floor(0.75*M);
-    Ndft=128;
-    this_data = nan(size(these_epochs));
-    for ichannel = 1:32
-        this_data(ichannel,:,:) = these_epochs(ichannel,:,:) - mean(these_epochs(ichannel,:,:),3);
-    end
-    this_data = mean(this_data(parietooccipital_channels,:,:),[1,3]);
-    spectrogram(this_data*10e7,window,noverlap,Ndft,fs,'yaxis')
-    ylim([0,30])
-    xlim([0,6])
-    xticklabels(0:1:16);
-    curr_tick_labels = xticklabels;
-    xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-    caxis([0,10])
-    xline(1,'LineWidth',2)
-    xline(2.8,'LineWidth',2)
-    yline(8,'LineWidth',2)
-    yline(12,'LineWidth',2)
-    title('Parietooccipital Channels WITH MEAN SUBTRACTED','FontSize',18)
+%      parietooccipital_channels = 11:20;
+%     figure;
+%     M = fs/10;
+%     window=hamming(M,'periodic');
+%     noverlap=floor(0.75*M);
+%     Ndft=128;
+%     this_data = nan(size(these_epochs));
+%     for ichannel = 1:32
+%         this_data(ichannel,:,:) = these_epochs(ichannel,:,:) - mean(these_epochs(ichannel,:,:),3);
+%     end
+%     this_data = mean(this_data(parietooccipital_channels,:,:),[1,3]);
+%     spectrogram(this_data*10e7,window,noverlap,Ndft,fs,'yaxis')
+%     ylim([0,30])
+%     xlim([0,6])
+%     xticklabels(0:1:16);
+%     curr_tick_labels = xticklabels;
+%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
+%     caxis([0,10])
+%     xline(1,'LineWidth',2)
+%     xline(2.8,'LineWidth',2)
+%     yline(8,'LineWidth',2)
+%     yline(12,'LineWidth',2)
+%     title('Parietooccipital Channels WITH MEAN SUBTRACTED','FontSize',18)
 
 
     %% Topoplots in each condition
@@ -683,133 +609,166 @@ for isubject = 1:size(curr_subject_ID,1)
 
     iplot = 1;
 
-    % ITD50 Attend
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ITD50\newlineAttend','Interpreter','tex','FontSize',18);
+    % Attend lead
+    subplot(2,length(topoplot_indices)+ 1,iplot);
+    text(-1,0.5,'Attend\newlineLead','Interpreter','tex','FontSize',18);
     axis off
     iplot = iplot+1;
 
     itime = 1;
     for itopo = topoplot_indices
         subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(itd50_by_target_onset(:,:,itopo), [1,3]);
+        this_data = mean(data_by_lead_target_onset(:,itopo,:), [2,3]);
         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
         title([num2str(topoplot_times(itime)),' ms'])
         iplot = iplot + 1;
         itime = itime + 1;
     end
 
-    % ITD50 Ignore
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ITD50\newlineIgnore','Interpreter','tex','FontSize',18);
+     % Attend lag
+    subplot(2,length(topoplot_indices)+ 1,iplot);
+    text(-1,0.5,'Attend\newlineLead','Interpreter','tex','FontSize',18);
     axis off
     iplot = iplot+1;
 
     itime = 1;
     for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(itd50_by_masker_onset(:,:,itopo), [1,3]);
+        subplot(2,length(topoplot_indices)+ 1,iplot);
+        this_data = mean(data_by_lag_target_onset(:,itopo,:), [2,3]);
         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
         title([num2str(topoplot_times(itime)),' ms'])
         iplot = iplot + 1;
         itime = itime + 1;
     end
 
-    % ITD500 Attend
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ITD500\newlineAttend','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(itd500_by_target_onset(:,:,itopo), [1,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
-
-    % ITD500 Ignore
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ITD500\newlineIgnore','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(itd500_by_masker_onset(:,:,itopo), [1,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
-
-    % ILD5 Attend
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ILD5\newlineAttend','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(ild5_by_target_onset(:,:,itopo), [1,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
-
-    % ILD5 Ignore
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ILD5\newlineIgnore','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(ild5_by_masker_onset(:,:,itopo), [1,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
-
-    % ILD5Mag Attend
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ILD5 Mag\newlineAttend','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(ild5mag_by_target_onset(:,:,itopo), [1,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
-
-    % ILD5 Ignore
-    subplot(8,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'ILD5 Mag\newlineIgnore','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(ild5mag_by_masker_onset(:,:,itopo), [1,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
+% 
+%     % ITD50 Attend
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ITD50\newlineAttend','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(itd50_by_target_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%     % ITD50 Ignore
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ITD50\newlineIgnore','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(itd50_by_masker_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%     % ITD500 Attend
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ITD500\newlineAttend','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(itd500_by_target_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%     % ITD500 Ignore
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ITD500\newlineIgnore','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(itd500_by_masker_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%     % ILD5 Attend
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ILD5\newlineAttend','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(ild5_by_target_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%     % ILD5 Ignore
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ILD5\newlineIgnore','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(ild5_by_masker_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%     % ILD5Mag Attend
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ILD5 Mag\newlineAttend','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(ild5mag_by_target_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%     % ILD5 Ignore
+%     subplot(8,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'ILD5 Mag\newlineIgnore','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(ild5mag_by_masker_onset(:,:,itopo), [1,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
 
     % button press time trace at Cz, Fz, and Pz
         figure;
@@ -851,7 +810,7 @@ for isubject = 1:size(curr_subject_ID,1)
 
 
     %% SAVE INFO FOR THIS SUBBY
-    save(append('Results_Subject_',string(curr_subject_ID(isubject,:)),'.mat'),'data_by_masker_onset_baselined','data_by_target_onset_baselined','data_by_button_press_baselined','ERP_info_button_press','ERP_info_masker','ERP_info_target','-v7.3')
+    save(append('Results_Subject_',string(curr_subject_ID(isubject,:)),'.mat'),'data_by_target_onset_baselined','data_by_lead_target_onset_baselined','data_by_lag_target_onset_baselined','data_by_button_press_baselined','ERP_info_button_press','ERP_info_lead_target','ERP_info_lag_target','ERP_info_target','-v7.3')
 
 end
 
