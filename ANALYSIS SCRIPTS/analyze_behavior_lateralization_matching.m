@@ -1,7 +1,8 @@
 %% analyze_behavior_lateralization_matching.m
 
 BehaviorTable = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\lateralization-matching.xlsx','Format','auto');
-subject_ID = char('latpilot1','latpilot2','latmatch3','latpilot4','latpilot5','latpilot6'); %
+%subject_ID = char('latpilot1','latpilot2','latmatch3','latpilot4','latpilot5','latpilot6'); %
+subject_ID = char('lateralization_1_matching');
 for isubject = 1:size(subject_ID,1) % For each subject...
     rows_this_subject = find(BehaviorTable.S == strtrim(string(subject_ID(isubject,:))));
 

@@ -1,51 +1,35 @@
 {
-  "instructions": ["Great! Welcome to the task itself. To begin, make sure you are still wearing your headphones or earphones. <p></p>Once you are ready, click <strong>Continue</strong> for further instructions.","On each trial, you will hear a voice say bash from the left or from the right. Your task is to listen to the words <strong>from that direction</strong> and click the button when you hear the word bash <strong>FROM THAT DIRECTION</strong>.", "There will be a distracting sound from the other side, but do your best to ignore it.", "When you are ready, click <strong>Continue</strong> to hear the first word."],
+  "instructions": ["Welcome to the task itself To begin, make sure you are still wearing your headphones or earphones. <p></p>Once you are ready, click <strong>Continue</strong> for further instructions.","On each trial, you will hear a voice say <strong>bash</strong>, <strong>dash</strong>, and <strong>gash</strong> from the left or from the right. Your task is to listen to the words <strong>from that direction</strong> and click the button AS SOON AS you hear the word <strong>bash</strong> from the target direction. There may be more than one <strong>bash</strong> in each trial. There will be a distracting sound from the other side, but do your best to ignore it.", "When you are ready, click <strong>Continue</strong> to begin the task itself."],
   "feedback":false,
   "holdfeedback": false,
   "feedbackdur": 0,
   "serveraudio": true,
   "estimatedduration": 7,
-  "randomize":false,
+  "randomize":true,
   "isi": 5000,
   "volume":[
     {
     "plugin": "html-button-response",
-    "prompt": "Welcome! This task involves listening to sounds and providing responses. We need to confirm that the computer volume is appropriate for our task. To begin, make sure you are still in a quiet room and wearing your headphones or earphones.<p> Please bring down your computer volume to 10-20% of maximum. Then, click <strong>Continue</strong> to proceed.</p>",
-    "choices": ["Continue"]
-    },
-    {
-    "plugin": "html-button-response",
-    "prompt": "When you are ready, hit the <strong>Play</strong> button to play a sample sound.<p> While that sound is playing, adjust your computer volume up to a comfortable (but not too loud) level.</p>",
-    "choices": ["Play"]
-    },
-    {
-    "plugin": "hari-audio-button-response",
-    "prompt": "Now adjust your computer volume up to a comfortable (but not too loud) level.",
-    "stimulus": "volumeSetStim.wav",
-    "choices": ["I have adjusted the volume, let's continue"]
-    },
-    {
-    "plugin": "html-button-response",
-    "prompt": "Thanks for adjusting your computer volume. We will use this volume setting for the remainder of the task. Please <strong>do not adjust the volume anymore throughout the task</strong>, as that could lead to sounds being too loud or too soft.<p>If this sounds OK, click <strong>Continue</strong> to begin the task.</p>",
+    "prompt": "Click <strong>Continue</strong> to begin the practice.</p>",
     "choices": ["Continue"]
     }
   ],
   "trials":[
         {
-    "plugin": "jspsych-audio-button-response",
+    "plugin": "ben-multi-button-response",
     "prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
     "choices": ["bash"],
     "answer": 1,
-    "stimulus": "ABLE2024_mrtEMtrial1.wav",
+    "stimulus": "test.wav",
     "cond": 1,
     "annot": {"Condition": "ITD50"}
     },
     {
-    "plugin": "jspsych-audio-button-response",
+    "plugin": "ben-multi-button-response",
     "prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
     "choices": ["bash"],
     "answer": 3,
-    "stimulus": "ABLE2024_mrtEMtrial1.wav",
+    "stimulus": "test.wav",
     "cond": 2,
     "annot": {"Condition": "ITD500"}
     }

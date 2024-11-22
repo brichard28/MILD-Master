@@ -1,0 +1,9 @@
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_1_trial_1.wav",
+"cond": 1,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=10_mag=0_word_set=0__l=g-b-g-d-g-d-b-d-g-b-g-d-b-g-g-d__r=g-g-g-d-b-g-d-d-g-d-d-g-g-d-b-d.wav"}
+},

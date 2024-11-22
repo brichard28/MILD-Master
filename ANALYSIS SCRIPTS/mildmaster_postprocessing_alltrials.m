@@ -20,7 +20,6 @@ erp_window_start_time = -50; % 100 ms before onset of word
 erp_window_end_time = 750; % 750 ms after onset of word
 nsubjects = size(curr_subject_ID,1);
 word_length = 0.3;
-num_tot_trials = 240; % look into this
 frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
 fs = 256;
 
@@ -29,10 +28,10 @@ for isubject = 1:size(curr_subject_ID,1)
     subID = curr_subject_ID(isubject,:); % set subject ID
     disp(subID)
 
-    if subID == 'fullpilot1'
+    if ismember(subID,{'fullpilot1'})
         cue_dur = 1.8;
     else
-        cue_dur = 2;
+        cue_dur = 2.0;
     end
 
     % Load word onset times data
@@ -75,6 +74,7 @@ for isubject = 1:size(curr_subject_ID,1)
     eeg_struct_name = fieldnames(this_EEG);
     this_EEG = getfield(this_EEG,string(eeg_struct_name(1)));
     these_epochs = this_EEG.data; % 32 channels x Time x 240 trials
+    num_tot_trials = size(these_epochs,3); % look into this
 
 
     % Define time vector for extracting target ERPs
@@ -124,6 +124,8 @@ for isubject = 1:size(curr_subject_ID,1)
         this_trial_whether_target_lead = sign(this_trial_masker_times - this_trial_target_times);
         this_trial_whether_target_lead(this_trial_whether_target_lead == -1) = 0; % 0 when masker leads, 1 when target leads
 
+        this_trial_target_bash_times = this_trial_target_times(ismember(this_trial_target_words,{'bash'}));
+        this_trial_masker_bash_times = this_trial_masker_times(ismember(this_trial_masker_words,{'bash'}));
         %% ISOLATE BUTTON PRESSES
         % Find this trial button presses
         this_trial_click_times = table2array(this_subject_table(itrial,9:end));
@@ -165,12 +167,17 @@ for isubject = 1:size(curr_subject_ID,1)
         end
 
         %% ISOLATE WORD PAIR ONSETS
+        if ismember(subID,{'fullpilot1','fullpilot2','fullpilot3'})
+            audio_onset_delay = 30;
+        else
+            audio_onset_delay = 0;
+        end
 
-        for ionset = 1:length(this_trial_target_times) % for each word pair onset, excluding the first
+        for ionset = 2:length(this_trial_target_times) % for each word pair onset, excluding the first
             if this_trial_whether_target_lead(ionset) == 1
-                resampled_search_time = this_trial_target_times(ionset)*1000;
+                resampled_search_time = this_trial_target_times(ionset)*1000 + audio_onset_delay;
             elseif this_trial_whether_target_lead(ionset) == 0
-                resampled_search_time = this_trial_masker_times(ionset)*1000;
+                resampled_search_time = this_trial_masker_times(ionset)*1000 + audio_onset_delay;
             end
             
             [~,start_time] = min(abs(resampled_audio_time - (resampled_search_time + erp_window_start_time))); %
@@ -373,6 +380,8 @@ for isubject = 1:size(curr_subject_ID,1)
 %     sgtitle(subID)
 
     %% Plot frontocentral ERPs
+    y_min = -4;
+    y_max = 5;
     figure;
     subplot(1,4,1)
     hold on
@@ -383,7 +392,7 @@ for isubject = 1:size(curr_subject_ID,1)
     xline(250,'--b','LineWidth',2)
     xline(600)
     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([-4,3])
+    ylim([y_min,y_max])
     xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
     ylabel('Voltage (uV)','FontSize',18)
@@ -397,7 +406,7 @@ for isubject = 1:size(curr_subject_ID,1)
     xline(250,'--b','LineWidth',2)
     xline(600)
     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([-4,3])
+    ylim([y_min,y_max])
     xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
 
@@ -410,7 +419,7 @@ for isubject = 1:size(curr_subject_ID,1)
     xline(250,'--b','LineWidth',2)
     xline(600)
     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([-4,3])
+    ylim([y_min,y_max])
     xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
 
@@ -424,7 +433,7 @@ for isubject = 1:size(curr_subject_ID,1)
     xline(250,'--b','LineWidth',2)
     xline(600)
     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([-4,3])
+    ylim([y_min,y_max])
     xlim([-100,750])
     xlabel('Time (ms)','FontSize',18)
 
@@ -454,120 +463,148 @@ for isubject = 1:size(curr_subject_ID,1)
     end
     xline(0,'LineWidth',2)
     xline(1800,'LineWidth',2)
-    xline([1.8 2.05 2.4 2.65 3 3.25 3.6 3.85 4.2 4.45 4.8 5.05 5.4 5.65 6 6.25]*1000,'LineWidth',1)
+    xline([this_trial_target_times, this_trial_masker_times]*1000,'LineWidth',1)
     title(subID)
     legend([p1(1),p2(1),p3(1),p4(1)],{'ITD50','ITD500','ILD5deg','ILD5degMag'})
 
-    %% Calculate spectrograms at each trial and channel
-    M = fs/10;
+    %% Calculate CWT spectrograms at each trial and channel
+    parietooccipital_channels = 11:20;
+    left_parietooccipital_channels = [11,12,14,15];
+    right_parietooccipital_channels = [17,18,19,20];
+    frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
+
+    M = 128;%fs*0.4;
     window=hamming(M,'periodic');
     noverlap=floor(0.75*M);
+    
     Ndft=128;
-    all_spectrograms_this_subject = nan(Ndft/2 + 1, 619, 32, size(these_epochs,3));
+    epoch_start_time = -1;
+    epoch_end_time = 16;
+    time_window = linspace(epoch_start_time, epoch_end_time, size(these_epochs, 2));
 
-    for ichannel = 1:32
-        for itrial = 1:size(these_epochs,3) % find the spectrogram for each trial
-
-            this_data = mean(these_epochs(ichannel,:,itrial),[1,3]);
-            [this_spectrogram,f,t] = spectrogram(this_data,window,noverlap,Ndft,fs,'yaxis'); % will return frequency by time
-            all_spectrograms_this_subject(:,:,ichannel, itrial) = abs(this_spectrogram); % frequency x time x channel X trial
+     all_spectrograms_this_subject = nan(Ndft/2 + 1, 123, 32, size(these_epochs,3));
+     all_cwt_this_subject= cell(32,num_tot_trials);
+     freq_range= [1 50];
+    for ichannel=1:32
+        for itrial=1:num_tot_trials
+            spect_sub= these_epochs(ichannel,:,itrial);
+            %[this_spectrogram,frequencies,time_window]=spectrogram(spect_sub,window,noverlap,Ndft,fs,'yaxis');
+            %all_spectrograms_this_subject(:,:,ichannel, itrial) = abs(this_spectrogram);
+            [cwt_coeffs, frequencies] = cwt(spect_sub, fs, 'FrequencyLimits', freq_range);
+            all_cwt_this_subject{ichannel,itrial}=abs(cwt_coeffs);
         end
     end
+    %% Plot  CWT spectrogram of the epoch at Frontocentral and Parietooccipital channels
+
+
+    % Frontocentral
+    fc_cwt_to_plot = [];
+    for ichannel=1:length(frontocentral_channels)
+        for itrial = 1:num_tot_trials
+            fc_cwt_to_plot(:,:,ichannel,itrial) = all_cwt_this_subject{frontocentral_channels(ichannel),itrial};
+        end
+    end
+
+    cmin = 50;
+    cmax = 125;
+    plot_time_limits = [-1, 6];
+    % Frontocentral channels
+    figure;
+    hold on
+    imagesc(time_window,frequencies,squeeze(mean(fc_cwt_to_plot(:,:,:,:),[3,4])))
+    set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    axis tight
+    set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %caxis([cmin,cmax])
+    xline(0,'LineWidth',2)
+    xline(2,'LineWidth',2)
+    %yline(8,'LineWidth',2)
+    %yline(12,'LineWidth',2)
+    xlim([plot_time_limits(1),plot_time_limits(end)])
+    title('Frontocentral Channels','FontSize',18)
+    xlabel('Time (s)','FontSize',18)
+    ylabel('Frequency (Hz)','FontSize',18)
+
+    % Parietooccipital channels BROKEN UP BY ATTEND
+    po_cwt_to_plot = [];
+    for ichannel=1:length(parietooccipital_channels)
+        for itrial = 1:num_tot_trials
+            po_cwt_to_plot(:,:,ichannel,itrial) = all_cwt_this_subject{parietooccipital_channels(ichannel),itrial};
+        end
+    end
+
+
+
     
-    %% Plot spectrogram of the epoch at Frontocentral and Parietooccipital channels
-%     % Frontocentral channels
-%     figure;
-%     hold on
-%     imagesc(t,f,squeeze(mean(all_spectrograms_this_subject(:,:,frontocentral_channels,:),[3,4])))
-%     ylim([0,30])
-%     xlim([0,6])
-%     xticklabels(0:1:16);
-%     curr_tick_labels = xticklabels;
-%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-%     caxis([20,70])
-%     xline(1,'LineWidth',2)
-%     xline(2.8,'LineWidth',2)
-%     %yline(8,'LineWidth',2)
-%     %yline(12,'LineWidth',2)
-%     title('Frontocentral Channels','FontSize',18)
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-% 
-%     % Parietooccipital channels BROKEN UP BY ATTEND
-%     parietooccipital_channels = 11:20;
-%     left_parietooccipital_channels = [11,12,14,15];
-%     right_parietooccipital_channels = [17,18,19,20];
-%     figure;
-%     subplot(2,2,1) % left hemisphere, attend left
-%     imagesc(t,f,squeeze(mean(all_spectrograms_this_subject(:,:,left_parietooccipital_channels,ismember(conditions,6)),[3,4])))
-%     set(gca,'YDir','normal')
-%     ylim([0,30])
-%     xlim([0,6])
-%     xticklabels(0:1:16);
-%     curr_tick_labels = xticklabels;
-%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-%     caxis([20,50])
-%     xline(1,'LineWidth',2)
-%     xline(2.8,'LineWidth',2)
-%     yline(8,'LineWidth',2)
-%     yline(12,'LineWidth',2)
-%     title('Left Hem. Attend Left')
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-% 
-%     subplot(2,2,2) % right hemisphere, attend left
-%     imagesc(t,f',squeeze(mean(all_spectrograms_this_subject(:,:,right_parietooccipital_channels,ismember(conditions,6)),[3,4])))
-%     set(gca,'YDir','normal')
-%     ylim([0,30])
-%     xlim([0,6])
-%     xticklabels(0:1:16);
-%     curr_tick_labels = xticklabels;
-%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-%     caxis([20,50])
-%     xline(1,'LineWidth',2)
-%     xline(2.8,'LineWidth',2)
-%     yline(8,'LineWidth',2)
-%     yline(12,'LineWidth',2)
-%     title('Right Hem. Attend Left')
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-% 
-%     subplot(2,2,3) % left hemisphere, attend right
-%     imagesc(t,f',squeeze(mean(all_spectrograms_this_subject(:,:,left_parietooccipital_channels,ismember(conditions,1)),[3,4])))
-%     set(gca,'YDir','normal')
-%     ylim([0,30])
-%     xlim([0,6])
-%     xticklabels(0:1:16);
-%     curr_tick_labels = xticklabels;
-%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-%     caxis([20,50])
-%     xline(1,'LineWidth',2)
-%     xline(2.8,'LineWidth',2)
-%     yline(8,'LineWidth',2)
-%     yline(12,'LineWidth',2)
-%     title('Left Hem. Attend Right')
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-% 
-%     subplot(2,2,4) % right hemisphere, attend right
-%     imagesc(t,f',squeeze(mean(all_spectrograms_this_subject(:,:,right_parietooccipital_channels,ismember(conditions,1)),[3,4])))
-%     set(gca,'YDir','normal')
-%     ylim([0,30])
-%     xlim([0,6])
-%     xticklabels(0:1:16);
-%     curr_tick_labels = xticklabels;
-%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-%     caxis([20,50])
-%     xline(1,'LineWidth',2)
-%     xline(2.8,'LineWidth',2)
-%     yline(8,'LineWidth',2)
-%     yline(12,'LineWidth',2)
-%     title('Right Hem. Attend Right')
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-% 
-% 
-%     sgtitle('Parietooccipital Channels ITD500 ONLY','FontSize',18)
+    attend_right_conditions = ismember(conditions,[1,2,3,7]);
+    attend_left_conditions = ismember(conditions,[4,5,6,8]);
+    figure;
+    subplot(2,2,1) % left hemisphere, attend left
+    imagesc(time_window,frequencies,squeeze(mean(po_cwt_to_plot(:,:,left_parietooccipital_channels - 10,ismember(conditions,attend_left_conditions)),[3,4])))
+    set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    axis tight
+    set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %caxis([cmin,cmax])
+    xline(0,'LineWidth',2)
+    xline(2,'LineWidth',2)
+    %yline(8,'LineWidth',2)
+    %yline(12,'LineWidth',2)
+    title('Left Hem. Attend Left','FontSize',18)
+    xlabel('Time (s)','FontSize',18)
+    ylabel('Frequency (Hz)','FontSize',18)
+    xlim([plot_time_limits(1),plot_time_limits(end)])
+
+
+    subplot(2,2,2) % right hemisphere, attend left
+    imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,right_parietooccipital_channels - 10,attend_left_conditions),[3,4])))
+    set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    axis tight
+    set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %caxis([cmin,cmax])
+    xline(0,'LineWidth',2)
+    xline(2,'LineWidth',2)
+    %yline(8,'LineWidth',2)
+    %yline(12,'LineWidth',2)
+    title('Right Hem. Attend Left','FontSize',18)
+    xlabel('Time (s)','FontSize',18)
+    ylabel('Frequency (Hz)','FontSize',18)
+    xlim([plot_time_limits(1),plot_time_limits(end)])
+
+
+    subplot(2,2,3) % left hemisphere, attend right
+    imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,left_parietooccipital_channels - 10,attend_right_conditions),[3,4])))
+    set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    axis tight
+    set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %caxis([cmin,cmax])
+    xline(0,'LineWidth',2)
+    xline(2,'LineWidth',2)
+    %yline(8,'LineWidth',2)
+    %yline(12,'LineWidth',2)
+    title('Left Hem. Attend Right','FontSize',18)
+    xlabel('Time (s)','FontSize',18)
+    ylabel('Frequency (Hz)','FontSize',18)
+    xlim([plot_time_limits(1),plot_time_limits(end)])
+
+
+    subplot(2,2,4) % right hemisphere, attend right
+    imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,right_parietooccipital_channels - 10,attend_right_conditions),[3,4])))
+    set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    axis tight
+    set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %caxis([cmin,cmax])
+    xline(0,'LineWidth',2)
+    xline(2,'LineWidth',2)
+    %yline(8,'LineWidth',2)
+    %yline(12,'LineWidth',2)
+    title('Right Hem. Attend Right','FontSize',18)
+    xlabel('Time (s)','FontSize',18)
+    ylabel('Frequency (Hz)','FontSize',18)
+    xlim([plot_time_limits(1),plot_time_limits(end)])
+
+
+
+    sgtitle('Parietooccipital Channels','FontSize',18)
 
      % what if I subtract the mean over the WHOLE trial (get rid of the
      % ERP?)
@@ -596,51 +633,51 @@ for isubject = 1:size(curr_subject_ID,1)
 %     title('Parietooccipital Channels WITH MEAN SUBTRACTED','FontSize',18)
 
 
-    %% Topoplots in each condition
-    figure;
-    hold on
-    cmin = -3;
-    cmax = 3;
-    fs = 256;
-
-    topoplot_indices = round(0:0.05*fs:(((600)/1000)*fs));
-    topoplot_indices(1) = 1;
-    topoplot_times = -100:50:500;
-
-    iplot = 1;
-
-    % Attend lead
-    subplot(2,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'Attend\newlineLead','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(8,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(data_by_lead_target_onset(:,itopo,:), [2,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
-
-     % Attend lag
-    subplot(2,length(topoplot_indices)+ 1,iplot);
-    text(-1,0.5,'Attend\newlineLead','Interpreter','tex','FontSize',18);
-    axis off
-    iplot = iplot+1;
-
-    itime = 1;
-    for itopo = topoplot_indices
-        subplot(2,length(topoplot_indices)+ 1,iplot);
-        this_data = mean(data_by_lag_target_onset(:,itopo,:), [2,3]);
-        topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-        title([num2str(topoplot_times(itime)),' ms'])
-        iplot = iplot + 1;
-        itime = itime + 1;
-    end
-
+%     %% Topoplots in each condition
+%     figure;
+%     hold on
+%     cmin = -3;
+%     cmax = 3;
+%     fs = 256;
+% 
+%     topoplot_indices = round(0:0.05*fs:(((600)/1000)*fs));
+%     topoplot_indices(1) = 1;
+%     topoplot_times = -100:50:500;
+% 
+%     iplot = 1;
+% 
+%     % Attend lead
+%     subplot(2,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'Attend\newlineLead','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(8,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(data_by_lead_target_onset(:,itopo,:), [2,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
+%      % Attend lag
+%     subplot(2,length(topoplot_indices)+ 1,iplot);
+%     text(-1,0.5,'Attend\newlineLead','Interpreter','tex','FontSize',18);
+%     axis off
+%     iplot = iplot+1;
+% 
+%     itime = 1;
+%     for itopo = topoplot_indices
+%         subplot(2,length(topoplot_indices)+ 1,iplot);
+%         this_data = mean(data_by_lag_target_onset(:,itopo,:), [2,3]);
+%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+%         title([num2str(topoplot_times(itime)),' ms'])
+%         iplot = iplot + 1;
+%         itime = itime + 1;
+%     end
+% 
 % 
 %     % ITD50 Attend
 %     subplot(8,length(topoplot_indices)+ 1,iplot);
@@ -771,22 +808,22 @@ for isubject = 1:size(curr_subject_ID,1)
 %     end
 
     % button press time trace at Cz, Fz, and Pz
-        figure;
-        subplot(3,1,1)
-        this_data = mean(all_data_button_press(:,32,:),2);
-        plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
-        title('Button Press Cz','FontSize',18)
-        ylim([-3,4])
-        subplot(3,1,2)
-        this_data = mean(all_data_button_press(:,31,:),2);
-        plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
-        title('Button Press Fz','FontSize',18)
-        ylim([-3,4])
-        subplot(3,1,3)
-        this_data = mean(all_data_button_press(:,13,:),2);
-        plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
-        title('Button Press Pz','FontSize',18)
-        ylim([-3,4])
+%         figure;
+%         subplot(3,1,1)
+%         this_data = mean(all_data_button_press(:,32,:),2);
+%         plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
+%         title('Button Press Cz','FontSize',18)
+%         ylim([-3,4])
+%         subplot(3,1,2)
+%         this_data = mean(all_data_button_press(:,31,:),2);
+%         plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
+%         title('Button Press Fz','FontSize',18)
+%         ylim([-3,4])
+%         subplot(3,1,3)
+%         this_data = mean(all_data_button_press(:,13,:),2);
+%         plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
+%         title('Button Press Pz','FontSize',18)
+%         ylim([-3,4])
 
 
 

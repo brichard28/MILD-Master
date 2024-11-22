@@ -56,42 +56,27 @@ if user == 'Laptop':
 else:
     data_root = '/home/ben/Nextcloud/data/nirs/data/'
     
-# all_fnirs_data_folders = [data_root + '2024-10-21/2024-10-21_006',
-#                           data_root + '2024-10-21/2024-10-21_007']
-# all_fnirs_data_folders = [data_root + '2024-10-23/2024-10-23_001',
-#                           data_root + '2024-10-23/2024-10-23_002']
+all_fnirs_data_folders = [data_root + '2024-10-08/2024-10-08_001',
+                          data_root + '2024-10-10/2024-10-10_001',
+                          data_root + '2024-10-15/2024-10-15_001',
+                          data_root + '2024-10-25/2024-10-25_002']
 
-# all_fnirs_data_folders = [data_root + '2024-10-08/2024-10-08_001',
-#                             data_root + '2024-10-10/2024-10-10_001',
-#                             data_root + '2024-10-15/2024-10-15_001']
-
-all_fnirs_data_folders = [data_root + '2024-10-24/2024-10-24_001',
-                            data_root + '2024-10-24/2024-10-24_002',
-                            data_root + '2024-10-24/2024-10-24_003',
-                            data_root + '2024-10-24/2024-10-24_004']
 # All subject IDs
-#subject_ID = ['phantom_no_camera','phantom_no_eeg']
-#subject_ID = [ 'fullpilot1', 'fullpilot2','fullpilot3']
-subject_ID = ['lights_on_cpod_on','lights_off_cpod_on','lights_on_cpod_off','lights_off_cpod_off']
-# subject_ID = ['phantom_no_lights','phantom_no_monitor']
+subject_ID = ['fullpilot1','fullpilot2','fullpilot3','fullpilot4']
+
+
 # The subjects we would like to run right now
-# curr_subject_ID = ['phantom_no_lights','phantom_no_monitor']
-#curr_subject_ID = [ 'fullpilot1', 'fullpilot2','fullpilot3']
-curr_subject_ID = ['lights_on_cpod_on','lights_off_cpod_on','lights_on_cpod_off','lights_off_cpod_off']
-
-curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
-curr_fnirs_data_folders = all_fnirs_data_folders #[all_fnirs_data_folders[np.array(curr_folder_indices)]]
-
+curr_subject_ID = ['fullpilot1','fullpilot2','fullpilot3','fullpilot4']
 
 masker_type = 'speech' # type of masker to analyze on this run
 glm_dur = 4.8
 
-n_subjects = len(curr_subject_ID)
+n_subjects = len(all_fnirs_data_folders)
 
 n_long_channels = 16
 fs = 10.2
-tmin, tmax = -5, 18
-n_timepoints = math.floor((tmax - tmin)*fs) + 1
+tmin, tmax = -1, 29
+n_timepoints = math.ceil((tmax - tmin)*fs)
 task_type = 'Ben_SvN'
 
 
@@ -152,10 +137,9 @@ for ii, subject_num in enumerate(range(n_subjects)):
     
     
     
-    
     os.environ["OMP_NUM_THREADS"] = "1"
     
-    subject = curr_subject_ID[ii]
+    subject = subject_ID[ii]
     task_type = 'mild-master'
     save_dir = "C:/Users/benri/Documents/GitHub/MILD-Master/ANALYSIS SCRIPTS/RESULTS DATA/fNIRS_Data/"
     if not os.path.exists(save_dir): os.makedirs(save_dir)
@@ -168,17 +152,17 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # -----------------      Load the Data        ---------
     # ---------------------------------------------------------------
     if preprocessing_type == "Eli":
-        data = mne.io.read_raw_nirx(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}_config.hdr",
+        data = mne.io.read_raw_nirx(f"{all_fnirs_data_folders[ii]}/{all_fnirs_data_folders[ii][-14:]}_config.hdr",
                                     verbose=False, preload=True)
     
-        data_snirf = mne.io.read_raw_snirf(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
+        data_snirf = mne.io.read_raw_snirf(f"{all_fnirs_data_folders[ii]}/{all_fnirs_data_folders[ii][-14:]}.snirf",
                                            optode_frame="mri", preload=True)
     
-        aux_snirf = read_snirf_aux_data(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
+        aux_snirf = read_snirf_aux_data(f"{all_fnirs_data_folders[ii]}/{all_fnirs_data_folders[ii][-14:]}.snirf",
                                         data_snirf)
     elif preprocessing_type == "Ben":
-        data = read_raw_nirx(f"{curr_fnirs_data_folders[ii]}/", verbose=False, preload=True)
-        data_snirf = mne.io.read_raw_snirf(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
+        data = read_raw_nirx(f"{all_fnirs_data_folders[ii]}/", verbose=False, preload=True)
+        data_snirf = mne.io.read_raw_snirf(f"{all_fnirs_data_folders[ii]}/{all_fnirs_data_folders[ii][-14:]}.snirf",
                                            optode_frame="mri", preload=True)
     
     
@@ -203,9 +187,9 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                 '11':	'itd=0_az=5_mag=0'})
     
     # Trying out shifting the trigger to the stim onset (rather than cue)
-    cue_dur = [1.8, 2]
-    #data.annotations.onset = data.annotations.onset + cue_dur[ii]
-    #data_snirf.annotations.onset = data_snirf.annotations.onset + cue_dur[ii]
+    #cue_dur = 1.8
+    #data.annotations.onset = data.annotations.onset + cue_dur
+    #data_snirf.annotations.onset = data_snirf.annotations.onset + cue_dur
     
     # ---------------------------------------------------------------
     # -------------               Preprocessing             ---------
@@ -213,18 +197,16 @@ for ii, subject_num in enumerate(range(n_subjects)):
     
     if preprocessing_type == "Eli":
         events, event_dict = mne.events_from_annotations(data, verbose=False)
-        
-        #fig = mne.viz.plot_events(events, event_id=event_dict, sfreq=data.info["sfreq"])
     
         raw_haemo_temp, null = preprocess_NIRX(data, data_snirf, event_dict,
                                                save=True,
                                                savename=save_dir + f'{subject}_{task_type}_preproc_nirs.fif',
-                                               plot_steps=True,
+                                               plot_steps=False,
                                                crop=False, crop_low=0, crop_high=0,
-                                               events_modification=False, reject=False,
-                                               short_regression=False, events_from_snirf=False,
+                                               events_modification=False, reject=True,
+                                               short_regression=True, events_from_snirf=False,
                                                drop_short=False, negative_enhancement=False,
-                                               snr_thres=3, filter_type='iir', filter_limits=[0.01,0.3])
+                                               snr_thres=3, filter_type='iir')
     
         raw_haemo_short = get_short_channels(raw_haemo_temp)
         raw_haemo_filt = get_long_channels(raw_haemo_temp)
@@ -267,7 +249,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
          
         # Filter data
         iir_params = dict({"order":2,"ftype":"butter","padlen":10000}) # 3
-        raw_haemo = raw_haemo.filter(0.01, 0.3, iir_params=iir_params, method='iir', verbose=False) #0.01,0.3
+        raw_haemo = raw_haemo.filter(0.01, 0.1, iir_params=iir_params, method='iir', verbose=False) #0.01,0.3
         #raw_haemo.filter(0.01, 0.2, h_trans_bandwidth=0.2, l_trans_bandwidth=0.005) # 0.01, 0.3, 0.2, 0.005
         
         raw_haemo_short = get_short_channels(raw_haemo)
@@ -289,7 +271,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     epochs = mne.Epochs(raw_haemo_filt, events,  # events_block,
                         event_id=event_dict,  # event_dict_total,
                         tmin=tmin, tmax=tmax,
-                        baseline= (tmin, 0),
+                        baseline= None, # (-5, 0)
                         reject = reject_criteria,
                        # flat = flat_criteria,
                         preload=True, detrend=None, verbose=True,
@@ -335,29 +317,29 @@ for ii, subject_num in enumerate(range(n_subjects)):
     data_ild5degMag_avg_hbr= np.full((len(chan_indices_good), n_timepoints), np.nan)
     
 
-    # for ichannel in range(len(chan_indices_good)):
-        
-    #     data_itd50_avg[ichannel,:] = np.nanmean(data_itd50[:,ichannel,:]  - np.nanmean(data_itd50[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-    #     data_itd500_avg[ichannel,:] = np.nanmean(data_itd500[:,ichannel,:]  - np.nanmean(data_itd500[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-    #     data_ild5deg_avg[ichannel,:] = np.nanmean(data_ild5deg[:,ichannel,:]  -  np.nanmean(data_ild5deg[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-    #     data_ild5degMag_avg[ichannel,:] = np.nanmean(data_ild5degMag[:,ichannel,:]  -  np.nanmean(data_ild5degMag[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-        
-    #     data_itd50_avg_hbr[ichannel,:] = np.nanmean(data_itd50_hbr[:,ichannel,:]  -  np.nanmean(data_itd50_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-    #     data_itd500_avg_hbr[ichannel,:] = np.nanmean(data_itd500_hbr[:,ichannel,:]  -  np.nanmean(data_itd500_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-    #     data_ild5deg_avg_hbr[ichannel,:] = np.nanmean(data_ild5deg_hbr[:,ichannel,:]  -  np.nanmean(data_ild5deg_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-    #     data_ild5degMag_avg_hbr[ichannel,:] = np.nanmean(data_ild5degMag_hbr[:,ichannel,:]  -  np.nanmean(data_ild5degMag_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
-    
     for ichannel in range(len(chan_indices_good)):
         
-        data_itd50_avg[ichannel,:] = np.nanmean(data_itd50[:,ichannel,:], axis=0)
-        data_itd500_avg[ichannel,:] = np.nanmean(data_itd500[:,ichannel,:], axis=0)
-        data_ild5deg_avg[ichannel,:] = np.nanmean(data_ild5deg[:,ichannel,:], axis=0)
-        data_ild5degMag_avg[ichannel,:] = np.nanmean(data_ild5degMag[:,ichannel,:], axis=0)
+        data_itd50_avg[ichannel,:] = np.nanmean(data_itd50[:,ichannel,:]  - np.nanmean(data_itd50[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
+        data_itd500_avg[ichannel,:] = np.nanmean(data_itd500[:,ichannel,:]  - np.nanmean(data_itd500[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
+        data_ild5deg_avg[ichannel,:] = np.nanmean(data_ild5deg[:,ichannel,:]  -  np.nanmean(data_ild5deg[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
+        data_ild5degMag_avg[ichannel,:] = np.nanmean(data_ild5degMag[:,ichannel,:]  -  np.nanmean(data_ild5degMag[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
         
-        data_itd50_avg_hbr[ichannel,:] = np.nanmean(data_itd50_hbr[:,ichannel,:], axis=0)
-        data_itd500_avg_hbr[ichannel,:] = np.nanmean(data_itd500_hbr[:,ichannel,:], axis=0)
-        data_ild5deg_avg_hbr[ichannel,:] = np.nanmean(data_ild5deg_hbr[:,ichannel,:], axis=0)
-        data_ild5degMag_avg_hbr[ichannel,:] = np.nanmean(data_ild5degMag_hbr[:,ichannel,:], axis=0)
+        data_itd50_avg_hbr[ichannel,:] = np.nanmean(data_itd50_hbr[:,ichannel,:]  -  np.nanmean(data_itd50_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
+        data_itd500_avg_hbr[ichannel,:] = np.nanmean(data_itd500_hbr[:,ichannel,:]  -  np.nanmean(data_itd500_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
+        data_ild5deg_avg_hbr[ichannel,:] = np.nanmean(data_ild5deg_hbr[:,ichannel,:]  -  np.nanmean(data_ild5deg_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
+        data_ild5degMag_avg_hbr[ichannel,:] = np.nanmean(data_ild5degMag_hbr[:,ichannel,:]  -  np.nanmean(data_ild5degMag_hbr[:,ichannel,0:int(-1*tmin*fs)], axis = (0,1)), axis=0)
+    
+    # for ichannel in range(len(chan_indices_good)):
+        
+    #     data_itd50_avg[ichannel,:] = np.nanmean(data_itd50[:,ichannel,:], axis=0)
+    #     data_itd500_avg[ichannel,:] = np.nanmean(data_itd500[:,ichannel,:], axis=0)
+    #     data_ild5deg_avg[ichannel,:] = np.nanmean(data_ild5deg[:,ichannel,:], axis=0)
+    #     data_ild5degMag_avg[ichannel,:] = np.nanmean(data_ild5degMag[:,ichannel,:], axis=0)
+        
+    #     data_itd50_avg_hbr[ichannel,:] = np.nanmean(data_itd50_hbr[:,ichannel,:], axis=0)
+    #     data_itd500_avg_hbr[ichannel,:] = np.nanmean(data_itd500_hbr[:,ichannel,:], axis=0)
+    #     data_ild5deg_avg_hbr[ichannel,:] = np.nanmean(data_ild5deg_hbr[:,ichannel,:], axis=0)
+    #     data_ild5degMag_avg_hbr[ichannel,:] = np.nanmean(data_ild5degMag_hbr[:,ichannel,:], axis=0)
     
     # need to mark the indices where the good channels are!
 
@@ -388,42 +370,42 @@ for ii, subject_num in enumerate(range(n_subjects)):
     fig, axes = plt.subplots(4, 2)
     curr_ax = axes[0, 0]
     curr_ax.plot(time,np.transpose(1e6*data_itd50_avg[:, :]), 'r')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ITD 50 HbO')
     
     curr_ax = axes[1, 0]
     curr_ax.plot(time,np.transpose(1e6*data_itd500_avg[:, :]), 'r')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ITD 500 HbO')
     
     curr_ax = axes[2, 0]
     curr_ax.plot(time,np.transpose(1e6*data_ild5deg_avg[:, :]), 'r')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ILD 5 deg HbO')
     
     curr_ax = axes[3, 0]
     curr_ax.plot(time,np.transpose(1e6*data_ild5degMag_avg[:, :]), 'r')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ILD 5 deg + Mag HbO')
     
     curr_ax = axes[0, 1]
     curr_ax.plot(time,np.transpose(1e6*data_itd50_avg_hbr[:, :]), 'b')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ITD 50 HbR')
     
     curr_ax = axes[1, 1]
     curr_ax.plot(time,np.transpose(1e6*data_itd500_avg_hbr[:, :]), 'b')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ITD 500 HbR')
     
     curr_ax = axes[2, 1]
     curr_ax.plot(time,np.transpose(1e6*data_ild5deg_avg_hbr[:, :]), 'b')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ILD 5 deg HbR')
     
     curr_ax = axes[3, 1]
     curr_ax.plot(time,np.transpose(1e6*data_ild5degMag_avg_hbr[:, :]), 'b')
-    curr_ax.set_ylim([-0.2,0.2])
+    curr_ax.set_ylim([-0.15,0.15])
     curr_ax.set_title('ILD 5 deg + Mag HbR')
     
     fig.suptitle(subject)
@@ -617,120 +599,120 @@ subject_data_ild5degMag_GLM_std = np.nanstd(1e6*subject_data_ild5degMag_GLM, axi
 
 
 channel_names = [this_chan_hbo.replace(' hbo','') for this_chan_hbo in chan_hbo]
-# ymin = -5e-2
-# ymax = 20e-2
-# fig, axes = plt.subplots(n_long_channels,5)
-# fig.set_figwidth(16)
-# fig.set_figheight(8)
-# for ichannel in range(n_long_channels):
+ymin = -5e-2
+ymax = 20e-2
+fig, axes = plt.subplots(n_long_channels,5)
+fig.set_figwidth(16)
+fig.set_figheight(8)
+for ichannel in range(n_long_channels):
       
-#     lims = dict(hbo=[-5e-2, 20e-2], hbr=[-5e-2, 20e-2])
-#     time = np.linspace(tmin,tmax,num=n_timepoints)
-#     baseline_start_index = 0
-#     baseline_end_index = int(5*fs)
+    lims = dict(hbo=[-5e-2, 20e-2], hbr=[-5e-2, 20e-2])
+    time = np.linspace(tmin,tmax,num=n_timepoints)
+    baseline_start_index = 0
+    baseline_end_index = int(5*fs)
     
-#     # Plot ITD50
-#     # HbO
-#     curr_ax = axes[ichannel, 0] 
-#     curr_data = subject_data_itd50_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     # HbR
-#     curr_data = subject_data_itd50_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 0:
-#         curr_ax.set_title('50 us ITD', fontsize = 24)
-#     elif ichannel == 3:
-#         curr_ax.set_ylabel(r'$\Delta$Hb ($\mu$M)', usetex=False, fontsize = 24)
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
+    # Plot ITD50
+    # HbO
+    curr_ax = axes[ichannel, 0] 
+    curr_data = subject_data_itd50_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
+    # HbR
+    curr_data = subject_data_itd50_hbr_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
+    curr_ax.set_ylim((ymin, ymax))
+    curr_ax.set_xticks(np.linspace(-5,20,num=6))
+    if ichannel == 0:
+        curr_ax.set_title('50 us ITD', fontsize = 24)
+    elif ichannel == 3:
+        curr_ax.set_ylabel(r'$\Delta$Hb ($\mu$M)', usetex=False, fontsize = 24)
+    if ichannel == 5:
+        curr_ax.set_xlabel('Time (s)', fontsize = 24)
+        curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
+    else:
+        curr_ax.set_xticklabels(["","","","","",""])
         
-#     # Plot ITD500
-#     curr_ax = axes[ichannel,1]
-#     # HbO
-#     curr_data = subject_data_itd500_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     # HbR
-#     curr_data = subject_data_itd500_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 0:
-#         curr_ax.set_title('500 us ITD', fontsize = 24)
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
-#     # Plot ild5deg
-#     curr_ax = axes[ichannel,2]
-#     # HbO
-#     curr_data = subject_data_ild5deg_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     # HbR
-#     curr_data = subject_data_ild5deg_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 0:
-#         curr_ax.set_title('ILD5deg', fontsize = 24)
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
-#     # Plot ild5degMag
-#     curr_ax = axes[ichannel,3]
-#     # HbO
-#     curr_data = subject_data_ild5degMag_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
-#     #HbR
-#     curr_data = subject_data_ild5degMag_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     if ichannel == 0:
-#         curr_ax.set_title('ILD5deg + Mag', fontsize = 24)
+    # Plot ITD500
+    curr_ax = axes[ichannel,1]
+    # HbO
+    curr_data = subject_data_itd500_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
+    # HbR
+    curr_data = subject_data_itd500_hbr_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
+    curr_ax.set_ylim((ymin, ymax))
+    curr_ax.set_xticks(np.linspace(-5,20,num=6))
+    if ichannel == 0:
+        curr_ax.set_title('500 us ITD', fontsize = 24)
+    if ichannel == 5:
+        curr_ax.set_xlabel('Time (s)', fontsize = 24)
+        curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
+    else:
+        curr_ax.set_xticklabels(["","","","","",""])
+    # Plot ild5deg
+    curr_ax = axes[ichannel,2]
+    # HbO
+    curr_data = subject_data_ild5deg_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
+    # HbR
+    curr_data = subject_data_ild5deg_hbr_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
+    curr_ax.set_ylim((ymin, ymax))
+    curr_ax.set_xticks(np.linspace(-5,20,num=6))
+    if ichannel == 0:
+        curr_ax.set_title('ILD5deg', fontsize = 24)
+    if ichannel == 5:
+        curr_ax.set_xlabel('Time (s)', fontsize = 24)
+        curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
+    else:
+        curr_ax.set_xticklabels(["","","","","",""])
+    # Plot ild5degMag
+    curr_ax = axes[ichannel,3]
+    # HbO
+    curr_data = subject_data_ild5degMag_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
+    curr_ax.set_xticks(np.linspace(-5,20,num=6))
+    if ichannel == 5:
+        curr_ax.set_xlabel('Time (s)', fontsize = 24)
+        curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
+    else:
+        curr_ax.set_xticklabels(["","","","","",""])
+    #HbR
+    curr_data = subject_data_ild5degMag_hbr_baselined[:,ichannel,:]
+    curr_mean = np.nanmean(curr_data, axis=0) 
+    curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
+    curr_ax.plot(time, curr_mean, 'k-')
+    curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
+    curr_ax.set_ylim((ymin, ymax))
+    if ichannel == 0:
+        curr_ax.set_title('ILD5deg + Mag', fontsize = 24)
     
     
-#     # Plot sensor location
-#     curr_ax = axes[ichannel,4]
-#     epochs.copy().pick(chan_hbo[ichannel]).plot_sensors(axes = curr_ax)
-# plt.subplots_adjust(top=.9, right=.98, left= 0.05, bottom = 0.07)
-# plt.savefig('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\PFC_Block_Averages.svg', format='svg')
+    # Plot sensor location
+    curr_ax = axes[ichannel,4]
+    epochs.copy().pick(chan_hbo[ichannel]).plot_sensors(axes = curr_ax)
+plt.subplots_adjust(top=.9, right=.98, left= 0.05, bottom = 0.07)
+plt.savefig('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\PFC_Block_Averages.svg', format='svg')
 
 
 
@@ -759,6 +741,7 @@ line2 = curr_ax.plot(time, curr_mean, 'ro', markerfacecolor= 'r', label = '500 u
 curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r', alpha = 0.1)
 curr_ax.legend()
 curr_ax.set_xlabel('Time (s)',fontsize=24)
+curr_ax.set_ylim([-0.1,0.06])
 curr_ax.set_ylabel(r'$\Delta$HbO ($\mu$M)', usetex=False, fontsize = 24)
 
 # ILD 
@@ -776,67 +759,68 @@ line2 = curr_ax.plot(time, curr_mean, 'ro', markerfacecolor= 'r', label = '5 deg
 curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r', alpha = 0.1)
 curr_ax.legend()
 curr_ax.set_xlabel('Time (s)',fontsize=24)
+curr_ax.set_ylim([-0.1,0.06])
 plt.savefig('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\PFC_Grand_Average.svg', format='svg')
 
 
 # ---------------------------------------------------------------
 # -----------------     PLotting Block Average Means PFC---------
 # ---------------------------------------------------------------
-# fig, axes = plt.subplots(n_long_channels, 2)
-# fig.set_figwidth(10)
-# fig.set_figheight(9)
-# caxis_lim = 11e-8
+fig, axes = plt.subplots(n_long_channels, 2)
+fig.set_figwidth(10)
+fig.set_figheight(9)
+caxis_lim = 11e-8
 
 
-# # Plot error bars
-# for ichannel in range(n_long_channels):
-#     curr_axes = axes[ichannel, 0]
-#     # ITD50
-#     curr_axes.errorbar(0.5, np.nanmean(mean_during_stim_itd50[:,ichannel], axis=0), 
-#                        np.nanstd(mean_during_stim_itd50[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_itd50, axis=0) - 1)),
-#                        fmt='o', capsize= 5.0)    
-#     # ITD500
-#     curr_axes.errorbar(1, np.nanmean(mean_during_stim_itd500[:,ichannel], axis=0), 
-#                        np.nanstd(mean_during_stim_itd500[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_itd500, axis=0) - 1) ),
-#                        fmt='o', capsize= 5.0)
-#     # ild5deg
-#     curr_axes.errorbar(1.5, np.nanmean(mean_during_stim_ild5deg[:,ichannel], axis=0),
-#                        np.nanstd(mean_during_stim_ild5deg[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_ild5deg, axis=0)  - 1)),
-#                        fmt='o', capsize= 5.0)
-#     # ild5degMag 
-#     curr_axes.errorbar(2, np.nanmean(mean_during_stim_ild5degMag[:,ichannel], axis=0), 
-#                        np.nanstd(mean_during_stim_ild5degMag[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_ild5degMag, axis=0) - 1) ),
-#                        fmt='o', capsize= 5.0)
+# Plot error bars
+for ichannel in range(n_long_channels):
+    curr_axes = axes[ichannel, 0]
+    # ITD50
+    curr_axes.errorbar(0.5, np.nanmean(mean_during_stim_itd50[:,ichannel], axis=0), 
+                       np.nanstd(mean_during_stim_itd50[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_itd50, axis=0) - 1)),
+                       fmt='o', capsize= 5.0)    
+    # ITD500
+    curr_axes.errorbar(1, np.nanmean(mean_during_stim_itd500[:,ichannel], axis=0), 
+                       np.nanstd(mean_during_stim_itd500[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_itd500, axis=0) - 1) ),
+                       fmt='o', capsize= 5.0)
+    # ild5deg
+    curr_axes.errorbar(1.5, np.nanmean(mean_during_stim_ild5deg[:,ichannel], axis=0),
+                       np.nanstd(mean_during_stim_ild5deg[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_ild5deg, axis=0)  - 1)),
+                       fmt='o', capsize= 5.0)
+    # ild5degMag 
+    curr_axes.errorbar(2, np.nanmean(mean_during_stim_ild5degMag[:,ichannel], axis=0), 
+                       np.nanstd(mean_during_stim_ild5degMag[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_ild5degMag, axis=0) - 1) ),
+                       fmt='o', capsize= 5.0)
     
-#     curr_axes.set_ylim((0,0.15))
-#     if ichannel == 2:
-#         curr_axes.set_ylabel(r'Mean $\Delta$Hb ($\mu$M) during stim.', usetex=False, fontsize=24)
-#     #curr_axes.set_title(channel_names[ichannel])
-#     curr_axes.set_xticks([0.5,1,1.5,2])
-#     curr_axes.set_xlim([0.4,2.1])
-#     if ichannel == 5:
-#         curr_axes.set_xticklabels(["Small\n ITD","Large\n ITD","Natural\n ILD","Broadband\n ILD"], fontsize = 18)
-#     else:
-#         curr_axes.set_xticklabels(["","","",""])
+    curr_axes.set_ylim((0,0.15))
+    if ichannel == 2:
+        curr_axes.set_ylabel(r'Mean $\Delta$Hb ($\mu$M) during stim.', usetex=False, fontsize=24)
+    #curr_axes.set_title(channel_names[ichannel])
+    curr_axes.set_xticks([0.5,1,1.5,2])
+    curr_axes.set_xlim([0.4,2.1])
+    if ichannel == 5:
+        curr_axes.set_xticklabels(["Small\n ITD","Large\n ITD","Natural\n ILD","Broadband\n ILD"], fontsize = 18)
+    else:
+        curr_axes.set_xticklabels(["","","",""])
         
-#     curr_axes = axes[ichannel, 1]
-#     epochs.copy().pick(chan_hbo[ichannel]).plot_sensors(axes = curr_axes)
+    curr_axes = axes[ichannel, 1]
+    epochs.copy().pick(chan_hbo[ichannel]).plot_sensors(axes = curr_axes)
     
-# fig.tight_layout()
-# plt.subplots_adjust(top=.98, right=.999, left= 0.1, bottom = 0.1)
-# plt.savefig(f'C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\Mean_HbO_PFC.svg', format='svg')
+fig.tight_layout()
+plt.subplots_adjust(top=.98, right=.999, left= 0.1, bottom = 0.1)
+plt.savefig(f'C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\Mean_HbO_PFC.svg', format='svg')
 
 
 
 # ---------------------------------------------------------------
 # -----------------     PLotting GLM Averages           ---------
 # ---------------------------------------------------------------
-caxis_lim = 8e-8
+# caxis_lim = 8e-8
 
-# caxis_lim = np.nanmean([np.nanmean(np.abs(subject_data_itd50_GLM_mean)),
-#             np.nanmean(np.abs(subject_data_itd500_GLM_mean)),
-#             np.nanmean(np.abs(subject_data_ild5deg_GLM_mean)),
-# #             np.nanmean(np.abs(subject_data_ild5degMag_GLM_mean))])
+# # caxis_lim = np.nanmean([np.nanmean(np.abs(subject_data_itd50_GLM_mean)),
+# #             np.nanmean(np.abs(subject_data_itd500_GLM_mean)),
+# #             np.nanmean(np.abs(subject_data_ild5deg_GLM_mean)),
+# # #             np.nanmean(np.abs(subject_data_ild5degMag_GLM_mean))])
 fig, axes = plt.subplots(int(n_long_channels/4),4)
 fig.set_figwidth(4)
 fig.set_figheight(8)
@@ -859,7 +843,7 @@ for ichannel, curr_axes in enumerate(axes.reshape(-1)):
                         np.nanstd(subject_data_ild5degMag_GLM[:,ichannel],axis=0)/(np.sqrt(np.size(subject_data_ild5degMag_GLM, axis=0)- 1) ),
                         fmt='o')
     
-    curr_axes.set_ylim((-0.1,0.1))
+    curr_axes.set_ylim((-0.05,0.08))
     curr_axes.set_xlabel('Condition')
     curr_axes.set_title(channel_names[ichannel])
     curr_axes.set_xticks([1,2,3,4])
@@ -906,29 +890,119 @@ ax4.set_title('GLM Beta: ild5degMag')
 plt.show()
 
 
+# ---------------------------------------------------------------
+# -----------------     Statistical Testing             ---------
+# ---------------------------------------------------------------
+# t_stat_SvN, p_value_SvN = stats.ttest_rel(subject_data_itd50_GLM, subject_data_itd500_GLM, axis=0, nan_policy='omit')
+# t_stat_SvN_bh_corr, p_value_SvN_bh_corr = stats.ttest_rel(subject_data_itd50_GLM_bh_corr, subject_data_itd500_GLM_bh_corr, axis=0, nan_policy='omit')
+
+# sig_chans = np.array(raw_haemo_filt.copy().pick('hbo').info['ch_names'])[np.where(p_value_SvN_bh_corr < 0.05)]
+
+# caxis_SvN = np.nanmean([np.nanmean(abs(t_stat_SvN)), np.nanmean(abs(t_stat_SvN_bh_corr))])
+
+# fig, axes = plt.subplots()
+# im, _ = mne.viz.plot_topomap(t_stat_SvN, epochs.pick('hbo').info,
+#                      extrapolate='local', image_interp='linear',
+#                      vlim=(-caxis_SvN*1.1, caxis_SvN*1.1), axes=axes, show=False)
+# cbar = fig.colorbar(im, ax=axes)
+# cbar.set_label('t-statistic')
+# axes.set_title('ITD50 vs ITD500 Contrast: Uncorrected')
+# plt.show()
+
+# fig, axes = plt.subplots()
+# im, _ =mne.viz.plot_topomap(t_stat_SvN_bh_corr, epochs.pick('hbo').info,
+#                      extrapolate='local', image_interp='linear',
+#                      vlim=(-caxis_SvN*1.1, caxis_SvN*1.1), axes=axes, show=False)
+# cbar = fig.colorbar(im, ax=axes)
+# cbar.set_label('t-statistic')
+# axes.set_title('ITD50 vs. ITD500 Contrast: BH Corrected')
+# plt.show()
+
+# ---------------------------------------------------------------
+# -----------------     Bootstrapping Test              ---------
+# ---------------------------------------------------------------
+# n_iter = 500
+# n_subject_array = np.arange(n_subjects)
+# subject_num_list = [8, 12, 16, 20]
+
+# t_stat_iter_max = np.zeros((n_iter, 4))
+# p_stat_below_0p05 = np.zeros((n_iter, 4))
+# t_stat_iter_max_bh_corr = np.zeros((n_iter, 4))
+# p_stat_below_0p05_bh_corr = np.zeros((n_iter, 4))
+
+# for i in range(n_iter):
+#     for j, subject_iter in enumerate(subject_num_list):
+#         # select 'n' subjects,
+#         #   take t-test for SvN
+#         #   store summary statistics in array maximum value and # of significant channels
+#         subject_selection = np.random.choice(n_subjects, subject_iter, replace=False)
+
+#         t_stat_iter, p_value_iter = stats.ttest_rel(subject_data_itd50_GLM[subject_selection, :],
+#                                                     subject_data_itd500_GLM[subject_selection, :],
+#                                                     axis=0, nan_policy='omit')
+
+#         # store
+#         t_stat_iter_max[i, j] = np.nanmax(abs(t_stat_iter[np.isfinite(t_stat_iter)]))
+#         p_stat_below_0p05[i, j] = np.sum(p_value_iter < 0.05)
+
+#         t_stat_iter_bh_corr, p_value_iter_bh_corr = stats.ttest_rel(subject_data_itd50_GLM_bh_corr[subject_selection, :],
+#                                                     subject_data_itd500_GLM_bh_corr[subject_selection, :],
+#                                                     axis=0, nan_policy='omit')
+
+#         # store
+#         t_stat_iter_max_bh_corr[i, j] = np.nanmax(abs(t_stat_iter_bh_corr[np.isfinite(t_stat_iter_bh_corr)]))
+#         p_stat_below_0p05_bh_corr[i, j] = np.sum(p_value_iter_bh_corr < 0.05)
+
+# # take averages and std. dev. for the bootstrapping test
+# t_stat_iter_max_mean = np.nanmean(t_stat_iter_max, axis=0)
+# t_stat_iter_max_std = np.nanstd(t_stat_iter_max, axis=0)
+# p_stat_below_0p05_mean = np.nanmean(p_stat_below_0p05, axis=0)
+# p_stat_below_0p05_std = np.nanstd(p_stat_below_0p05, axis=0)
+
+# # bh correction stats
+# t_stat_iter_max_bh_corr_mean = np.nanmean(t_stat_iter_max_bh_corr, axis=0)
+# t_stat_iter_max_bh_corr_std = np.nanstd(t_stat_iter_max_bh_corr, axis=0)
+# p_stat_below_0p05_bh_corr_mean = np.nanmean(p_stat_below_0p05_bh_corr, axis=0)
+# p_stat_below_0p05_bh_corr_std = np.nanstd(p_stat_below_0p05_bh_corr, axis=0)
+
+# plt.errorbar(subject_num_list, t_stat_iter_max_mean, t_stat_iter_max_std, capsize=5)
+# plt.errorbar(subject_num_list, t_stat_iter_max_bh_corr_mean, t_stat_iter_max_bh_corr_std, capsize=5)
+# plt.ylim([1, 5])
+# plt.ylabel('Maximum t-statistic')
+# plt.xlabel('Number of Subjects')
+# plt.title('Maximum t-statistic Across Channels')
+# plt.show()
+
+# plt.errorbar(subject_num_list, p_stat_below_0p05_mean, p_stat_below_0p05_std, capsize=5)
+# plt.errorbar(subject_num_list, p_stat_below_0p05_bh_corr_mean, p_stat_below_0p05_bh_corr_std, capsize=5)
+# plt.title('Number of Significant Channels (p < 0.05)')
+# plt.ylabel('Number of Channels')
+# plt.xlabel('Number of Subjects')
+# plt.show()
+
 
 # ---------------------------------------------------------------
 # -----------------     Compare Mean HbO and GLM Values ---------
 # ---------------------------------------------------------------
-fig, axes = plt.subplots(2, 7)
-fig.set_figwidth(16)
-fig.set_figheight(8)
-caxis_lim = 11e-8
-for ichannel, curr_axes in enumerate(axes.reshape(-1)):
-    # ITD50
-    curr_axes.scatter(mean_during_stim_itd50[:,ichannel],subject_data_itd50_GLM[:,ichannel])
+# fig, axes = plt.subplots(2, 7)
+# fig.set_figwidth(16)
+# fig.set_figheight(8)
+# caxis_lim = 11e-8
+# for ichannel, curr_axes in enumerate(axes.reshape(-1)):
+#     # ITD50
+#     curr_axes.scatter(mean_during_stim_itd50[:,ichannel],subject_data_itd50_GLM[:,ichannel])
     
-    # ITD500
-    curr_axes.scatter(mean_during_stim_itd500[:,ichannel],subject_data_itd500_GLM[:,ichannel])
+#     # ITD500
+#     curr_axes.scatter(mean_during_stim_itd500[:,ichannel],subject_data_itd500_GLM[:,ichannel])
     
-    # ild5deg
-    curr_axes.scatter(mean_during_stim_ild5deg[:,ichannel],subject_data_ild5deg_GLM[:,ichannel])
+#     # ild5deg
+#     curr_axes.scatter(mean_during_stim_ild5deg[:,ichannel],subject_data_ild5deg_GLM[:,ichannel])
     
-    # ild5degMag
-    curr_axes.scatter(mean_during_stim_ild5degMag[:,ichannel],subject_data_ild5degMag_GLM[:,ichannel])
+#     # ild5degMag
+#     curr_axes.scatter(mean_during_stim_ild5degMag[:,ichannel],subject_data_ild5degMag_GLM[:,ichannel])
     
-    curr_axes.set_xlabel(r'Mean $\Delta$Hb ($\mu$M) during stim.', usetex=False)
-    curr_axes.set_ylabel('Beta')
+#     curr_axes.set_xlabel(r'Mean $\Delta$Hb ($\mu$M) during stim.', usetex=False)
+#     curr_axes.set_ylabel('Beta')
 # plt.savefig(f'C:\\Users\\benri\\Documents\\GitHub\\SRM-NIRS-EEG\\ANALYSIS SCRIPTS\\Eli Analysis\\Plots\\Beta_vs_HbO_dur_{glm_dur}_{masker_type}_masker.png')
 
 

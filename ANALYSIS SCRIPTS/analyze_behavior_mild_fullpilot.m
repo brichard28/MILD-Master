@@ -5,7 +5,7 @@
 
 BehaviorTable = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx','Format','auto');
 
-subject_ID = char('fullpilot1','fullpilot2','fullpilot3'); % neuroimaging pilot
+subject_ID = char('dense_nirs_3','dense_nirs_4'); % neuroimaging pilot
 num_conditions = 8;
 min_click_times = [];
 all_click_times = [];

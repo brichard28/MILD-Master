@@ -1,0 +1,170 @@
+{
+  "instructions": ["Welcome to the practice! To begin, make sure you are still wearing your headphones or earphones. <p></p>Once you are ready, click <strong>Continue</strong> for further instructions.","On each trial, you will hear a voice say <strong>bash</strong>, <strong>dash</strong>, and <strong>gash</strong> from the left or from the right. Your task is to listen to the words <strong>from that direction</strong> and click the button AS SOON AS you hear the word <strong>bash</strong> from the target direction. There may be more than one <strong>bash</strong> in each trial. There will be a distracting sound from the other side, but do your best to ignore it.", "When you are ready, click <strong>Continue</strong> to practice with a single stream."],
+  "feedback":false,
+  "holdfeedback": false,
+  "feedbackdur": 0,
+  "serveraudio": true,
+  "estimatedduration": 2,
+  "randomize":true,
+  "isi": 5000,
+  "volume":[
+    {
+    "plugin": "html-button-response",
+    "prompt": "Click <strong>Continue</strong> to begin the practice.</p>",
+    "choices": ["Continue"]
+    }
+  ],
+  "trials":[
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong>.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "practice_midline_1.wav",
+    "cond": 1,
+    "annot": {"Condition": "practice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong>.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "practice_midline_2.wav",
+    "cond": 1,
+    "annot": {"Condition": "practice"}
+    },
+    {
+    "plugin": "html-button-response",
+    "prompt": "Great! Now we are going to make the sounds spatial. This next trial will include a single stream coming from the <strong>LEFT</strong>. Again, click the button when you hear <strong>bash</strong>.",
+    "choices": ["Continue"]
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong> from the LEFT.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "practice_single_stream_left.wav",
+    "cond": 2,
+    "annot": {"Condition": "practice"}
+    },
+    {
+    "plugin": "html-button-response",
+    "prompt": "Awesome work! Now the opposite: listen to the single stream coming from the <strong>RIGHT</strong>. Again, click the button when you hear <strong>bash</strong>.",
+    "choices": ["Continue"]
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong> from the RIGHT.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "practice_single_stream_right.wav",
+    "cond": 2,
+    "annot": {"Condition": "practice"}
+    },
+    {
+    "plugin": "html-button-response",
+    "prompt": "Now it is time to practice the full task. At the beginning of each trial, you will hear a <strong>cue word</strong> and see an <strong>arrow</strong>. This will tell you where to attend (left or right) on this trial. Listen for <strong>bash</strong> from ONLY the cued direction. Ignore <strong>bash</strong> from the other direction. Click Continue to try one out.",
+    "choices": ["Continue"]
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "practice_both_streams_ash.wav",
+    "cond": 2,
+    "annot": {"Condition": "practice"}
+    },
+    {
+    "plugin": "html-button-response",
+    "prompt": "Great practicing with bash, dash and gash! You might also hear bæ, dæ and gæ (with the same vowels). Click Continue to try out a trial with these syllables instead.",
+    "choices": ["Continue"]
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bæ</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "practice_both_streams_ae.wav",
+    "cond": 2,
+    "annot": {"Condition": "practice"}
+    },
+    {
+    "plugin": "html-button-response",
+    "prompt": "You will now complete 8 trials of practice with bæ/dæ/gæ or bash/dash/gash. If you pass the training, you will be able to continue with the task. Otherwise, you can try one more time. If you do not pass the training on the second round, you will be unable to complete the study and will be compensated for your time so far.",
+    "choices": ["Continue"]
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bæ</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "0__side=r_itd=500_az=0_mag=0_word_set=0__l=d-g-g-g-d-g-d-g-g-d-b-g-d-d-g-g__r=g-d-b-d-d-d-d-b-d-g-g-g-d-b-g-b.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "1__side=l_itd=500_az=0_mag=0_word_set=1__l=d-g-g-g-b-g-g-g-d-d-d-g-d-d-g-b__r=d-g-b-g-g-g-b-d-b-g-g-b-d-d-g-g.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bæ</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "5__side=l_itd=500_az=0_mag=0_word_set=0__l=d-d-d-d-d-d-d-g-d-b-d-b-g-g-d-g__r=g-d-b-d-d-d-b-d-g-d-d-g-d-b-g-b.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "3__side=r_itd=500_az=0_mag=0_word_set=1__l=g-g-d-d-d-g-d-d-b-d-d-d-g-g-g-g__r=d-b-d-b-d-b-d-g-g-d-b-d-d-d-g-b.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bæ</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "7__side=l_itd=500_az=0_mag=0_word_set=0__l=g-d-d-d-g-d-g-d-b-d-g-d-d-g-d-b__r=g-b-d-d-b-g-b-d-g-g-g-g-g-d-d-g.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bæ</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "6__side=r_itd=500_az=0_mag=0_word_set=0__l=g-g-d-g-g-d-g-d-d-g-g-d-b-d-d-d__r=d-b-g-b-d-d-g-d-b-g-b-g-g-g-d-d.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bæ</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "4__side=r_itd=500_az=0_mag=0_word_set=1__l=d-d-g-d-g-d-b-g-d-g-d-g-g-g-d-b__r=d-b-d-d-b-d-g-g-g-b-g-g-d-b-d-d.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    },
+    {
+    "plugin": "hari-audio-button-response",
+    "prompt": "Click when you hear the word <strong>bash</strong> from the cued direction.",
+    "choices": ["bash"],
+    "answer": 1,
+    "stimulus": "2__side=l_itd=500_az=0_mag=0_word_set=1__l=d-g-b-d-d-g-d-d-d-g-d-d-g-d-d-b__r=d-d-d-d-b-g-b-d-b-d-g-b-d-d-d-g.wav",
+    "cond": 2,
+    "annot": {"Condition": "fullpractice"}
+    }
+  ]
+}
