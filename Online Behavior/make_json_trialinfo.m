@@ -53,7 +53,6 @@ for itrialpercondition = 1:ntrialspercondition
         fprintf(fp, '\"stimulus\": \"%s\",\n', fname);
         fprintf(fp, '\"cond\": %d,\n', find(all_conditions == string(this_condition)));
         fprintf(fp, '\"annot\": {\"spatial_cue": \"%s\"}\n},\n', this_trial_info);
-        itrial = itrial + 1;
 
         % write the current audiofile name as its pretty name
         [this_audio,this_fs] = audioread(strcat(trialfiles(itrialpercondition).folder,'\',this_trial_info));

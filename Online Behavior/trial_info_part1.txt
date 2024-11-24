@@ -1,0 +1,432 @@
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_1_trial_1.wav",
+"cond": 1,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=10_mag=0_word_set=0__l=g-b-g-d-g-d-b-d-g-b-g-d-b-g-g-d__r=g-g-g-d-b-g-d-d-g-d-d-g-g-d-b-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_2_trial_1.wav",
+"cond": 2,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=10_mag=0_word_set=1__l=g-g-d-g-d-d-g-b-d-b-g-d-b-d-b-g__r=d-d-g-d-b-g-d-d-d-d-g-d-g-g-d-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_3_trial_1.wav",
+"cond": 3,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=15_mag=0_word_set=0__l=d-g-d-g-g-d-d-g-d-g-b-g-d-g-b-d__r=g-g-g-d-b-g-d-d-b-d-g-d-b-d-d-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_4_trial_1.wav",
+"cond": 4,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=15_mag=0_word_set=1__l=g-g-g-g-d-d-g-d-d-g-d-b-g-g-g-d__r=d-d-b-d-d-g-b-g-b-g-d-d-d-b-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_5_trial_1.wav",
+"cond": 5,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=20_mag=0_word_set=0__l=d-d-g-g-d-g-b-g-b-d-g-g-d-g-g-d__r=g-b-d-b-d-g-g-g-d-g-d-b-d-b-d-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_6_trial_1.wav",
+"cond": 6,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=20_mag=0_word_set=1__l=d-g-g-g-g-d-b-g-d-g-b-g-d-d-d-g__r=g-d-d-d-b-d-g-g-b-g-d-g-d-d-b-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_7_trial_1.wav",
+"cond": 7,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=5_mag=0_word_set=0__l=d-g-g-g-b-g-d-g-g-g-g-g-g-g-d-d__r=g-g-b-g-g-g-b-d-g-b-g-g-b-d-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_8_trial_1.wav",
+"cond": 8,
+"annot": {"spatial_cue": "0__side=l_itd=0_az=5_mag=0_word_set=1__l=d-g-g-g-g-g-d-d-b-g-b-d-g-g-d-b__r=g-g-b-g-b-d-d-g-g-d-g-g-b-d-g-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_9_trial_1.wav",
+"cond": 9,
+"annot": {"spatial_cue": "0__side=l_itd=500_az=0_mag=0_word_set=0__l=g-g-d-d-b-d-g-d-d-g-d-d-d-d-b-g__r=g-g-d-g-g-d-d-d-b-d-b-d-b-g-d-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_10_trial_1.wav",
+"cond": 10,
+"annot": {"spatial_cue": "0__side=l_itd=500_az=0_mag=0_word_set=1__l=g-g-g-b-d-g-d-g-g-g-d-g-b-d-g-g__r=d-b-g-d-d-b-d-g-b-g-b-d-g-d-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_11_trial_1.wav",
+"cond": 11,
+"annot": {"spatial_cue": "0__side=l_itd=50_az=0_mag=0_word_set=0__l=d-g-d-g-g-g-g-b-g-d-d-g-d-b-d-d__r=d-d-d-b-g-b-g-g-d-d-b-g-g-g-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_12_trial_1.wav",
+"cond": 12,
+"annot": {"spatial_cue": "0__side=l_itd=50_az=0_mag=0_word_set=1__l=d-d-g-d-d-g-b-d-d-d-g-d-g-b-d-d__r=d-g-d-b-d-d-d-g-b-d-b-g-g-g-d-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_13_trial_1.wav",
+"cond": 13,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=10_mag=0_word_set=0__l=d-g-d-g-g-g-g-b-d-d-d-g-g-g-d-d__r=d-b-g-d-g-d-d-d-d-g-b-d-g-b-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_14_trial_1.wav",
+"cond": 14,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=10_mag=0_word_set=1__l=g-d-b-g-g-g-g-d-d-g-b-d-b-g-b-d__r=d-g-d-d-b-d-d-g-d-d-g-d-d-d-d-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_15_trial_1.wav",
+"cond": 15,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=15_mag=0_word_set=0__l=g-g-g-d-d-d-d-b-g-g-g-g-d-d-g-d__r=g-d-d-b-d-b-d-g-d-b-g-b-d-d-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_16_trial_1.wav",
+"cond": 16,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=15_mag=0_word_set=1__l=g-b-d-g-g-b-g-b-g-d-d-g-g-b-g-g__r=d-d-g-g-d-g-d-d-d-g-g-b-d-g-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_17_trial_1.wav",
+"cond": 17,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=20_mag=0_word_set=0__l=d-b-g-d-g-d-b-g-d-d-d-d-d-g-b-d__r=d-d-d-d-d-d-d-d-g-b-d-b-g-g-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_18_trial_1.wav",
+"cond": 18,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=20_mag=0_word_set=1__l=d-g-g-g-g-g-d-g-b-d-g-d-g-g-d-g__r=d-b-g-b-g-g-b-d-d-d-d-g-d-b-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_19_trial_1.wav",
+"cond": 19,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=5_mag=0_word_set=0__l=d-b-g-b-g-g-d-b-g-g-d-d-g-g-d-g__r=g-d-d-d-d-b-d-d-g-g-d-d-b-g-d-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_20_trial_1.wav",
+"cond": 20,
+"annot": {"spatial_cue": "0__side=r_itd=0_az=5_mag=0_word_set=1__l=g-g-d-g-b-d-d-g-g-g-g-b-g-g-d-d__r=g-b-g-d-d-d-b-d-g-d-d-g-d-g-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_21_trial_1.wav",
+"cond": 21,
+"annot": {"spatial_cue": "0__side=r_itd=500_az=0_mag=0_word_set=0__l=g-d-g-g-d-b-g-b-d-g-d-g-g-d-d-d__r=g-b-g-b-d-g-d-d-g-b-d-b-d-d-g-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_22_trial_1.wav",
+"cond": 22,
+"annot": {"spatial_cue": "0__side=r_itd=500_az=0_mag=0_word_set=1__l=g-g-d-g-d-d-g-d-d-b-g-d-d-g-d-d__r=g-b-g-b-g-g-d-b-g-g-g-g-d-b-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_23_trial_1.wav",
+"cond": 23,
+"annot": {"spatial_cue": "0__side=r_itd=50_az=0_mag=0_word_set=0__l=d-d-d-g-b-g-b-d-g-g-d-b-d-g-d-g__r=d-g-b-d-d-g-g-g-b-d-d-g-d-d-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_24_trial_1.wav",
+"cond": 24,
+"annot": {"spatial_cue": "0__side=r_itd=50_az=0_mag=0_word_set=1__l=g-d-d-d-d-d-d-d-d-d-d-b-d-b-g-d__r=g-b-g-b-g-d-d-g-b-g-d-g-d-g-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_1_trial_2.wav",
+"cond": 1,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=10_mag=0_word_set=0__l=d-d-b-d-b-d-g-d-g-d-g-d-g-d-g-d__r=g-d-g-g-d-g-b-g-b-d-b-d-g-g-b-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_2_trial_2.wav",
+"cond": 2,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=10_mag=0_word_set=1__l=g-g-g-g-b-g-d-d-b-d-g-g-d-g-g-d__r=g-g-g-d-g-d-b-g-d-g-d-g-b-g-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_3_trial_2.wav",
+"cond": 3,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=15_mag=0_word_set=0__l=g-g-g-d-d-g-g-b-d-d-d-g-d-g-g-g__r=g-b-d-b-d-g-d-g-g-b-g-d-b-g-b-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_4_trial_2.wav",
+"cond": 4,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=15_mag=0_word_set=1__l=d-d-g-d-g-d-b-d-g-g-g-d-g-d-d-d__r=d-d-b-d-g-d-d-g-d-g-b-g-b-d-b-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_5_trial_2.wav",
+"cond": 5,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=20_mag=0_word_set=0__l=g-d-d-d-d-d-d-g-d-b-d-b-g-b-g-b__r=g-g-g-g-g-b-d-d-d-g-g-g-g-d-g-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_6_trial_2.wav",
+"cond": 6,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=20_mag=0_word_set=1__l=d-g-g-g-d-g-g-b-d-g-g-b-d-d-g-b__r=g-g-b-g-d-g-d-g-g-d-d-d-g-b-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_7_trial_2.wav",
+"cond": 7,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=5_mag=0_word_set=0__l=d-g-d-d-d-b-d-d-d-d-d-d-d-g-g-g__r=d-b-d-b-g-g-g-d-b-g-b-d-d-d-d-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_8_trial_2.wav",
+"cond": 8,
+"annot": {"spatial_cue": "1__side=l_itd=0_az=5_mag=0_word_set=1__l=g-g-d-g-b-g-d-g-g-d-g-g-b-g-d-b__r=g-b-d-d-d-d-b-d-b-g-g-g-g-g-g-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_9_trial_2.wav",
+"cond": 9,
+"annot": {"spatial_cue": "1__side=l_itd=500_az=0_mag=0_word_set=0__l=g-g-g-d-d-b-g-d-d-d-g-d-g-b-d-b__r=d-d-d-b-g-d-d-b-g-g-b-g-g-g-d-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_10_trial_2.wav",
+"cond": 10,
+"annot": {"spatial_cue": "1__side=l_itd=500_az=0_mag=0_word_set=1__l=d-g-g-d-g-g-g-g-b-g-d-g-g-d-g-d__r=d-d-b-g-b-g-b-g-g-d-d-d-b-d-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_11_trial_2.wav",
+"cond": 11,
+"annot": {"spatial_cue": "1__side=l_itd=50_az=0_mag=0_word_set=0__l=d-b-d-d-g-g-d-g-d-d-g-g-d-d-g-d__r=g-d-g-b-g-g-b-g-d-b-g-d-d-b-g-d.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_12_trial_2.wav",
+"cond": 12,
+"annot": {"spatial_cue": "1__side=l_itd=50_az=0_mag=0_word_set=1__l=d-d-b-d-g-g-d-g-g-g-b-d-g-d-b-d__r=g-g-d-g-g-d-g-g-b-d-g-g-b-d-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_13_trial_2.wav",
+"cond": 13,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=10_mag=0_word_set=0__l=d-g-g-d-g-g-d-b-g-g-g-g-g-g-d-g__r=d-g-d-g-b-g-d-d-g-g-g-b-g-b-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_14_trial_2.wav",
+"cond": 14,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=10_mag=0_word_set=1__l=g-b-d-d-g-d-g-g-d-g-g-g-b-d-b-d__r=d-d-g-b-d-d-g-b-d-b-g-d-g-g-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_15_trial_2.wav",
+"cond": 15,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=15_mag=0_word_set=0__l=g-d-g-d-g-d-d-g-b-g-g-g-g-g-g-d__r=d-b-d-g-g-d-b-g-d-g-b-g-g-b-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_16_trial_2.wav",
+"cond": 16,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=15_mag=0_word_set=1__l=d-g-g-d-d-g-d-b-d-g-b-g-d-g-d-g__r=g-b-g-b-g-d-d-g-d-g-d-d-d-b-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_17_trial_2.wav",
+"cond": 17,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=20_mag=0_word_set=0__l=d-d-g-b-g-d-g-d-d-d-d-g-d-d-d-g__r=g-g-g-g-g-g-b-d-b-d-b-d-b-d-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_18_trial_2.wav",
+"cond": 18,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=20_mag=0_word_set=1__l=g-b-g-d-d-d-d-d-g-g-d-d-b-g-d-g__r=g-d-g-g-g-g-d-b-d-b-d-d-d-d-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_19_trial_2.wav",
+"cond": 19,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=5_mag=0_word_set=0__l=g-d-d-d-d-d-d-d-g-d-d-d-b-d-b-d__r=d-b-d-g-g-b-d-g-g-b-g-d-d-g-d-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_20_trial_2.wav",
+"cond": 20,
+"annot": {"spatial_cue": "1__side=r_itd=0_az=5_mag=0_word_set=1__l=d-b-g-d-g-d-b-g-g-d-d-g-d-b-d-g__r=g-d-d-d-b-d-g-g-g-b-g-d-d-g-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_21_trial_2.wav",
+"cond": 21,
+"annot": {"spatial_cue": "1__side=r_itd=500_az=0_mag=0_word_set=0__l=d-d-b-d-b-g-g-g-d-d-d-g-b-d-g-d__r=g-d-g-g-g-d-b-g-g-g-b-d-g-g-d-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_22_trial_2.wav",
+"cond": 22,
+"annot": {"spatial_cue": "1__side=r_itd=500_az=0_mag=0_word_set=1__l=g-g-g-b-d-d-d-g-d-b-d-g-d-g-g-g__r=d-b-g-d-g-g-d-d-d-d-d-b-d-b-g-b.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>ba</strong> from the cued direction",
+"choices": ["ba"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_23_trial_2.wav",
+"cond": 23,
+"annot": {"spatial_cue": "1__side=r_itd=50_az=0_mag=0_word_set=0__l=g-g-d-b-d-b-d-d-g-g-g-b-g-g-g-b__r=g-d-g-g-d-d-g-d-g-d-g-d-d-b-g-g.wav"}
+},
+{
+"plugin": "ben-multi-button-response",
+"prompt": "Click when you hear the word <strong>bash</strong> from the cued direction",
+"choices": ["bash"],
+"answer": 1,
+"stimulus": "bashdashgashonline_cond_24_trial_2.wav",
+"cond": 24,
+"annot": {"spatial_cue": "1__side=r_itd=50_az=0_mag=0_word_set=1__l=d-d-d-d-d-b-d-g-g-g-d-d-b-g-g-d__r=d-d-b-g-g-g-d-d-d-g-b-g-g-d-b-g.wav"}
+},
