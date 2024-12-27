@@ -78,28 +78,32 @@ all_fnirs_data_folders = [data_root +'2024-10-30/2024-10-30_001',
                           data_root + '2024-11-08/2024-11-08_001',
                           data_root + '2024-11-11/2024-11-11_001',
                           data_root + '2024-11-12/2024-11-12_001',
-                          data_root + '2024-11-14/2024-11-14_001']
+                          data_root + '2024-11-14/2024-11-14_001',
+                          data_root + '2024-11-21/2024-11-21_001',
+                          data_root + '2024-11-22/2024-11-22_001',
+                          data_root + '2024-12-02/2024-12-02_001',
+                          data_root + '2024-12-03/2024-12-03_001']
 
 
 
 # All subject IDs
-subject_ID = ['dense_nirs_2','dense_nirs_3','dense_nirs_4','dense_nirs_5','dense_nirs_6','dense_nirs_7','dense_nirs_8','dense_nirs_9','dense_nirs_10']
+subject_ID = ['dense_nirs_2','dense_nirs_3','dense_nirs_4','dense_nirs_5','dense_nirs_6','dense_nirs_7','dense_nirs_8','dense_nirs_9','dense_nirs_10','dense_nirs_11','dense_nirs_12','dense_nirs_13','dense_nirs_14']
 # The subjects we would like to run right now
-curr_subject_ID = ['dense_nirs_10']
-
+curr_subject_ID = ['dense_nirs_4','dense_nirs_6','dense_nirs_7','dense_nirs_8','dense_nirs_9','dense_nirs_11','dense_nirs_12','dense_nirs_13','dense_nirs_14']
+# 'dense_nirs_5',
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
 
 masker_type = 'speech' # type of masker to analyze on this run
 
-glm_dur = 11.6
+glm_dur = 3
 
 n_subjects = len(curr_subject_ID)
 
 n_long_channels = 97
 fs = 5.1
-tmin, tmax = -5, 23
+tmin, tmax = -5, 30
 n_timepoints = math.floor((tmax - tmin)*fs) + 1
 task_type = 'Ben_SvN'
 
@@ -156,7 +160,7 @@ subject_info = []
 # loop through all subjects and all sessions (takes a while)
 preprocessing_type = "Eli"
 
-
+all_epochs = []
 for ii, subject_num in enumerate(range(n_subjects)):
     
     
@@ -270,7 +274,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                                plot_steps=True,
                                                crop=False, crop_low=0, crop_high=0,
                                                events_modification=False, reject=True,
-                                               short_regression=True, events_from_snirf=False,
+                                               short_regression=False, events_from_snirf=False,
                                                drop_short=False, negative_enhancement=False,
                                                snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
     
@@ -332,11 +336,13 @@ for ii, subject_num in enumerate(range(n_subjects)):
     epochs = mne.Epochs(raw_haemo_filt, events,  # events_block,
                         event_id=event_dict,  # event_dict_total,
                         tmin=tmin, tmax=tmax,
-                        baseline= (tmin, 0),
+                        baseline= (-2, 0),
                         reject = reject_criteria,
                        # flat = flat_criteria,
                         preload=True, detrend=None, verbose=True,
                         on_missing='warn')
+    
+    all_epochs.append(epochs)
     #epochs.plot_drop_log()
     #plt.show()
     #epochs.drop_bad()
@@ -350,16 +356,21 @@ for ii, subject_num in enumerate(range(n_subjects)):
     evoked_hbr_error = np.zeros((n_conditions,), dtype=object)
     vlim = 0.2
     n_conditions = 1
-    for i, cond in enumerate(['itd=50_az=0_mag=0']):
-        evoked_hbo[i] = epochs['itd=50_az=0_mag=0','itd=500_az=0_mag=0','itd=0_az=5_mag=0','itd=0_az=5_mag=1'].copy().average(picks='hbo')
-        evoked_hbo_error[i] = epochs['itd=50_az=0_mag=0','itd=500_az=0_mag=0','itd=0_az=5_mag=0','itd=0_az=5_mag=1'].copy().standard_error(picks='hbo')
-        evoked_hbr[i] = epochs['itd=50_az=0_mag=0','itd=500_az=0_mag=0','itd=0_az=5_mag=0','itd=0_az=5_mag=1'].copy().average(picks='hbr')
-        evoked_hbr_error[i] = epochs['itd=50_az=0_mag=0','itd=500_az=0_mag=0','itd=0_az=5_mag=0','itd=0_az=5_mag=1'].copy().standard_error(picks='hbr')
-        fig = plt.figure(figsize=(8, 5), dpi=200)
+    fig = plt.figure(figsize=(8, 5), dpi=200)
+
+    for i, cond in enumerate(conditions):
+        evoked_hbo[i] = epochs[cond].copy().average(picks='hbo')
+        evoked_hbo_error[i] = epochs[cond].copy().standard_error(picks='hbo')
+        evoked_hbr[i] = epochs[cond].copy().average(picks='hbr')
+        evoked_hbr_error[i] = epochs[cond].copy().standard_error(picks='hbr')
         fig = plot_nirs_evoked_error(fig, evoked_hbo[i], evoked_hbo_error[i],
-                                     colour='r', ylim=[-vlim, vlim])
-        fig = plot_nirs_evoked_error(fig, evoked_hbr[i], evoked_hbr_error[i],
-                             colour='b', ylim=[-vlim, vlim], add_legend=True)
+                                      colour='r', ylim=[-vlim, vlim])
+        # fig = plot_nirs_evoked_error(fig, evoked_hbr[i], evoked_hbr_error[i],
+        #                      colour='b', ylim=[-vlim, vlim], add_legend=True)
+        
+    # save to all subject array
+    for i, cond in enumerate(conditions):
+        all_evokeds[cond].append(epochs[cond].average())
     
 
 
@@ -585,8 +596,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
 pfc_channels = []
 stg_channels = []
 # Take Means
-index_stim_start = int(2*fs) # 8
-index_stim_end = int(6.8*fs)
+index_stim_start = int(5*fs) # 8
+index_stim_end = int(16.6*fs)
 # ITD50
 mean_during_stim_itd50 = np.nanmean(subject_data_itd50_baselined[:,:,index_stim_start:index_stim_end], axis=2)
 mean_during_stim_itd50_hbr = np.nanmean(subject_data_itd50_hbr_baselined[:,:,index_stim_start:index_stim_end], axis=2)
@@ -690,222 +701,6 @@ subject_data_ild5degMag_GLM_std = np.nanstd(1e6*subject_data_ild5degMag_GLM, axi
 
 
 
-# ---------------------------------------------------------------
-# -----------------     PLotting Block Averages (PFC)   ---------
-# ---------------------------------------------------------------
-
-
-channel_names = [this_chan_hbo.replace(' hbo','') for this_chan_hbo in chan_hbo]
-# ymin = -5e-2
-# ymax = 20e-2
-# fig, axes = plt.subplots(n_long_channels,5)
-# fig.set_figwidth(16)
-# fig.set_figheight(8)
-# for ichannel in range(n_long_channels):
-      
-#     lims = dict(hbo=[-5e-2, 20e-2], hbr=[-5e-2, 20e-2])
-time = np.linspace(tmin,tmax,num=n_timepoints)
-#     baseline_start_index = 0
-#     baseline_end_index = int(5*fs)
-    
-#     # Plot ITD50
-#     # HbO
-#     curr_ax = axes[ichannel, 0] 
-#     curr_data = subject_data_itd50_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     # HbR
-#     curr_data = subject_data_itd50_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 0:
-#         curr_ax.set_title('50 us ITD', fontsize = 24)
-#     elif ichannel == 3:
-#         curr_ax.set_ylabel(r'$\Delta$Hb ($\mu$M)', usetex=False, fontsize = 24)
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
-        
-#     # Plot ITD500
-#     curr_ax = axes[ichannel,1]
-#     # HbO
-#     curr_data = subject_data_itd500_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     # HbR
-#     curr_data = subject_data_itd500_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 0:
-#         curr_ax.set_title('500 us ITD', fontsize = 24)
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
-#     # Plot ild5deg
-#     curr_ax = axes[ichannel,2]
-#     # HbO
-#     curr_data = subject_data_ild5deg_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     # HbR
-#     curr_data = subject_data_ild5deg_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 0:
-#         curr_ax.set_title('ILD5deg', fontsize = 24)
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
-#     # Plot ild5degMag
-#     curr_ax = axes[ichannel,3]
-#     # HbO
-#     curr_data = subject_data_ild5degMag_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r')
-#     curr_ax.set_xticks(np.linspace(-5,20,num=6))
-#     if ichannel == 5:
-#         curr_ax.set_xlabel('Time (s)', fontsize = 24)
-#         curr_ax.set_xticklabels(np.linspace(-5,20,num=6))
-#     else:
-#         curr_ax.set_xticklabels(["","","","","",""])
-#     #HbR
-#     curr_data = subject_data_ild5degMag_hbr_baselined[:,ichannel,:]
-#     curr_mean = np.nanmean(curr_data, axis=0) 
-#     curr_error = np.nanstd(curr_data, axis=0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-#     curr_ax.plot(time, curr_mean, 'k-')
-#     curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='b')
-#     curr_ax.set_ylim((ymin, ymax))
-#     if ichannel == 0:
-#         curr_ax.set_title('ILD5deg + Mag', fontsize = 24)
-    
-    
-#     # Plot sensor location
-#     curr_ax = axes[ichannel,4]
-#     epochs.copy().pick(chan_hbo[ichannel]).plot_sensors(axes = curr_ax)
-# plt.subplots_adjust(top=.9, right=.98, left= 0.05, bottom = 0.07)
-# plt.savefig('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\PFC_Block_Averages.svg', format='svg')
-
-
-
-
-# ---------------------------------------------------------------
-# -----------------     Plot Grand Average PFC          ---------
-# ---------------------------------------------------------------
-
-# ymin = -5e-2
-# ymax = 20e-2
-# fig, axes = plt.subplots(1, 2)
-# fig.set_figwidth(16)
-# fig.set_figheight(8)
-# # ITD 50 vs ITD 500
-# curr_ax = axes[0]
-# curr_data = np.nanmean(subject_data_itd50_baselined[:,:,:], axis = 1) # mean over channel
-# curr_mean = np.nanmean(curr_data, axis = 0) # mean over subject
-# curr_error = np.nanstd(curr_data, axis = 0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-# line1 = curr_ax.plot(time, curr_mean, 'ro', markerfacecolor= 'white', label = '50 us ITD')
-# curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r', alpha = 0.1)
-
-# curr_data = np.nanmean(subject_data_itd500_baselined[:,:,:], axis = 1) # mean over channel
-# curr_mean = np.nanmean(curr_data, axis = 0) # mean over subject
-# curr_error = np.nanstd(curr_data, axis = 0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-# line2 = curr_ax.plot(time, curr_mean, 'ro', markerfacecolor= 'r', label = '500 us ITD')
-# curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r', alpha = 0.1)
-# curr_ax.legend()
-# curr_ax.set_xlabel('Time (s)',fontsize=24)
-# curr_ax.set_ylabel(r'$\Delta$HbO ($\mu$M)', usetex=False, fontsize = 24)
-
-# # ILD 
-# curr_ax = axes[1]
-# curr_data = np.nanmean(subject_data_ild5deg_baselined[:,:,:], axis = 1) # mean over channel
-# curr_mean = np.nanmean(curr_data, axis = 0) # mean over subject
-# curr_error = np.nanstd(curr_data, axis = 0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-# line1 = curr_ax.plot(time, curr_mean, 'ro', markerfacecolor= 'white', label = '5 deg ILD')
-# curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r', alpha = 0.1)
-
-# curr_data = np.nanmean(subject_data_ild5degMag_baselined[:,:,:], axis = 1) # mean over channel
-# curr_mean = np.nanmean(curr_data, axis = 0) # mean over subject
-# curr_error = np.nanstd(curr_data, axis = 0)/np.sqrt(np.size(curr_data, axis=0) - 1)
-# line2 = curr_ax.plot(time, curr_mean, 'ro', markerfacecolor= 'r', label = '5 deg ILD + Mag')
-# curr_ax.fill_between(time, curr_mean- curr_error,  curr_mean+curr_error, color='r', alpha = 0.1)
-# curr_ax.legend()
-# curr_ax.set_xlabel('Time (s)',fontsize=24)
-# plt.savefig('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\PFC_Grand_Average.svg', format='svg')
-
-
-# ---------------------------------------------------------------
-# -----------------     PLotting Block Average Means PFC---------
-# ---------------------------------------------------------------
-# fig, axes = plt.subplots(n_long_channels, 2)
-# fig.set_figwidth(10)
-# fig.set_figheight(9)
-# caxis_lim = 11e-8
-
-
-# # Plot error bars
-# for ichannel in range(n_long_channels):
-#     curr_axes = axes[ichannel, 0]
-#     # ITD50
-#     curr_axes.errorbar(0.5, np.nanmean(mean_during_stim_itd50[:,ichannel], axis=0), 
-#                        np.nanstd(mean_during_stim_itd50[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_itd50, axis=0) - 1)),
-#                        fmt='o', capsize= 5.0)    
-#     # ITD500
-#     curr_axes.errorbar(1, np.nanmean(mean_during_stim_itd500[:,ichannel], axis=0), 
-#                        np.nanstd(mean_during_stim_itd500[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_itd500, axis=0) - 1) ),
-#                        fmt='o', capsize= 5.0)
-#     # ild5deg
-#     curr_axes.errorbar(1.5, np.nanmean(mean_during_stim_ild5deg[:,ichannel], axis=0),
-#                        np.nanstd(mean_during_stim_ild5deg[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_ild5deg, axis=0)  - 1)),
-#                        fmt='o', capsize= 5.0)
-#     # ild5degMag 
-#     curr_axes.errorbar(2, np.nanmean(mean_during_stim_ild5degMag[:,ichannel], axis=0), 
-#                        np.nanstd(mean_during_stim_ild5degMag[:,ichannel],axis=0)/(np.sqrt(np.size(mean_during_stim_ild5degMag, axis=0) - 1) ),
-#                        fmt='o', capsize= 5.0)
-    
-#     curr_axes.set_ylim((0,0.15))
-#     if ichannel == 2:
-#         curr_axes.set_ylabel(r'Mean $\Delta$Hb ($\mu$M) during stim.', usetex=False, fontsize=24)
-#     #curr_axes.set_title(channel_names[ichannel])
-#     curr_axes.set_xticks([0.5,1,1.5,2])
-#     curr_axes.set_xlim([0.4,2.1])
-#     if ichannel == 5:
-#         curr_axes.set_xticklabels(["Small\n ITD","Large\n ITD","Natural\n ILD","Broadband\n ILD"], fontsize = 18)
-#     else:
-#         curr_axes.set_xticklabels(["","","",""])
-        
-#     curr_axes = axes[ichannel, 1]
-#     epochs.copy().pick(chan_hbo[ichannel]).plot_sensors(axes = curr_axes)
-    
-# fig.tight_layout()
-# plt.subplots_adjust(top=.98, right=.999, left= 0.1, bottom = 0.1)
-# plt.savefig(f'C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\fNIRS_Plots\\Mean_HbO_PFC.svg', format='svg')
-
-
 
 # ---------------------------------------------------------------
 # -----------------     PLotting GLM Averages           ---------
@@ -949,41 +744,124 @@ time = np.linspace(tmin,tmax,num=n_timepoints)
 
 # plt.subplots_adjust(top=.9, right=0.999, left= 0.1, bottom = 0.07)
 # plt.savefig(f'C:\\Users\\benri\\Documents\\GitHub\\SRM-NIRS-EEG\\ANALYSIS SCRIPTS\\Eli Analysis\\Plots\\Beta_dur_{glm_dur}_{masker_type}_masker.png')
-caxis_lim = 0.06
+caxis_lim = 0.05
 
 fig, (ax1,ax2,ax3,ax4) = plt.subplots(1, 4)
-im, _ = mne.viz.plot_topomap(subject_data_itd50_GLM_mean, epochs.pick('hbo').info,
+im, _ = mne.viz.plot_topomap(subject_data_itd50_GLM_mean, all_epochs[0].pick('hbo').info,
                       extrapolate='box',  image_interp='nearest',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='RdBu_r', axes=ax1, show=False)
+                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax1, show=False)
 #cbar = fig.colorbar(im, ax=ax1)
 #cbar.set_label('Beta (a.u.)')
 ax1.set_title('GLM Beta: ITD50')
 plt.show()
 
-im, _ = mne.viz.plot_topomap(subject_data_itd500_GLM_mean, epochs.pick('hbo').info,
+im, _ = mne.viz.plot_topomap(subject_data_itd500_GLM_mean, all_epochs[0].pick('hbo').info,
                       extrapolate='box',  image_interp='nearest',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='RdBu_r', axes=ax2, show=False)
+                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax2, show=False)
 #cbar = fig.colorbar(im, ax=ax2)
 #cbar.set_label('Beta (a.u.)')
 ax2.set_title('GLM Beta: ITD500')
 plt.show()
 
-im, _ = mne.viz.plot_topomap(subject_data_ild5deg_GLM_mean, epochs.pick('hbo').info,
+im, _ = mne.viz.plot_topomap(subject_data_ild5deg_GLM_mean, all_epochs[0].pick('hbo').info,
                       extrapolate='box', image_interp='nearest',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='RdBu_r', axes=ax3, show=False)
+                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax3, show=False)
 #cbar = fig.colorbar(im, ax=ax3)
 #cbar.set_label('Beta (a.u.)')
 ax3.set_title('GLM Beta: ild5deg')
 plt.show()
 
-im, _ = mne.viz.plot_topomap(subject_data_ild5degMag_GLM_mean, epochs.pick('hbo').info,
+im, _ = mne.viz.plot_topomap(subject_data_ild5degMag_GLM_mean, all_epochs[0].pick('hbo').info,
                       extrapolate='box', image_interp='nearest',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='RdBu_r', axes=ax4, show=False)
+                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax4, show=False)
 cbar = fig.colorbar(im, ax=ax4)
 cbar.set_label('Beta (a.u.)')
 ax4.set_title('GLM Beta: ild5degMag')
 plt.show()
 
+# ---------------------------------------------------------------
+# -----------------     Topomap of Mean HbO             ---------
+# ---------------------------------------------------------------
+caxis_min = 0
+caxis_max = 0.1
+
+fig, (ax1,ax2,ax3,ax4) = plt.subplots(1, 4)
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd50, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='box',  image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax1, show=False)
+#cbar = fig.colorbar(im, ax=ax1)
+#cbar.set_label('Beta (a.u.)')
+ax1.set_title('Mean Delta HbO: ITD50')
+plt.show()
+
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd500, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='box',  image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax2, show=False)
+#cbar = fig.colorbar(im, ax=ax2)
+#cbar.set_label('Beta (a.u.)')
+ax2.set_title('Mean Delta HbO: ITD500')
+plt.show()
+
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild5deg, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='box', image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax3, show=False)
+#cbar = fig.colorbar(im, ax=ax3)
+#cbar.set_label('Beta (a.u.)')
+ax3.set_title('Mean Delta HbO: ild5deg')
+plt.show()
+
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild5degMag, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='box', image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax4, show=False)
+cbar = fig.colorbar(im, ax=ax4)
+cbar.set_label('Mean DeltaHbO')
+ax4.set_title('Mean Delta HbO: ild5degMag')
+plt.show()
+
+
+
+# ---------------------------------------------------------------
+# -----------------     Scatterplot of Mean HbO         ---------
+# ---------------------------------------------------------------
+# Build Data Frame
+mean_hbo_all_conditions = np.stack((mean_during_stim_itd50,mean_during_stim_itd500,
+                                          mean_during_stim_ild5deg,mean_during_stim_ild5degMag),axis=0)
+
+mean_hbo_df = pd.DataFrame(columns=['MeanHbO','S','Condition'])
+conditions = ['itd50','itd500','ild5deg','ild5degMag']
+
+mean_hbo_df['MeanHbO'] = pd.Series(np.ravel(mean_hbo_all_conditions))
+
+mean_hbo_df['S'] = pd.Series(np.tile(np.array([np.repeat(isub,np.size(mean_hbo_all_conditions,axis=2)) for isub in range(len(curr_subject_ID))]).ravel(),np.size(mean_hbo_all_conditions,axis=0)))
+mean_hbo_df['Condition'] = pd.Series(np.array([np.repeat(cond,np.size(mean_hbo_all_conditions,axis=1)*np.size(mean_hbo_all_conditions,axis=2)) for cond in conditions]).ravel())
+
+fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(12, 5))
+import seaborn as sns
+sns.lineplot(x="Condition", y="MeanHbO", hue="S", data=mean_hbo_df)
+
+# ---------------------------------------------------------------
+# -----------------     Topomap of Group Block Averages ---------
+# ---------------------------------------------------------------
+conditions = ['itd=50_az=0_mag=0','itd=500_az=0_mag=0','itd=0_az=5_mag=0','itd=0_az=5_mag=1']  
+n_conditions = len(conditions)
+fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(17, 5))
+lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, 0.2])
+
+for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
+    for idx, cond in enumerate(conditions):
+        mne.viz.plot_compare_evokeds(
+            {cond: all_evokeds[cond]},
+            combine="mean",
+            picks=pick,
+            axes=axes[idx],
+            show=False,
+            colors=[color],
+            legend=False,
+            ylim=lims,
+            ci=0.95,
+        )
+        axes[idx].set_title(f"{cond}")
+axes[0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
 
 
 # ---------------------------------------------------------------

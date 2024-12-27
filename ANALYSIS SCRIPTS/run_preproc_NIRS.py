@@ -125,8 +125,8 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
         diff = np.setdiff1d(list(itertools.compress(raw_od.ch_names, sci < sci_thres)), bad_channels_total)
 
         # set the bad channels to what the two methods agree upon
-        #raw_od.info['bads'] = list(np.concatenate([agree, diff]))
-        raw_od.info['bads'] = list(itertools.compress(raw_od.ch_names, sci < sci_thres)) + list(bad_channels_total)
+        raw_od.info['bads'] = list(np.concatenate([agree, diff]))
+        #raw_od.info['bads'] = list(itertools.compress(raw_od.ch_names, sci < sci_thres)) + list(bad_channels_total)
 
 
     # ---------------------------------------------------------------

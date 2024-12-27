@@ -1,6 +1,8 @@
 % Primary Authors: Victoria Figarola, Benjamin Richardson 7/21/23
 % Secondary Authors: Emaya Anand, Maanasa Guru Adimurthy
 % EPOCHING
+
+% 'fullpilot1','fullpilot2','fullpilot3','eeg_pilot_1','eeg_pilot_4','eeg_pilot_5','eeg_pilot_6','eeg_pilot_7','eeg_pilot_8'); % char();
 subID = ['fullpilot3']; % set current subject ID
 
 % Set directories
@@ -62,7 +64,7 @@ EEG.urevent(urevents_to_remove) = [];
 
 %all epochs
 
-EEG = pop_epoch( EEG, {"31231" , "63999"}, [-1  16], 'newname', [subID, 'all epochs'], 'epochinfo', 'yes');
+EEG = pop_epoch( EEG, {"31231" , "63999"}, [0  16], 'newname', [subID, 'all epochs'], 'epochinfo', 'yes');
 
 EEG = eeg_checkset( EEG );
 [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 2, 'gui', 'off');

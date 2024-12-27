@@ -5,7 +5,17 @@
 
 BehaviorTable = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx','Format','auto');
 
-subject_ID = char('dense_nirs_3','dense_nirs_4'); % neuroimaging pilot
+subject_ID = char('fullpilot1','fullpilot2','fullpilot3','dense_nirs_3','dense_nirs_4','dense_nirs_5',...
+'dense_nirs_6',...
+'dense_nirs_7',...
+'dense_nirs_8',...
+'dense_nirs_9',... % neuroimaging pilot
+'dense_nirs_10',...
+'dense_nirs_11',...
+'dense_nirs_12',...
+'dense_nirs_13',...
+'dense_nirs_14','eeg_pilot_4');
+
 num_conditions = 8;
 min_click_times = [];
 all_click_times = [];
@@ -34,7 +44,7 @@ all_maskers = {'side=r_itd=50_az=0_mag=0_lpf=0',...
 'side=l_itd=500_az=0_mag=0_lpf=0',...
 'side=r_itd=0_az=5_mag=0_lpf=0',...
 'side=l_itd=0_az=5_mag=0_lpf=0',...
-'side=r_itd=0_az= 5_mag=1_lpf=0',...
+'side=r_itd=0_az=5_mag=1_lpf=0',...
 'side=l_itd=0_az=5_mag=1_lpf=0'};
 
 fs = 44100;
@@ -48,6 +58,13 @@ for isubject = 1:size(subject_ID,1) % For each subject...
     % Load the word times for this subject
     WordTimesTable = readtable("C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master__s_" + strtrim(string(subject_ID(isubject,:))) + "__Word_Times.csv");
 
+    for i = 1:height(WordTimesTable)
+        if contains(string(WordTimesTable(i,:).Var1),'side=r_itd=0_az= 5_mag=1_lpf=0')
+            curr_char = char(WordTimesTable(i,:).Var1);
+            WordTimesTable(i,:).Var1 = {strcat(string(curr_char(1:end-30)),'side=r_itd=0_az=5_mag=1_lpf=0')};
+        end
+    end
+
     run_count_per_condition = -1*ones(1,num_conditions); % array to keep track of which run in each condition we are on
 
     % Find the rows associated with this subject
@@ -59,17 +76,25 @@ for isubject = 1:size(subject_ID,1) % For each subject...
     all_FA_rts_this_subject = repmat(all_FA_rts_this_subject,num_conditions,1);
     distances_to_nearest_bash = [];
 
+
+
     % For each trial....
     for itrial = 1:length(rows_this_subject)
 
         this_trial_condition = BehaviorTable.Condition(rows_this_subject(itrial)); % find the condition for this trial
         this_trial_masker = BehaviorTable.masker(rows_this_subject(itrial)); % find the masker type for this trial
-%         if string(this_trial_masker) == 'side=r_itd=0_az= 5_mag=1_lpf=0'
-%             this_trial_masker = {'side=r_itd=0_az=5_mag=1_lpf=0'};
-%         end
+        
+        if string(this_trial_masker) == 'side=r_itd=0_az= 5_mag=1_lpf=0'
+            this_trial_masker = {'side=r_itd=0_az=5_mag=1_lpf=0'};
+        end
         run_count_per_condition(string(all_maskers) == string(this_trial_masker)) = run_count_per_condition(string(all_maskers) == string(this_trial_masker)) + 1;
 
         this_trial_run = run_count_per_condition(string(all_maskers) == string(this_trial_masker)); % find how many runs of this condition have happened already
+
+        
+        
+        
+        
         this_trial_click_times = table2array(BehaviorTable(rows_this_subject(itrial),8:end)); % find the click times for this trial
         this_trial_click_times(isnan(this_trial_click_times)) = []; % remove NaN from these click times
         this_trial_click_times = this_trial_click_times/1000;
@@ -92,6 +117,8 @@ for isubject = 1:size(subject_ID,1) % For each subject...
         end
         %disp(which_soundfile_this_trial)
 
+
+        
 
         this_trial_target_all = WordTimesTable(string(WordTimesTable.Var1) == append(string(which_soundfile_this_trial),"_",this_trial_masker) & string(WordTimesTable.Var3) == 'Target',4:end);
         this_trial_target_words = table2array(this_trial_target_all(:,1:2:end));
@@ -138,7 +165,7 @@ for isubject = 1:size(subject_ID,1) % For each subject...
        %% Hit and False Alarm Windows
 
        threshold_window_start = 0.1; %0.2
-       threshold_window_end =  0.8; % 1.15
+       threshold_window_end =  1; % 1.15
        tVec = 0:1/44100:10;
        hit_windows = zeros(1,length(tVec)); % create an empty array to define hit windows
        lead_hit_windows = zeros(1,length(tVec));
