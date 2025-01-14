@@ -1,4 +1,4 @@
-%% gerbilmaster_postprocessing_alltrials.m
+%% mildmaster_postprocessing_alltrials.m
 
 % Set directories
 whos_using = 'Bon';
@@ -19,7 +19,7 @@ erp_window_start_time = -50; % 100 ms before onset of word
 erp_window_end_time = 950; % 750 ms after onset of word
 nsubjects = size(curr_subject_ID,1);
 word_length = 0.3;
-frontocentral_channels = 32;% [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
+frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
 fs = 256;
 
 %% For each subject.....

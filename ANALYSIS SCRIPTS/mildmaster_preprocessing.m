@@ -5,7 +5,7 @@
 % order = preprocessing, epoch, postprocessing, multsubjects
 %-------------------------------------------------------------------------------------------------------------------
 
-subID = 'eeg_pilot_8'; % Set current subject ID
+subID = 'button_press_pilot_2'; % Set current subject ID
 % Excel sheet parameters
 range_A = 'A2'; % Excel sheet 
 range_B = 'B2';

@@ -3,7 +3,7 @@
 % EPOCHING
 
 % 'fullpilot1','fullpilot2','fullpilot3','eeg_pilot_1','eeg_pilot_4','eeg_pilot_5','eeg_pilot_6','eeg_pilot_7','eeg_pilot_8'); % char();
-subID = ['fullpilot3']; % set current subject ID
+subID = ['button_press_pilot_2']; % set current subject ID
 
 % Set directories
 whos_using = 'Bon';

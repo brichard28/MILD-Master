@@ -44,7 +44,7 @@ def main(subjectID):
 
      
     fs = 44100          # fs
-    n = 6            # # of trials
+    n = 3            # # of trials
     ntokens = 16         # # of tokens in a trial
     snr = 0
     t_path = 'C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\Online Behavior\\stim\\bashdashgash'
