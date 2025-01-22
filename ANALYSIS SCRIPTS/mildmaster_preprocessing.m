@@ -5,10 +5,10 @@
 % order = preprocessing, epoch, postprocessing, multsubjects
 %-------------------------------------------------------------------------------------------------------------------
 
-subID = 'button_press_pilot_2'; % Set current subject ID
+subID = 'mild_master_1'; % Set current subject ID
 % Excel sheet parameters
-range_A = 'A2'; % Excel sheet 
-range_B = 'B2';
+range_A = 'A1'; % Excel sheet 
+range_B = 'B1';
 badchannels = 'channelsremoved.xlsx';
 % Set directories
 whos_using = 'Bon'; % Choose user for directory stuff
@@ -68,6 +68,14 @@ fs = EEG.srate;
 [b, a] = butter(1, [1, 50] / (fs / 2));
 EEG.data = filtfilt(b, a, double(EEG.data')); 
 EEG.data = EEG.data';
+
+% 60 Hz notch
+wo = 60/(fs/2);
+bw = wo/17;
+[b,a] = iirnotch(wo,bw);
+EEG.data = filtfilt(b, a, double(EEG.data')); 
+EEG.data = EEG.data';
+
 EEG = eeg_checkset( EEG );
 [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 3,'setname',[subID, 'Bandpassed'],'gui','on');
 

@@ -13,7 +13,7 @@ elseif all(whos_using == 'Bon')
     prepro_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
 end
 
-curr_subject_ID = char('eeg_pilot_1','eeg_pilot_4','eeg_pilot_5','eeg_pilot_6','eeg_pilot_7','eeg_pilot_8'); % char();
+curr_subject_ID = char('mild_master_1','mild_master_3','mild_master_4','mild_master_5'); % char();
 % Set analysis parameters
 erp_window_start_time = -50; % 100 ms before onset of word
 erp_window_end_time = 950; % 750 ms after onset of word
@@ -36,14 +36,18 @@ for isubject = 1:size(curr_subject_ID,1)
     BehaviorTable = readtable(dir_mildmaster,'FileType','spreadsheet','Format','auto');
     rows_this_subject = find(BehaviorTable.S == strtrim(string(curr_subject_ID(isubject,:)))); % find the rows in the spreadsheet which belong to this subject
     conditions = BehaviorTable.Condition(rows_this_subject); % conditions by trial for this subject
-    condition_names = {'side=r_itd=500_az=0_mag=0_lpf=0',...
-        'side=r_itd=50_az=0_mag=0_lpf=0',...
-        'side=r_itd=0_az=5_mag=0_lpf=0',...
-        'side=l_itd=0_az=5_mag=1_lpf=0',...
-        'side=l_itd=50_az=0_mag=0_lpf=0',...
-        'side=l_itd=500_az=0_mag=0_lpf=0',...
-        'side=r_itd=0_az= 5_mag=1_lpf=0',...
-        'side=l_itd=0_az=5_mag=0_lpf=0'};
+    condition_names = {'side=l_itd=0_az_itd=0_az=5_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=0_az=15_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=5_az=0_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=0_az=5_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=0_az=15_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=15_az=0_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=5_az=0_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=15_az=0_mag=0_lpf=0'};
+    small_itd_cond = [3,7];
+    large_itd_cond = [6,8];
+    small_ild_cond = [1,4];
+    large_ild_cond = [2,5];
     this_subject_table = BehaviorTable(rows_this_subject,:);
 
     % Create empty arrays for ERPs
@@ -81,17 +85,20 @@ for isubject = 1:size(curr_subject_ID,1)
     resampled_audio_time = resampled_audio_time.*1000;
 
 
-%     [~,baseline_start_index] = min(abs(resampled_audio_time - -1));
-%     [~,baseline_end_index] = min(abs(resampled_audio_time - 0));
-%     for ichannel = 1:32
-%         these_epochs(ichannel,:,:) = these_epochs(ichannel,:,:) - mean(these_epochs(ichannel,baseline_start_index:baseline_end_index,:),'all');
-%     end
+    %     [~,baseline_start_index] = min(abs(resampled_audio_time - -1));
+    %     [~,baseline_end_index] = min(abs(resampled_audio_time - 0));
+    %     for ichannel = 1:32
+    %         these_epochs(ichannel,:,:) = these_epochs(ichannel,:,:) - mean(these_epochs(ichannel,baseline_start_index:baseline_end_index,:),'all');
+    %     end
 
     % Define time vector for extracting masker ERPs
 
     noise_thresh = 50; % 80;
-
-    for itrial = 1:size(this_EEG.data,3)% for each trial (should be 144)
+    num_trials = size(this_EEG.data,3);
+    if subID == "mild_master_2"
+        num_trials = 78;
+    end
+    for itrial = 1:num_trials% for each trial (should be 120)
         this_trial_masker = BehaviorTable.masker(rows_this_subject(itrial)); % find the masker type for this trial
         if mod(itrial,10) == 0
             disp(itrial)
@@ -182,7 +189,7 @@ for isubject = 1:size(curr_subject_ID,1)
             elseif this_trial_whether_target_lead(ionset) == 0
                 resampled_search_time = this_trial_masker_times(ionset)*1000 + audio_onset_delay;
             end
-            
+
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
@@ -310,107 +317,107 @@ for isubject = 1:size(curr_subject_ID,1)
     %all_info_target(isubject).info = ERP_info_target;
 
     % sort all data into conditions
-    itd50_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[2,5]))),3));
+    itd5_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,small_itd_cond))),3));
 
-    itd500_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[1,6]))),3));
+    itd15_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,large_itd_cond))),3));
 
-    ild5_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[3,8]))),3));
+    ild5_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,small_ild_cond))),3));
 
-    ild5mag_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,[4,7]))),3));
+    ild15_by_target_onset(isubject,:,:) = squeeze(mean(data_by_target_onset_baselined(:,:,logical(ismember(ERP_info_target(:).Condition,large_ild_cond))),3));
 
     %% ALL WORDS
     % sort lead data into conditions
-    itd50_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[2,5]))),3));
-    itd500_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[1,6]))),3));
-    ild5_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[3,8]))),3));
-    ild5mag_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[4,7]))),3));
+    itd5_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,small_itd_cond))),3));
+    itd15_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,large_itd_cond))),3));
+    ild5_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,small_ild_cond))),3));
+    ild15_by_lead_target_onset(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,large_ild_cond))),3));
 
     % sort lag data into conditions
-    itd50_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[2,5]))),3));
-    itd500_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[1,6]))),3));
-    ild5_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[3,8]))),3));
-    ild5mag_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[4,7]))),3));
+    itd5_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,small_itd_cond))),3));
+    itd15_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,large_itd_cond))),3));
+    ild5_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,small_ild_cond))),3));
+    ild15_by_lag_target_onset(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,large_ild_cond))),3));
 
     %% JUST BASH
 
-    itd50_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[2,5]).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
-    itd500_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[1,6]).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
-    ild5_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[3,8]).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
-    ild5mag_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[4,7]).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    itd5_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,small_itd_cond).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    itd15_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,large_itd_cond).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    ild5_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,small_ild_cond).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    ild15_by_lead_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,large_ild_cond).*ismember(ERP_info_lead_target(:).Word,"bash")')),3));
 
     % sort lag data into conditions
-    itd50_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[2,5]).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
-    itd500_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[1,6]).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
-    ild5_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[3,8]).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
-    ild5mag_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[4,7]).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    itd5_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,small_itd_cond).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    itd15_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,large_itd_cond).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    ild5_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,small_ild_cond).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    ild15_by_lag_target_onset_bash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,large_ild_cond).*ismember(ERP_info_lag_target(:).Word,"bash")')),3));
 
 
     %% JUST DASH, GASH
-    itd50_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[2,5]).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
-    itd500_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[1,6]).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
-    ild5_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[3,8]).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
-    ild5mag_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,[4,7]).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    itd5_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,small_itd_cond).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    itd15_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,large_itd_cond).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    ild5_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,small_ild_cond).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
+    ild15_by_lead_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lead_target_onset_baselined(:,:,logical(ismember(ERP_info_lead_target(:).Condition,large_ild_cond).*~ismember(ERP_info_lead_target(:).Word,"bash")')),3));
 
     % sort lag data into conditions
-    itd50_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[2,5]).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
-    itd500_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[1,6]).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
-    ild5_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[3,8]).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
-    ild5mag_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,[4,7]).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    itd5_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,small_itd_cond).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    itd15_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,large_itd_cond).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    ild5_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,small_ild_cond).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
+    ild15_by_lag_target_onset_dashgash(isubject,:,:) = squeeze(mean(data_by_lag_target_onset_baselined(:,:,logical(ismember(ERP_info_lag_target(:).Condition,large_ild_cond).*~ismember(ERP_info_lag_target(:).Word,"bash")')),3));
 
     %% Plot all data frontocentral erp for each subject
-%     figure;
-%     subplot(1,4,1)
-%     hold on
-%     p1 = plot(single_onset_time,squeeze(mean(itd50_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-%     p2 = plot(single_onset_time,squeeze(mean(itd50_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-%     title('50 us ITD','FontSize',18)
-%     xline(0)
-%     xline(250)
-%     legend([p1(1),p2(1)],{'Attend','Ignore'})
-%     ylim([-4,3])
-%     xlim([-100,750])
-%     xlabel('Time (ms)','FontSize',18)
-%     ylabel('Voltage (uV)','FontSize',18)
-% 
-%     subplot(1,4,2)
-%     hold on
-%     p1 = plot(single_onset_time,squeeze(mean(itd500_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-%     p2 = plot(single_onset_time,squeeze(mean(itd500_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-%     title('500 us ITD','FontSize',18)
-%     xline(0)
-%     xline(250)
-%     legend([p1(1),p2(1)],{'Attend','Ignore'})
-%     ylim([-4,3])
-%     xlim([-100,750])
-%     xlabel('Time (ms)','FontSize',18)
-% 
-%     subplot(1,4,3)
-%     hold on
-%     p1 = plot(single_onset_time,squeeze(mean(ild5_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-%     p2 = plot(single_onset_time,squeeze(mean(ild5_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-%     title('5 deg ILD','FontSize',18)
-%     xline(0)
-%     xline(250)
-%     legend([p1(1),p2(1)],{'Attend','Ignore'})
-%     ylim([-4,3])
-%     xlim([-100,750])
-%     xlabel('Time (ms)','FontSize',18)
-% 
-% 
-%     subplot(1,4,4)
-%     hold on
-%     p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-%     p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
-%     title('5 deg ILD + MAG','FontSize',18)
-%     xline(0)
-%     xline(250)
-%     legend([p1(1),p2(1)],{'Attend','Ignore'})
-%     ylim([-4,3])
-%     xlim([-100,750])
-%     xlabel('Time (ms)','FontSize',18)
-% 
-% 
-%     sgtitle(subID)
+    %     figure;
+    %     subplot(1,4,1)
+    %     hold on
+    %     p1 = plot(single_onset_time,squeeze(mean(itd5_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+    %     p2 = plot(single_onset_time,squeeze(mean(itd5_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    %     title('5 deg ITDs','FontSize',18)
+    %     xline(0)
+    %     xline(250)
+    %     legend([p1(1),p2(1)],{'Attend','Ignore'})
+    %     ylim([-4,3])
+    %     xlim([-100,750])
+    %     xlabel('Time (ms)','FontSize',18)
+    %     ylabel('Voltage (uV)','FontSize',18)
+    %
+    %     subplot(1,4,2)
+    %     hold on
+    %     p1 = plot(single_onset_time,squeeze(mean(itd15_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+    %     p2 = plot(single_onset_time,squeeze(mean(itd15_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    %     title('15 deg ITDs','FontSize',18)
+    %     xline(0)
+    %     xline(250)
+    %     legend([p1(1),p2(1)],{'Attend','Ignore'})
+    %     ylim([-4,3])
+    %     xlim([-100,750])
+    %     xlabel('Time (ms)','FontSize',18)
+    %
+    %     subplot(1,4,3)
+    %     hold on
+    %     p1 = plot(single_onset_time,squeeze(mean(ild5_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+    %     p2 = plot(single_onset_time,squeeze(mean(ild5_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    %     title('5 deg ILDs','FontSize',18)
+    %     xline(0)
+    %     xline(250)
+    %     legend([p1(1),p2(1)],{'Attend','Ignore'})
+    %     ylim([-4,3])
+    %     xlim([-100,750])
+    %     xlabel('Time (ms)','FontSize',18)
+    %
+    %
+    %     subplot(1,4,4)
+    %     hold on
+    %     p1 = plot(single_onset_time,squeeze(mean(ild15_by_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+    %     p2 = plot(single_onset_time,squeeze(mean(ild15_by_masker_onset(isubject,frontocentral_channels,:),2)),'-b');
+    %     title('15 deg ILDs','FontSize',18)
+    %     xline(0)
+    %     xline(250)
+    %     legend([p1(1),p2(1)],{'Attend','Ignore'})
+    %     ylim([-4,3])
+    %     xlim([-100,750])
+    %     xlabel('Time (ms)','FontSize',18)
+    %
+    %
+    %     sgtitle(subID)
 
     %% Plot frontocentral ERPs
     y_min = -4;
@@ -418,9 +425,9 @@ for isubject = 1:size(curr_subject_ID,1)
     figure;
     subplot(1,4,1)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd50_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd50_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('50 us ITD','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
+    title('5 deg ITDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -432,9 +439,9 @@ for isubject = 1:size(curr_subject_ID,1)
 
     subplot(1,4,2)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd500_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd500_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('500 us ITD','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
+    title('15 deg ITDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -447,7 +454,7 @@ for isubject = 1:size(curr_subject_ID,1)
     hold on
     p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
     p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD','FontSize',18)
+    title('5 deg ILDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -459,9 +466,9 @@ for isubject = 1:size(curr_subject_ID,1)
 
     subplot(1,4,4)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD + MAG','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
+    title('15 deg ILDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -479,9 +486,9 @@ for isubject = 1:size(curr_subject_ID,1)
     figure;
     subplot(1,4,1)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd50_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd50_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('50 us ITD','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
+    title('5 deg ITDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -493,9 +500,9 @@ for isubject = 1:size(curr_subject_ID,1)
 
     subplot(1,4,2)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd500_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd500_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('500 us ITD','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
+    title('15 deg ITDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -508,7 +515,7 @@ for isubject = 1:size(curr_subject_ID,1)
     hold on
     p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
     p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD','FontSize',18)
+    title('5 deg ILDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -520,9 +527,9 @@ for isubject = 1:size(curr_subject_ID,1)
 
     subplot(1,4,4)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD + MAG','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
+    title('15 deg ILDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -542,9 +549,9 @@ for isubject = 1:size(curr_subject_ID,1)
     figure;
     subplot(1,4,1)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd50_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd50_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('50 us ITD','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
+    title('5 deg ITDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -556,9 +563,9 @@ for isubject = 1:size(curr_subject_ID,1)
 
     subplot(1,4,2)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd500_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd500_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('500 us ITD','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
+    title('15 deg ITDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -571,7 +578,7 @@ for isubject = 1:size(curr_subject_ID,1)
     hold on
     p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
     p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD','FontSize',18)
+    title('5 deg ILDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -583,9 +590,9 @@ for isubject = 1:size(curr_subject_ID,1)
 
     subplot(1,4,4)
     hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5mag_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5mag_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILD + MAG','FontSize',18)
+    p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
+    p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
+    title('15 deg ILDs','FontSize',18)
     xline(0,'--r','LineWidth',2)
     xline(250,'--b','LineWidth',2)
     xline(600)
@@ -603,15 +610,15 @@ for isubject = 1:size(curr_subject_ID,1)
     [~,baseline_start_index_wholetrial] = min(abs(eeg_time + 1000));
     [~,baseline_end_index_wholetrial] = min(abs(eeg_time + 0));
     these_epochs = these_epochs - mean(these_epochs(:,baseline_start_index_wholetrial:baseline_end_index_wholetrial,:),[2,3]);
-    
+
     figure;
     %subplot(size(curr_subject_ID,1),1,isubject)
     hold on;
-    p1 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[2,5])),[1,3])); % itd 50
-    p2 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[1,6])),[1,3])); % itd 500
-    p3 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[3,8])),[1,3])); % ild 5
-    p4 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,[4,7])),[1,3])); % itd 5 + mag
-    
+    p1 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,small_itd_cond)),[1,3])); % itd 50
+    p2 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,large_itd_cond)),[1,3])); % itd 500
+    p3 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,small_ild_cond)),[1,3])); % ild 5
+    p4 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,large_ild_cond)),[1,3])); % itd 5 + mag
+
     %legend({'Scrambled','Unscrambled'})
     if isubject == size(curr_subject_ID,1)
         xlabel('Time (ms)','FontSize',18)
@@ -622,7 +629,7 @@ for isubject = 1:size(curr_subject_ID,1)
     xline(cue_dur*1000,'LineWidth',2)
     xline([this_trial_target_times, this_trial_masker_times]*1000,'LineWidth',1)
     title(subID)
-    legend([p1(1),p2(1),p3(1),p4(1)],{'ITD50','ITD500','ILD5deg','ILD5degMag'})
+    legend([p1(1),p2(1),p3(1),p4(1)],{'itd5','itd15','ILD5deg','ILD5degMag'})
 
     %% Calculate CWT spectrograms at each trial and channel
     parietooccipital_channels = 11:20;
@@ -633,206 +640,206 @@ for isubject = 1:size(curr_subject_ID,1)
     M = 128;%fs*0.4;
     window=hamming(M,'periodic');
     noverlap=floor(0.75*M);
-    
+
     Ndft=128;
     epoch_start_time = 0;
     epoch_end_time = 16;
     time_window = linspace(epoch_start_time, epoch_end_time, size(these_epochs, 2));
 
-     all_spectrograms_this_subject = nan(Ndft/2 + 1, 123, 32, size(these_epochs,3));
-     all_cwt_this_subject= cell(32,num_tot_trials);
-     freq_range= [1 50];
-%     for ichannel=1:32
-%         for itrial=1:num_tot_trials
-%             spect_sub= these_epochs(ichannel,:,itrial);
-%             %[this_spectrogram,frequencies,time_window]=spectrogram(spect_sub,window,noverlap,Ndft,fs,'yaxis');
-%             %all_spectrograms_this_subject(:,:,ichannel, itrial) = abs(this_spectrogram);
-%             [cwt_coeffs, frequencies] = cwt(spect_sub, fs, 'FrequencyLimits', freq_range);
-%             all_cwt_this_subject{ichannel,itrial}=abs(cwt_coeffs);
-%         end
-%    end
+    all_spectrograms_this_subject = nan(Ndft/2 + 1, 123, 32, size(these_epochs,3));
+    all_cwt_this_subject= cell(32,num_tot_trials);
+    freq_range= [1 50];
+    %     for ichannel=1:32
+    %         for itrial=1:num_tot_trials
+    %             spect_sub= these_epochs(ichannel,:,itrial);
+    %             %[this_spectrogram,frequencies,time_window]=spectrogram(spect_sub,window,noverlap,Ndft,fs,'yaxis');
+    %             %all_spectrograms_this_subject(:,:,ichannel, itrial) = abs(this_spectrogram);
+    %             [cwt_coeffs, frequencies] = cwt(spect_sub, fs, 'FrequencyLimits', freq_range);
+    %             all_cwt_this_subject{ichannel,itrial}=abs(cwt_coeffs);
+    %         end
+    %    end
     %% Plot  CWT spectrogram of the epoch at Frontocentral and Parietooccipital channels
 
 
     % Frontocentral
-%     fc_cwt_to_plot = [];
-%     for ichannel=1:length(frontocentral_channels)
-%         for itrial = 1:num_tot_trials
-%             fc_cwt_to_plot(:,:,ichannel,itrial) = all_cwt_this_subject{frontocentral_channels(ichannel),itrial};
-%         end
-%     end
-     cmin = 50;
-     cmax = 125;
-     plot_time_limits = [-1, 6];
-%     % Frontocentral channels
-%     figure;
-%     hold on
-%     imagesc(time_window,frequencies,squeeze(mean(fc_cwt_to_plot(:,:,:,:),[3,4])))
-%     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
-%     axis tight
-%     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
-%     %caxis([cmin,cmax])
-%     xline(0,'LineWidth',2)
-%     xline(2,'LineWidth',2)
-%     %yline(8,'LineWidth',2)
-%     %yline(12,'LineWidth',2)
-%     xlim([plot_time_limits(1),plot_time_limits(end)])
-%     title('Frontocentral Channels','FontSize',18)
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
+    %     fc_cwt_to_plot = [];
+    %     for ichannel=1:length(frontocentral_channels)
+    %         for itrial = 1:num_tot_trials
+    %             fc_cwt_to_plot(:,:,ichannel,itrial) = all_cwt_this_subject{frontocentral_channels(ichannel),itrial};
+    %         end
+    %     end
+    cmin = 50;
+    cmax = 125;
+    plot_time_limits = [-1, 6];
+    %     % Frontocentral channels
+    %     figure;
+    %     hold on
+    %     imagesc(time_window,frequencies,squeeze(mean(fc_cwt_to_plot(:,:,:,:),[3,4])))
+    %     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    %     axis tight
+    %     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %     %caxis([cmin,cmax])
+    %     xline(0,'LineWidth',2)
+    %     xline(2,'LineWidth',2)
+    %     %yline(8,'LineWidth',2)
+    %     %yline(12,'LineWidth',2)
+    %     xlim([plot_time_limits(1),plot_time_limits(end)])
+    %     title('Frontocentral Channels','FontSize',18)
+    %     xlabel('Time (s)','FontSize',18)
+    %     ylabel('Frequency (Hz)','FontSize',18)
 
     % Parietooccipital channels BROKEN UP BY ATTEND
-%     po_cwt_to_plot = [];
-%     for ichannel=1:length(parietooccipital_channels)
-%         for itrial = 1:num_tot_trials
-%             po_cwt_to_plot(:,:,ichannel,itrial) = all_cwt_this_subject{parietooccipital_channels(ichannel),itrial};
-%         end
-%     end
-% 
-% 
-% 
-%     
-%     attend_right_conditions = ismember(conditions,[1,2,3,7]);
-%     attend_left_conditions = ismember(conditions,[4,5,6,8]);
-%     figure;
-%     subplot(2,2,1) % left hemisphere, attend left
-%     imagesc(time_window,frequencies,squeeze(mean(po_cwt_to_plot(:,:,left_parietooccipital_channels - 10,ismember(conditions,attend_left_conditions)),[3,4])))
-%     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
-%     axis tight
-%     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
-%     %caxis([cmin,cmax])
-%     xline(0,'LineWidth',2)
-%     xline(2,'LineWidth',2)
-%     %yline(8,'LineWidth',2)
-%     %yline(12,'LineWidth',2)
-%     title('Left Hem. Attend Left','FontSize',18)
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-%     xlim([plot_time_limits(1),plot_time_limits(end)])
-% 
-% 
-%     subplot(2,2,2) % right hemisphere, attend left
-%     imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,right_parietooccipital_channels - 10,attend_left_conditions),[3,4])))
-%     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
-%     axis tight
-%     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
-%     %caxis([cmin,cmax])
-%     xline(0,'LineWidth',2)
-%     xline(2,'LineWidth',2)
-%     %yline(8,'LineWidth',2)
-%     %yline(12,'LineWidth',2)
-%     title('Right Hem. Attend Left','FontSize',18)
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-%     xlim([plot_time_limits(1),plot_time_limits(end)])
-% 
-% 
-%     subplot(2,2,3) % left hemisphere, attend right
-%     imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,left_parietooccipital_channels - 10,attend_right_conditions),[3,4])))
-%     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
-%     axis tight
-%     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
-%     %caxis([cmin,cmax])
-%     xline(0,'LineWidth',2)
-%     xline(2,'LineWidth',2)
-%     %yline(8,'LineWidth',2)
-%     %yline(12,'LineWidth',2)
-%     title('Left Hem. Attend Right','FontSize',18)
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-%     xlim([plot_time_limits(1),plot_time_limits(end)])
-% 
-% 
-%     subplot(2,2,4) % right hemisphere, attend right
-%     imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,right_parietooccipital_channels - 10,attend_right_conditions),[3,4])))
-%     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
-%     axis tight
-%     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
-%     %caxis([cmin,cmax])
-%     xline(0,'LineWidth',2)
-%     xline(2,'LineWidth',2)
-%     %yline(8,'LineWidth',2)
-%     %yline(12,'LineWidth',2)
-%     title('Right Hem. Attend Right','FontSize',18)
-%     xlabel('Time (s)','FontSize',18)
-%     ylabel('Frequency (Hz)','FontSize',18)
-%     xlim([plot_time_limits(1),plot_time_limits(end)])
-% 
-% 
-% 
-%     sgtitle('Parietooccipital Channels','FontSize',18)
+    %     po_cwt_to_plot = [];
+    %     for ichannel=1:length(parietooccipital_channels)
+    %         for itrial = 1:num_tot_trials
+    %             po_cwt_to_plot(:,:,ichannel,itrial) = all_cwt_this_subject{parietooccipital_channels(ichannel),itrial};
+    %         end
+    %     end
+    %
+    %
+    %
+    %
+    %     attend_right_conditions = ismember(conditions,[1,2,3,7]);
+    %     attend_left_conditions = ismember(conditions,[4,5,6,8]);
+    %     figure;
+    %     subplot(2,2,1) % left hemisphere, attend left
+    %     imagesc(time_window,frequencies,squeeze(mean(po_cwt_to_plot(:,:,left_parietooccipital_channels - 10,ismember(conditions,attend_left_conditions)),[3,4])))
+    %     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    %     axis tight
+    %     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %     %caxis([cmin,cmax])
+    %     xline(0,'LineWidth',2)
+    %     xline(2,'LineWidth',2)
+    %     %yline(8,'LineWidth',2)
+    %     %yline(12,'LineWidth',2)
+    %     title('Left Hem. Attend Left','FontSize',18)
+    %     xlabel('Time (s)','FontSize',18)
+    %     ylabel('Frequency (Hz)','FontSize',18)
+    %     xlim([plot_time_limits(1),plot_time_limits(end)])
+    %
+    %
+    %     subplot(2,2,2) % right hemisphere, attend left
+    %     imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,right_parietooccipital_channels - 10,attend_left_conditions),[3,4])))
+    %     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    %     axis tight
+    %     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %     %caxis([cmin,cmax])
+    %     xline(0,'LineWidth',2)
+    %     xline(2,'LineWidth',2)
+    %     %yline(8,'LineWidth',2)
+    %     %yline(12,'LineWidth',2)
+    %     title('Right Hem. Attend Left','FontSize',18)
+    %     xlabel('Time (s)','FontSize',18)
+    %     ylabel('Frequency (Hz)','FontSize',18)
+    %     xlim([plot_time_limits(1),plot_time_limits(end)])
+    %
+    %
+    %     subplot(2,2,3) % left hemisphere, attend right
+    %     imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,left_parietooccipital_channels - 10,attend_right_conditions),[3,4])))
+    %     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    %     axis tight
+    %     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %     %caxis([cmin,cmax])
+    %     xline(0,'LineWidth',2)
+    %     xline(2,'LineWidth',2)
+    %     %yline(8,'LineWidth',2)
+    %     %yline(12,'LineWidth',2)
+    %     title('Left Hem. Attend Right','FontSize',18)
+    %     xlabel('Time (s)','FontSize',18)
+    %     ylabel('Frequency (Hz)','FontSize',18)
+    %     xlim([plot_time_limits(1),plot_time_limits(end)])
+    %
+    %
+    %     subplot(2,2,4) % right hemisphere, attend right
+    %     imagesc(time_window,frequencies',squeeze(mean(po_cwt_to_plot(:,:,right_parietooccipital_channels - 10,attend_right_conditions),[3,4])))
+    %     set(gca,'YScale','log','YMinorTick','off','Ydir','normal')
+    %     axis tight
+    %     set(gca,'YTick',freq_range(1):1:freq_range(end),'YTickLabel',freq_range(1):1:freq_range(end))
+    %     %caxis([cmin,cmax])
+    %     xline(0,'LineWidth',2)
+    %     xline(2,'LineWidth',2)
+    %     %yline(8,'LineWidth',2)
+    %     %yline(12,'LineWidth',2)
+    %     title('Right Hem. Attend Right','FontSize',18)
+    %     xlabel('Time (s)','FontSize',18)
+    %     ylabel('Frequency (Hz)','FontSize',18)
+    %     xlim([plot_time_limits(1),plot_time_limits(end)])
+    %
+    %
+    %
+    %     sgtitle('Parietooccipital Channels','FontSize',18)
 
-     % what if I subtract the mean over the WHOLE trial (get rid of the
-     % ERP?)
-%      parietooccipital_channels = 11:20;
-%     figure;
-%     M = fs/10;
-%     window=hamming(M,'periodic');
-%     noverlap=floor(0.75*M);
-%     Ndft=128;
-%     this_data = nan(size(these_epochs));
-%     for ichannel = 1:32
-%         this_data(ichannel,:,:) = these_epochs(ichannel,:,:) - mean(these_epochs(ichannel,:,:),3);
-%     end
-%     this_data = mean(this_data(parietooccipital_channels,:,:),[1,3]);
-%     spectrogram(this_data*10e7,window,noverlap,Ndft,fs,'yaxis')
-%     ylim([0,30])
-%     xlim([0,6])
-%     xticklabels(0:1:16);
-%     curr_tick_labels = xticklabels;
-%     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
-%     caxis([0,10])
-%     xline(1,'LineWidth',2)
-%     xline(2.8,'LineWidth',2)
-%     yline(8,'LineWidth',2)
-%     yline(12,'LineWidth',2)
-%     title('Parietooccipital Channels WITH MEAN SUBTRACTED','FontSize',18)
+    % what if I subtract the mean over the WHOLE trial (get rid of the
+    % ERP?)
+    %      parietooccipital_channels = 11:20;
+    %     figure;
+    %     M = fs/10;
+    %     window=hamming(M,'periodic');
+    %     noverlap=floor(0.75*M);
+    %     Ndft=128;
+    %     this_data = nan(size(these_epochs));
+    %     for ichannel = 1:32
+    %         this_data(ichannel,:,:) = these_epochs(ichannel,:,:) - mean(these_epochs(ichannel,:,:),3);
+    %     end
+    %     this_data = mean(this_data(parietooccipital_channels,:,:),[1,3]);
+    %     spectrogram(this_data*10e7,window,noverlap,Ndft,fs,'yaxis')
+    %     ylim([0,30])
+    %     xlim([0,6])
+    %     xticklabels(0:1:16);
+    %     curr_tick_labels = xticklabels;
+    %     xticklabels(string(str2double(string(curr_tick_labels)) - 1));
+    %     caxis([0,10])
+    %     xline(1,'LineWidth',2)
+    %     xline(2.8,'LineWidth',2)
+    %     yline(8,'LineWidth',2)
+    %     yline(12,'LineWidth',2)
+    %     title('Parietooccipital Channels WITH MEAN SUBTRACTED','FontSize',18)
 
 
     %% Whole Trial topoplot
-%     figure;
-%     hold on
-%     cmin = -3;
-%     cmax = 3;
-%     fs = 256;
-% 
-%     topoplot_indices = round(0:0.25*fs:(((13000)/1000)*fs));
-%     topoplot_indices(1) = 1;
-%     topoplot_times = -1000:250:13000;
-% 
-%     iplot = 1;
-% 
-%     itime = 1;
-%     for itopo = topoplot_indices
-%         subplot(4,round((length(topoplot_indices))/4),iplot);
-%         this_data = mean(these_epochs(:,itopo,:), [2,3]);
-%         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
-%         title([num2str(topoplot_times(itime)),' ms'])
-%         iplot = iplot + 1;
-%         itime = itime + 1;
-%     end
-% 
-%     sgtitle(subID)
-% 
-% 
-% 
-%     %button press time trace at Cz, Fz, and Pz
-%     figure;
-%     subplot(3,1,1)
-%     this_data = mean(all_data_button_press(:,32,:),2);
-%     plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
-%     title('Button Press Cz','FontSize',18)
-%     ylim([-3,4])
-%     subplot(3,1,2)
-%     this_data = mean(all_data_button_press(:,31,:),2);
-%     plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
-%     title('Button Press Fz','FontSize',18)
-%     ylim([-3,4])
-%     subplot(3,1,3)
-%     this_data = mean(all_data_button_press(:,13,:),2);
-%     plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
-%     title('Button Press Pz','FontSize',18)
-%     ylim([-3,4])
+    %     figure;
+    %     hold on
+    %     cmin = -3;
+    %     cmax = 3;
+    %     fs = 256;
+    %
+    %     topoplot_indices = round(0:0.25*fs:(((13000)/1000)*fs));
+    %     topoplot_indices(1) = 1;
+    %     topoplot_times = -1000:250:13000;
+    %
+    %     iplot = 1;
+    %
+    %     itime = 1;
+    %     for itopo = topoplot_indices
+    %         subplot(4,round((length(topoplot_indices))/4),iplot);
+    %         this_data = mean(these_epochs(:,itopo,:), [2,3]);
+    %         topoplot(this_data,this_EEG.chanlocs,'maplimits',[cmin, cmax]);
+    %         title([num2str(topoplot_times(itime)),' ms'])
+    %         iplot = iplot + 1;
+    %         itime = itime + 1;
+    %     end
+    %
+    %     sgtitle(subID)
+    %
+    %
+    %
+    %     %button press time trace at Cz, Fz, and Pz
+    %     figure;
+    %     subplot(3,1,1)
+    %     this_data = mean(all_data_button_press(:,32,:),2);
+    %     plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
+    %     title('Button Press Cz','FontSize',18)
+    %     ylim([-3,4])
+    %     subplot(3,1,2)
+    %     this_data = mean(all_data_button_press(:,31,:),2);
+    %     plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
+    %     title('Button Press Fz','FontSize',18)
+    %     ylim([-3,4])
+    %     subplot(3,1,3)
+    %     this_data = mean(all_data_button_press(:,13,:),2);
+    %     plot(single_onset_time_buttonpress,squeeze(mean(this_data,1)),'-k')
+    %     title('Button Press Pz','FontSize',18)
+    %     ylim([-3,4])
 
 
 

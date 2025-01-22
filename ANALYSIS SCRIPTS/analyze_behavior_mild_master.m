@@ -6,7 +6,7 @@
 BehaviorTable = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx','Format','auto');
 
 %subject_ID = char('itd_pilot1','itd_pilot2','itd_pilot3','itdpilot_4_5','itd_pilot5'); % itd pilot
-subject_ID = char('ildpilot1','ildpilot2');
+subject_ID = char('mild_master_1','mild_master_3','mild_master_4','mild_master_5');
 num_conditions = 8;
 
 all_hits = zeros(size(subject_ID,1),num_conditions);
@@ -24,14 +24,15 @@ all_num_masker_bash = zeros(size(subject_ID,1),num_conditions);
 % 'side=r_itd=50_az=0_mag=0',...
 % 'side=l_itd=400_az=0_mag=0'}; % itd pilot
 
-all_maskers = {'side=r_itd=0_az=10_mag=1',...
-'side=l_itd=0_az=10_mag=0',...
-'side=l_itd=0_az=10_mag=1',...
-'side=l_itd=0_az=60_mag=0',...
-'side=r_itd=0_az=60_mag=1',...
-'side=r_itd=0_az=60_mag=0',...
-'side=r_itd=0_az=10_mag=0',...
-'side=l_itd=0_az=60_mag=1'}; % ild pilot
+% all_maskers = {'side=r_itd=0_az=10_mag=1',...
+% 'side=l_itd=0_az=10_mag=0',...
+% 'side=l_itd=0_az=10_mag=1',...
+% 'side=l_itd=0_az=60_mag=0',...
+% 'side=r_itd=0_az=60_mag=1',...
+% 'side=r_itd=0_az=60_mag=0',...
+% 'side=r_itd=0_az=10_mag=0',...
+% 'side=l_itd=0_az=60_mag=1'}; % ild pilot
+
 
 fs = 44100;
 cue_dur = 1.5;
@@ -50,8 +51,26 @@ for isubject = 1:size(subject_ID,1) % For each subject...
     rows_this_subject = find(BehaviorTable.S == strtrim(string(subject_ID(isubject,:))));
 
 
+    all_maskers = {'side=l_itd=0_az_itd=0_az=5_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=0_az=15_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=5_az=0_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=0_az=5_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=0_az=15_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=15_az=0_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=5_az=0_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=15_az=0_mag=0_lpf=0'};
+    small_itd_cond = [3,7];
+    large_itd_cond = [6,8];
+    small_ild_cond = [1,4];
+    large_ild_cond = [2,5];
+
     % For each trial....
     for itrial = 1:length(rows_this_subject)
+
+
+        if mod(itrial,10) == 0
+            disp(itrial)
+        end
 
         this_trial_condition = BehaviorTable.Condition(rows_this_subject(itrial)); % find the condition for this trial
         this_trial_masker = BehaviorTable.masker(rows_this_subject(itrial)); % find the masker type for this trial
@@ -92,18 +111,18 @@ for isubject = 1:size(subject_ID,1) % For each subject...
         % Store number of color words in the target and masker
         all_num_target_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_target_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_target_words == "bash");
         all_num_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_masker_words == "bash");
-        
+
         % Find just color times in target and masker
         this_trial_target_bash_times = this_trial_target_times(this_trial_target_words == "bash");
         this_trial_masker_bash_times = this_trial_masker_times(this_trial_masker_words == "bash");
-      
-       %% Hit and False Alarm Windows
 
-       threshold_window_start = 0.2; %0.2
-       threshold_window_end =  0.8; % 1.0
-       tVec = 0:1/44100:16;
-       hit_windows = zeros(1,length(tVec)); % create an empty array to define hit windows
-       FA_windows = zeros(1,length(tVec)); % create an empty array to define false alarm windows
+        %% Hit and False Alarm Windows
+
+        threshold_window_start = 0.2; %0.2
+        threshold_window_end =  1.0; % 1.0
+        tVec = 0:1/44100:16;
+        hit_windows = zeros(1,length(tVec)); % create an empty array to define hit windows
+        FA_windows = zeros(1,length(tVec)); % create an empty array to define false alarm windows
 
         % specify hit windows
         for i = 1:length(this_trial_target_bash_times) % for each of the current target color times...
@@ -144,37 +163,39 @@ for isubject = 1:size(subject_ID,1) % For each subject...
 
         % associate it with the correct condition
 
-        
+
     end
 
-disp(append(string(subject_ID(isubject,:)),': ', num2str((clicks_not_counted/total_clicks)*100), '% of clicks not counted'))
+    disp(append(string(subject_ID(isubject,:)),': ', num2str((clicks_not_counted/total_clicks)*100), '% of clicks not counted'))
 end
 
 %% NEW ORDER = itd50 noise, itd500 noise, ildnat noise, ild10 noise, itd50 speech, itd500 speech, ildnat speech, ild10 speech
+
+
 all_hits_collapsed_left_and_right = [];
-all_hits_collapsed_left_and_right(1,:) = sum(all_hits(:,[2,7]),2); % itd50 / ild10
-all_hits_collapsed_left_and_right(2,:) = sum(all_hits(:,[1,3]),2); % itd100 / ild10mag
-all_hits_collapsed_left_and_right(3,:) = sum(all_hits(:,[4,6]),2); % itd200 /ild60
-all_hits_collapsed_left_and_right(4,:) = sum(all_hits(:,[5,8]),2); % itd400 / ild60mag
+all_hits_collapsed_left_and_right(1,:) = sum(all_hits(:,small_itd_cond),2); % itd50 / ild10
+all_hits_collapsed_left_and_right(2,:) = sum(all_hits(:,large_itd_cond),2); % itd100 / ild10mag
+all_hits_collapsed_left_and_right(3,:) = sum(all_hits(:,small_ild_cond),2); % itd200 /ild60
+all_hits_collapsed_left_and_right(4,:) = sum(all_hits(:,large_ild_cond),2); % itd400 / ild60mag
 
 all_FAs_collapsed_left_and_right = [];
-all_FAs_collapsed_left_and_right(1,:) = sum(all_FAs(:,[2,7]),2); % itd50 / ild10
-all_FAs_collapsed_left_and_right(2,:) = sum(all_FAs(:,[1,3]),2); % itd100 / ild10mag
-all_FAs_collapsed_left_and_right(3,:) = sum(all_FAs(:,[4,6]),2); % itd200 /ild60
-all_FAs_collapsed_left_and_right(4,:) = sum(all_FAs(:,[5,8]),2); % itd400 / ild60mag
+all_FAs_collapsed_left_and_right(1,:) = sum(all_FAs(:,small_itd_cond),2); % itd5
+all_FAs_collapsed_left_and_right(2,:) = sum(all_FAs(:,large_itd_cond),2); % itd15
+all_FAs_collapsed_left_and_right(3,:) = sum(all_FAs(:,small_ild_cond),2); % ild5
+all_FAs_collapsed_left_and_right(4,:) = sum(all_FAs(:,large_ild_cond),2); % ild15
 
 all_num_target_bash_collapsed_left_and_right = [];
-all_num_target_bash_collapsed_left_and_right(1,:) = sum(all_num_target_bash(:,[2,7]),2); % itd50 / ild10
-all_num_target_bash_collapsed_left_and_right(2,:) = sum(all_num_target_bash(:,[1,3]),2); % itd100 / ild10mag
-all_num_target_bash_collapsed_left_and_right(3,:) = sum(all_num_target_bash(:,[4,6]),2); % itd200 /ild60
-all_num_target_bash_collapsed_left_and_right(4,:) = sum(all_num_target_bash(:,[5,8]),2); % itd400 / ild60mag
+all_num_target_bash_collapsed_left_and_right(1,:) = sum(all_num_target_bash(:,small_itd_cond),2); % itd50 / ild10
+all_num_target_bash_collapsed_left_and_right(2,:) = sum(all_num_target_bash(:,large_itd_cond),2); % itd100 / ild10mag
+all_num_target_bash_collapsed_left_and_right(3,:) = sum(all_num_target_bash(:,small_ild_cond),2); % itd200 /ild60
+all_num_target_bash_collapsed_left_and_right(4,:) = sum(all_num_target_bash(:,large_ild_cond),2); % itd400 / ild60mag
 
 
 all_num_masker_bash_collapsed_left_and_right = [];
-all_num_masker_bash_collapsed_left_and_right(1,:) = sum(all_num_masker_bash(:,[2,7]),2); % itd50 / ild10
-all_num_masker_bash_collapsed_left_and_right(2,:) = sum(all_num_masker_bash(:,[1,3]),2); % itd100 / ild10mag
-all_num_masker_bash_collapsed_left_and_right(3,:) = sum(all_num_masker_bash(:,[4,6]),2); % itd200 /ild60
-all_num_masker_bash_collapsed_left_and_right(4,:) = sum(all_num_masker_bash(:,[5,8]),2); % itd400 / ild60mag
+all_num_masker_bash_collapsed_left_and_right(1,:) = sum(all_num_masker_bash(:,small_itd_cond),2); % itd50 / ild10
+all_num_masker_bash_collapsed_left_and_right(2,:) = sum(all_num_masker_bash(:,large_itd_cond),2); % itd100 / ild10mag
+all_num_masker_bash_collapsed_left_and_right(3,:) = sum(all_num_masker_bash(:,small_ild_cond),2); % itd200 /ild60
+all_num_masker_bash_collapsed_left_and_right(4,:) = sum(all_num_masker_bash(:,large_ild_cond),2); % itd400 / ild60mag
 
 all_hit_rates = all_hits./all_num_target_bash;
 all_hit_rates_collapsed = all_hits_collapsed_left_and_right./all_num_target_bash_collapsed_left_and_right;
@@ -192,35 +213,31 @@ all_FA_rates_collapsed(all_FA_rates_collapsed == 0) = 0.001;
 %% D-prime calculation
 d_primes_all = norminv(all_hit_rates) - norminv(all_FA_rates);
 d_primes_collapsed = [];
-d_primes_collapsed(1,:) = mean(d_primes_all(:,[2,7]),2); % itd50 / ild10
-d_primes_collapsed(2,:) = mean(d_primes_all(:,[1,3]),2); % itd100 / ild10mag
-d_primes_collapsed(3,:) = mean(d_primes_all(:,[4,6]),2); % itd200 /ild60
-d_primes_collapsed(4,:) = mean(d_primes_all(:,[5,8]),2); % itd400 / ild60mag
+d_primes_collapsed(1,:) = mean(d_primes_all(:,small_itd_cond),2); % itd50 / ild10
+d_primes_collapsed(2,:) = mean(d_primes_all(:,large_itd_cond),2); % itd100 / ild10mag
+d_primes_collapsed(3,:) = mean(d_primes_all(:,small_ild_cond),2); % itd200 /ild60
+d_primes_collapsed(4,:) = mean(d_primes_all(:,large_ild_cond),2); % itd400 / ild60mag
 
 figure;
 subplot(1,3,1)
 plot(1:4,d_primes_collapsed,'-o')
-title("d'")
+ylabel("d'",'FontSize',18)
 %xticklabels({'50','100','200','400'})
-xticklabels({'10deg','10degMag','60deg','60degMag'})
-%xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
+xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
 subplot(1,3,2)
 plot(1:4,all_hit_rates_collapsed,'-o')
 ylim([0 1])
-title('Hit Rate')
+ylabel('Hit Rate','FontSize',18)
 %xticklabels({'50','100','200','400'})
-xticklabels({'10deg','10degMag','60deg','60degMag'})
+xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
 subplot(1,3,3)
 plot(1:4,all_FA_rates_collapsed,'-o')
 ylim([0 1])
-title('FA Rate')
+ylabel('FA Rate','FontSize',18)
 %xticklabels({'50','100','200','400'})
-xticklabels({'10deg','10degMag','60deg','60degMag'})
+xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
 %xlabel('ITD (us)')
-xlabel('Natural ILD (deg)')
 %% Save data
 save('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER_Behavior_Results.mat','d_primes_collapsed','d_primes_collapsed','all_hit_rates_collapsed','all_FA_rates_collapsed')
 

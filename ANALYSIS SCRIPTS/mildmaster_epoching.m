@@ -3,7 +3,7 @@
 % EPOCHING
 
 % 'fullpilot1','fullpilot2','fullpilot3','eeg_pilot_1','eeg_pilot_4','eeg_pilot_5','eeg_pilot_6','eeg_pilot_7','eeg_pilot_8'); % char();
-subID = ['button_press_pilot_2']; % set current subject ID
+subID = ['mild_master_5']; % set current subject ID
 
 % Set directories
 whos_using = 'Bon';
@@ -62,7 +62,21 @@ end
 EEG.event(events_to_remove) = [];
 EEG.urevent(urevents_to_remove) = [];
 
-%all epochs
+
+%% epoch trigger for button press, save data
+if ~ismember(subID,{'mild_master_2'})
+    % take the first trigger (10 min before)
+    index_button_press_start = EEG.event(1).latency;
+    button_press_data = EEG.data(:,index_button_press_start:index_button_press_start + (10*60*EEG.srate));
+    save(append(subID,"_button_press_data.mat"),'button_press_data','index_button_press_start');
+
+    % remove triggers
+    EEG.event(1) = [];
+    EEG.urevent(1) = [];
+end
+
+
+%% all epochs
 
 EEG = pop_epoch( EEG, {"31231" , "63999"}, [0  16], 'newname', [subID, 'all epochs'], 'epochinfo', 'yes');
 

@@ -228,45 +228,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
         events, event_dict = mne.events_from_annotations(data, verbose=False)
         
         #fig = mne.viz.plot_events(events, event_id=event_dict, sfreq=data.info["sfreq"])
-    
-        if subject == 'dense_nirs_10':
-            # Sources for short channels, 2,5,7,10,13,16,22,23
-            channels_to_drop = ['S1_D22 760',
-             'S1_D22 850',
-             'S3_D24 760',
-             'S3_D24 850',
-             'S4_D25 760',
-             'S4_D25 850',
-             'S6_D27 760',
-             'S6_D27 850',
-             'S8_D29 760',
-             'S8_D29 850',
-             'S9_D30 760',
-             'S9_D30 850',
-             'S11_D32 760',
-             'S11_D32 850',
-             'S12_D33 760',
-             'S12_D33 850',
-             'S14_D35 760',
-             'S14_D35 850',
-             'S15_D36 760',
-             'S15_D36 850',
-             'S17_D38 760',
-             'S17_D38 850',
-             'S18_D39 760',
-             'S18_D39 850',
-             'S19_D40 760',
-             'S19_D40 850',
-             'S20_D41 760',
-             'S20_D41 850',
-             'S21_D42 760',
-             'S21_D42 850',
-             'S24_D45 760',
-             'S24_D45 850']
-            
-            data.drop_channels(channels_to_drop)
-            data_snirf.drop_channels(channels_to_drop)
-            
+
         
         raw_haemo_temp, null = preprocess_NIRX(data, data_snirf, event_dict,
                                                save=True,
