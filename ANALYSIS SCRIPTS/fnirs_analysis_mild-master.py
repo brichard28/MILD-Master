@@ -7,8 +7,6 @@ Created on Wed Oct  9 19:47:20 2024
 
 import numpy as np
 import mne
-import pickle
-import matplotlib
 import math
 # matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
@@ -18,7 +16,6 @@ from collections import defaultdict
 
 mne.set_config('MNE_BROWSER_BACKEND', 'qt')
 #from nirx_movement import mark_aux_movement_bad
-import mne_nirs
 from mne_nirs.experimental_design import make_first_level_design_matrix
 from mne_nirs.statistics import run_glm
 from mne_nirs.channels import (get_long_channels,
@@ -28,6 +25,9 @@ from nilearn.plotting import plot_design_matrix
 from run_preproc_NIRS import preprocess_NIRX
 from mne_nirs.io.snirf import read_snirf_aux_data
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from mne_nirs.channels import picks_pair_to_idx
+from mne_nirs.visualisation import plot_glm_group_topo
+
 #from scipy import signal
 from scipy import stats
 
@@ -52,40 +52,131 @@ data_root = 'C:/Users/benri/Downloads/'
 
 # Define Subject Files
 root = ''
-user = 'Laptop'
+user = 'Noptop'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
 else:
-    data_root = '/home/ben/Nextcloud/data/nirs/data/'
-    
-all_fnirs_data_folders = [data_root + '2025-01-16/2025-01-16_001',
-                          data_root + '2025-01-20/2025-01-20_001',
-                          data_root + '2025-01-20/2025-01-20_002',
-                          data_root + '2025-01-20/2025-01-20_003']
+    data_root = 'D:\\Downloads\\'
+
+all_fnirs_data_folders = [data_root + "2025-01-16/2025-01-16_001",
+data_root + "2025-01-20/2025-01-20_001",
+data_root + "2025-01-20/2025-01-20_002",
+data_root + "2025-01-20/2025-01-20_003",
+data_root + "2025-01-21/2025-01-21_001",
+data_root + "2025-01-21/2025-01-21_002",
+data_root + "2025-01-22/2025-01-22_001",
+data_root + "2025-01-22/2025-01-22_002",
+data_root + "2025-01-23/2025-01-23_001",
+data_root + "2025-01-24/2025-01-24_001",
+data_root + "2025-01-24/2025-01-24_002",
+data_root + "2025-01-24/2025-01-24_003",
+data_root + "2025-01-27/2025-01-27_003",
+data_root + "2025-01-29/2025-01-29_001",
+data_root + "2025-01-29/2025-01-29_001",
+data_root + "2025-01-30/2025-01-30_001",
+data_root + "2025-01-30/2025-01-30_002",
+data_root + "2025-02-04/2025-02-04_001",
+data_root + "2025-02-05/2025-02-05_001",
+data_root + "2025-02-05/2025-02-05_002",
+data_root + "2025-02-06/2025-02-06_001",
+data_root + "2025-02-06/2025-02-06_002",
+data_root + "2025-02-10/2025-02-10_001",
+data_root + "2025-02-12/2025-02-12_001",
+data_root + "2025-02-13/2025-02-13_001",
+data_root + "2025-02-13/2025-02-13_002",
+data_root + "2025-02-18/2025-02-18_001",                                                                                                            
+data_root + "2025-02-19/2025-02-19_001",
+data_root + "2025-02-19/2025-02-19_002",
+data_root + "2025-02-20/2025-02-20_001",
+data_root + "2025-02-20/2025-02-20_002",
+data_root + "2025-02-24/2025-02-24_001",
+data_root + "2025-02-24/2025-02-24_002"]
 
 # All subject IDs
-subject_ID = ['mild_master_1','mild_master_3','mild_master_4','mild_master_5']
+subject_ID = ['mild_master_1',
+'mild_master_3',
+'mild_master_4',
+'mild_master_5',
+'mild_master_7',
+'mild_master_6',
+'mild_master_8',
+'mild_master_9',
+'mild_master_10',
+'mild_master_11',
+'mild_master_12',
+'mild_master_13',
+'mild_master_14',
+'mild_master_15',
+'mild_master_16',
+'mild_master_17',
+'mild_master_18',
+'mild_master_19',
+'mild_master_20',
+'mild_master_21',
+'mild_master_22',
+'mild_master_23',
+'mild_master_24',
+'mild_master_25',
+'mild_master_26',
+'mild_master_27',
+'mild_master_28',
+'mild_master_29',
+'mild_master_30',
+'mild_master_31',
+'mild_master_32',
+'mild_master_33',
+'mild_master_34']
 
 
 # The subjects we would like to run right now
-curr_subject_ID = ['mild_master_3','mild_master_4','mild_master_5']
+curr_subject_ID = ['mild_master_1',
+'mild_master_3',
+'mild_master_4',
+'mild_master_5',
+'mild_master_6',
+'mild_master_8',
+'mild_master_9',
+'mild_master_10',
+'mild_master_11',
+'mild_master_12',
+'mild_master_14',
+'mild_master_15',
+'mild_master_16',
+'mild_master_17',
+'mild_master_18',
+'mild_master_19',
+'mild_master_20',
+'mild_master_22',
+'mild_master_23',
+'mild_master_24',
+'mild_master_25',
+'mild_master_26',
+'mild_master_27',
+'mild_master_28',
+'mild_master_29',
+'mild_master_30',
+'mild_master_31',
+'mild_master_32',
+'mild_master_33',
+'mild_master_34']
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
 masker_type = 'speech' # type of masker to analyze on this run
-glm_dur = 4.8
+glm_dur = 5
 
 n_subjects = len(curr_subject_ID)
 
 n_long_channels = 101
 fs = 6.8
-tmin, tmax = -5, 26
+tmin, tmax = -2, 16
 n_timepoints = math.ceil((tmax - tmin)*fs)
 task_type = 'Ben_SvN'
 
 
+all_subjects_bad_channels = []
 
 # set up the arrays to hold all subject data
 subject_data_itd5 = np.full((n_subjects, n_long_channels, n_timepoints), np.nan)
@@ -175,22 +266,42 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -----------------      Preprocess the Data            ---------
     # ---------------------------------------------------------------  
-    data.annotations.rename({'5.0':	'az_itd=0_az=5',
-'6.0':	'az_itd=0_az=15',
-'7.0':	'az_itd=5_az=0',
-'8.0':	'az_itd=0_az=5',
-'9.0':	'az_itd=0_az=15',
-'10.0':	'az_itd=15_az=0',
-'11.0':	'az_itd=5_az=0',
-'12.0':	'az_itd=15_az=0'})
-    data_snirf.annotations.rename({'5':	'az_itd=0_az=5',
-'6':	'az_itd=0_az=15',
-'7':	'az_itd=5_az=0',
-'8':	'az_itd=0_az=5',
-'9':	'az_itd=0_az=15',
-'10':	'az_itd=15_az=0',
-'11':	'az_itd=5_az=0',
-'12':	'az_itd=15_az=0'})
+    
+    if subject != "mild_master_1":
+        data.annotations.rename({'5.0':	'az_itd=0_az=5',
+    '6.0':	'az_itd=0_az=15',
+    '7.0':	'az_itd=5_az=0',
+    '8.0':	'az_itd=0_az=5',
+    '9.0':	'az_itd=0_az=15',
+    '10.0':	'az_itd=15_az=0',
+    '11.0':	'az_itd=5_az=0',
+    '12.0':	'az_itd=15_az=0'})
+        data_snirf.annotations.rename({'5':	'az_itd=0_az=5',
+    '6':	'az_itd=0_az=15',
+    '7':	'az_itd=5_az=0',
+    '8':	'az_itd=0_az=5',
+    '9':	'az_itd=0_az=15',
+    '10':	'az_itd=15_az=0',
+    '11':	'az_itd=5_az=0',
+    '12':	'az_itd=15_az=0'})
+    else:
+        data.annotations.rename({'4.0':	'az_itd=0_az=5',
+    '5.0':	'az_itd=0_az=15',
+    '6.0':	'az_itd=5_az=0',
+    '7.0':	'az_itd=0_az=5',
+    '8.0':	'az_itd=0_az=15',
+    '9.0':	'az_itd=15_az=0',
+    '10.0':	'az_itd=5_az=0',
+    '11.0':	'az_itd=15_az=0'})
+        data_snirf.annotations.rename({'4':	'az_itd=0_az=5',
+    '5':	'az_itd=0_az=15',
+    '6':	'az_itd=5_az=0',
+    '7':	'az_itd=0_az=5',
+    '8':	'az_itd=0_az=15',
+    '9':	'az_itd=15_az=0',
+    '10':	'az_itd=5_az=0',
+    '11':	'az_itd=15_az=0'})
+        
     
     # Trying out shifting the trigger to the stim onset (rather than cue)
     #cue_dur = 1.8
@@ -203,6 +314,11 @@ for ii, subject_num in enumerate(range(n_subjects)):
     
     if preprocessing_type == "Eli":
         events, event_dict = mne.events_from_annotations(data, verbose=False)
+        
+        if subject != "mild_master_5":
+            this_sub_short_regression = True
+        else:
+            this_sub_short_regression = False
     
         raw_haemo_temp, null = preprocess_NIRX(data, data_snirf, event_dict,
                                                save=True,
@@ -210,11 +326,14 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                                plot_steps=False,
                                                crop=False, crop_low=0, crop_high=0,
                                                events_modification=False, reject=True,
-                                               short_regression=False, events_from_snirf=False,
+                                               short_regression=this_sub_short_regression, events_from_snirf=False,
                                                drop_short=False, negative_enhancement=False,
-                                               snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
+                                               snr_thres=1.5, sci_thres=0.6, filter_type='iir', filter_limits=[0.01,0.3])
     
-        raw_haemo_short = get_short_channels(raw_haemo_temp)
+        
+        if subject != "mild_master_5":
+            raw_haemo_short = get_short_channels(raw_haemo_temp)
+
         raw_haemo_filt = get_long_channels(raw_haemo_temp)
         
         # extra_regressors = aux_snirf.reset_index(drop=True)
@@ -263,21 +382,21 @@ for ii, subject_num in enumerate(range(n_subjects)):
         
         
         num_channels_removed[ii] = len(list(raw_haemo_filt.info['bads']))/2
-        age[ii] = 2024 - data.info['subject_info']['birthday'][0]
+        age[ii] = 2025 - data.info['subject_info']['birthday'][0]
         sex[ii] = data.info['subject_info']['sex']
 
 
     # ---------------------------------------------------------------
     # -------------               Epoching                  ---------
     # ---------------------------------------------------------------
-    reject_criteria = dict(hbo=5e-6)#5e-6
+    reject_criteria = None #dict(hbo=20e-6)#5e-6
     #flat_criteria = dict(hbo=0.05e-6)
     
 
     epochs = mne.Epochs(raw_haemo_filt, events,  # events_block,
                         event_id=event_dict,  # event_dict_total,
                         tmin=tmin, tmax=tmax,
-                        baseline= None, # (-5, 0)
+                        baseline= (tmin, 0),
                         reject = reject_criteria,
                        # flat = flat_criteria,
                         preload=True, detrend=None, verbose=True,
@@ -301,14 +420,16 @@ for ii, subject_num in enumerate(range(n_subjects)):
     vlim = 0.2
     n_conditions = 1
     fig = plt.figure(figsize=(8, 5), dpi=200)
+    
+    epochs_colors = ['r','g','b','y']
 
     for i, cond in enumerate(conditions):
         evoked_hbo[i] = epochs[cond].copy().average(picks='hbo')
         evoked_hbo_error[i] = epochs[cond].copy().standard_error(picks='hbo')
         evoked_hbr[i] = epochs[cond].copy().average(picks='hbr')
         evoked_hbr_error[i] = epochs[cond].copy().standard_error(picks='hbr')
-        fig = plot_nirs_evoked_error(fig, evoked_hbo[i], evoked_hbo_error[i],
-                                      colour='r', ylim=[-vlim, vlim])
+        # fig = plot_nirs_evoked_error(fig, evoked_hbo[i], evoked_hbo_error[i],
+        #                               colour=epochs_colors[i], ylim=[-vlim, vlim])
         # fig = plot_nirs_evoked_error(fig, evoked_hbr[i], evoked_hbr_error[i],
         #                      colour='b', ylim=[-vlim, vlim], add_legend=True)
         
@@ -478,6 +599,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
     raw_haemo_filt_for_glm = get_long_channels(raw_haemo_filt).copy()
     
     # drop bad channels from glm
+    all_subjects_bad_channels.append([epochs.copy().info['bads']])
+    
     raw_haemo_filt_for_glm.drop_channels(epochs.copy().info['bads'])
 
     raw_haemo_filt_for_glm.annotations.set_durations(glm_dur)
@@ -488,7 +611,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                                         drift_model=None,
                                                         high_pass=0.01,  # Must be specified per experiment
                                                         hrf_model='spm',
-                                                        stim_dur=raw_haemo_filt.annotations.duration)
+                                                        stim_dur=glm_dur)
     # # add_regs=filtered_signals)
 
     design_matrix_hbo["Linear"] = np.arange(0, np.shape(design_matrix_hbo)[0])
@@ -498,32 +621,32 @@ for ii, subject_num in enumerate(range(n_subjects)):
     min_max_scaler = MinMaxScaler()
     X_minmax = min_max_scaler.fit_transform(design_matrix_hbo)
     design_matrix_min_max = pd.DataFrame(X_minmax, columns=design_matrix_hbo.columns.tolist())
-    if False:
-    # plotting optional
-        fig, ax1 = plt.subplots(figsize=(10, 6), nrows=1, ncols=1)
-        ax_img = plot_design_matrix(design_matrix_min_max, ax=ax1)
-        plt.show()
+    # if False:
+    # # plotting optional
+    #     fig, ax1 = plt.subplots(figsize=(10, 6), nrows=1, ncols=1)
+    #     ax_img = plot_design_matrix(design_matrix_min_max, ax=ax1)
+    #     plt.show()
     
-        s = mne_nirs.experimental_design.create_boxcar(raw_haemo_filt, stim_dur=glm_dur)
-        fig, ax2 = plt.subplots(figsize=(10, 6), nrows=1, ncols=1)
-        plt.plot(raw_haemo_filt.times[0:2000], s[0:2000, 3])
-        plt.plot(design_matrix_hbo['itd=500_az=0_mag=0'])
-        plt.legend(["Stimulus", "Expected Response"])
-        plt.xlabel("Time (s)")
-        plt.ylabel("Amplitude")
-        plt.show()
+    #     s = mne_nirs.experimental_design.create_boxcar(raw_haemo_filt, stim_dur=glm_dur)
+    #     fig, ax2 = plt.subplots(figsize=(10, 6), nrows=1, ncols=1)
+    #     plt.plot(raw_haemo_filt.times[0:2000], s[0:2000, 3])
+    #     plt.plot(design_matrix_hbo['itd=500_az=0_mag=0'])
+    #     plt.legend(["Stimulus", "Expected Response"])
+    #     plt.xlabel("Time (s)")
+    #     plt.ylabel("Amplitude")
+    #     plt.show()
 
     # print(f'running GLM for subject {ii + 1}')
 
     # pre-whiten
     raw_haemo_filt_for_glm._data = np.subtract(raw_haemo_filt_for_glm._data,
-                                            np.mean(raw_haemo_filt_for_glm._data, axis=1)[:, np.newaxis])
+                                            np.nanmean(raw_haemo_filt_for_glm._data, axis=1)[:, np.newaxis])
     glm_est = run_glm(raw_haemo_filt_for_glm, design_matrix_hbo, noise_model='ar1')
 
     # record the glm est for each condition, for each subject
     # will adjust the beta values by the BH correction method
 
-    glm_est_df = glm_est.pick(picks='data', exclude='bads').to_dataframe()
+    glm_est_df = glm_est.pick(picks='data').to_dataframe()
 
     # # put into a larger array with all subjects data!
     subject_data_itd5_GLM[ii, chan_indices_good_hbo] = glm_est_df.loc[glm_est_df['Condition'] == 'az_itd=5_az=0']['theta']
@@ -532,6 +655,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
     subject_data_ild15_GLM[ii, chan_indices_good_hbo] = glm_est_df.loc[glm_est_df['Condition'] == 'az_itd=0_az=15']['theta']
 
 
+    # Append stats df to a larger dataframe
+    
 
 ##############################
 ## Take mean during stim ####
@@ -540,8 +665,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
 pfc_channels = []
 stg_channels = []
 # Take Means
-index_stim_start = int(5*fs) # 8
-index_stim_end = int(17.8*fs)
+index_stim_start = int(2*fs) # 8
+index_stim_end = int(13.6*fs)
 # itd5
 mean_during_stim_itd5 = np.nanmean(subject_data_itd5_baselined[:,:,index_stim_start:index_stim_end], axis=2)
 mean_during_stim_itd5_hbr = np.nanmean(subject_data_itd5_hbr_baselined[:,:,index_stim_start:index_stim_end], axis=2)
@@ -627,6 +752,12 @@ subject_data_itd15_GLM_mean = np.nanmean(1e6*subject_data_itd15_GLM, axis=0)
 subject_data_ild5_GLM_mean = np.nanmean(1e6*subject_data_ild5_GLM, axis=0)
 subject_data_ild15_GLM_mean = np.nanmean(1e6*subject_data_ild15_GLM, axis=0)
 
+subject_data_itd5_GLM_mean[np.isnan(subject_data_itd5_GLM_mean)] = 0
+subject_data_itd15_GLM_mean[np.isnan(subject_data_itd15_GLM_mean)] = 0
+subject_data_ild5_GLM_mean[np.isnan(subject_data_ild5_GLM_mean)] = 0
+subject_data_ild15_GLM_mean[np.isnan(subject_data_ild15_GLM_mean)] = 0
+
+
 subject_data_itd5_GLM_std = np.nanstd(1e6*subject_data_itd5_GLM, axis=0) / np.sqrt(n_subjects)
 subject_data_itd15_GLM_std = np.nanstd(1e6*subject_data_itd15_GLM, axis=0) / np.sqrt(n_subjects)
 subject_data_ild5_GLM_std = np.nanstd(1e6*subject_data_ild5_GLM, axis=0) / np.sqrt(n_subjects)
@@ -677,7 +808,7 @@ subject_data_ild15_GLM_std = np.nanstd(1e6*subject_data_ild15_GLM, axis=0) / np.
 #                         np.nanstd(subject_data_ild15_GLM[:,ichannel],axis=0)/(np.sqrt(np.size(subject_data_ild15_GLM, axis=0)- 1) ),
 #                         fmt='o')
     
-#     curr_axes.set_ylim((-0.1,0.1))
+#     curr_axes.set_ylim((-0.1,0.1)) 
 #     curr_axes.set_xlabel('Condition')
 #     curr_axes.set_title(channel_names[ichannel])
 #     curr_axes.set_xticks([1,2,3,4])
@@ -688,81 +819,140 @@ subject_data_ild15_GLM_std = np.nanstd(1e6*subject_data_ild15_GLM, axis=0) / np.
 
 # plt.subplots_adjust(top=.9, right=0.999, left= 0.1, bottom = 0.07)
 # plt.savefig(f'C:\\Users\\benri\\Documents\\GitHub\\SRM-NIRS-EEG\\ANALYSIS SCRIPTS\\Eli Analysis\\Plots\\Beta_dur_{glm_dur}_{masker_type}_masker.png')
-caxis_lim = 0.05
+caxis_lim = 0.1
 
 fig, (ax1,ax2,ax3,ax4) = plt.subplots(1, 4)
 im, _ = mne.viz.plot_topomap(subject_data_itd5_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='head',  image_interp='linear',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax1, show=False)
+                      extrapolate='local',  image_interp='cubic',
+                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax1, show=True)
 #cbar = fig.colorbar(im, ax=ax1)
 #cbar.set_label('Beta (a.u.)')
 ax1.set_title('GLM Beta: itd5')
 plt.show()
 
 im, _ = mne.viz.plot_topomap(subject_data_itd15_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='head',  image_interp='linear',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax2, show=False)
+                      extrapolate='local',  image_interp='cubic',
+                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax2, show=False)
 #cbar = fig.colorbar(im, ax=ax2)
 #cbar.set_label('Beta (a.u.)')
 ax2.set_title('GLM Beta: itd15')
 plt.show()
 
 im, _ = mne.viz.plot_topomap(subject_data_ild5_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='head', image_interp='linear',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax3, show=False)
+                      extrapolate='local', image_interp='cubic',
+                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax3, show=False)
 #cbar = fig.colorbar(im, ax=ax3)
 #cbar.set_label('Beta (a.u.)')
 ax3.set_title('GLM Beta: ild5')
 plt.show()
 
 im, _ = mne.viz.plot_topomap(subject_data_ild15_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='head', image_interp='linear',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='Reds', axes=ax4, show=False)
+                      extrapolate='local', image_interp='cubic',
+                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax4, show=False)
 cbar = fig.colorbar(im, ax=ax4)
 cbar.set_label('Beta (a.u.)')
 ax4.set_title('GLM Beta: ild15')
 plt.show()
 
+
+caxis_lim = 0.15
+
+
+groups_single_chroma = dict(
+    Left_Hemisphere =  picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), [[1,8]], on_missing='warning'),
+    Right_Hemisphere =  picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), [[2,7]], on_missing='warning'))
+
+fig, (ax1,ax2,ax3,ax4,ax5) = plt.subplots(1, 5)
+plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo").pick(groups_single_chroma['Left_Hemisphere']),
+                    subject_data_itd5_GLM_mean,                ####Change here####
+                    colorbar=False, axes=ax1,
+                    vlim=(-caxis_lim, caxis_lim), cmap='summer')
+
+plt.show()
+
+
 # ---------------------------------------------------------------
 # -----------------     Topomap of Mean HbO             ---------
-# ---------------------------------------------------------------
-caxis_min = 0
+caxis_min = -0.1
 caxis_max = 0.1
+
+all_epochs[0].pick('hbo').info['bads'] = []
 
 fig, (ax1,ax2,ax3,ax4) = plt.subplots(1, 4)
 im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd5, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='head',  image_interp='linear',
-                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax1, show=False)
+                      extrapolate='local',  image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax1, show=False)
 #cbar = fig.colorbar(im, ax=ax1)
 #cbar.set_label('Beta (a.u.)')
 ax1.set_title('Mean Delta HbO: itd5')
 plt.show()
 
 im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd15, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='head',  image_interp='linear',
-                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax2, show=False)
+                      extrapolate='local',  image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax2, show=False)
 #cbar = fig.colorbar(im, ax=ax2)
 #cbar.set_label('Beta (a.u.)')
 ax2.set_title('Mean Delta HbO: itd15')
 plt.show()
 
 im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild5, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='head', image_interp='linear',
-                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax3, show=False)
+                      extrapolate='local', image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax3, show=False)
 #cbar = fig.colorbar(im, ax=ax3)
 #cbar.set_label('Beta (a.u.)')
 ax3.set_title('Mean Delta HbO: ild5')
 plt.show()
 
 im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild15, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='head', image_interp='linear',
-                              vlim=(caxis_min, caxis_max), cmap ='Reds', axes=ax4, show=False)
+                      extrapolate='local', image_interp='nearest',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax4, show=False)
 cbar = fig.colorbar(im, ax=ax4)
 cbar.set_label('Mean DeltaHbO')
 ax4.set_title('Mean Delta HbO: ild15')
 plt.show()
 
+caxis_min = -0.05
+caxis_max = 0.05
 
+mean_during_stim_itd5[np.isnan(mean_during_stim_itd5)] = 0
+mean_during_stim_itd15[np.isnan(mean_during_stim_itd15)] = 0
+mean_during_stim_ild5[np.isnan(mean_during_stim_ild5)] = 0
+mean_during_stim_ild15[np.isnan(mean_during_stim_ild15)] = 0
+
+all_epochs[0].pick('hbo').info['bads'] = []
+
+fig, (ax1,ax2,ax3,ax4,ax5) = plt.subplots(1, 5)
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd5, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='local',  image_interp='cubic',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax1, show=False)
+#cbar = fig.colorbar(im, ax=ax1)
+#cbar.set_label('Beta (a.u.)')
+ax1.set_title('Mean Delta HbO: itd5')
+plt.show()
+
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd15, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='local',  image_interp='cubic',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax2, show=False)
+#cbar = fig.colorbar(im, ax=ax2)
+#cbar.set_label('Beta (a.u.)')
+ax2.set_title('Mean Delta HbO: itd15')
+plt.show()
+
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild5, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='local', image_interp='cubic',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax3, show=False)
+#cbar = fig.colorbar(im, ax=ax3)
+#cbar.set_label('Beta (a.u.)')
+ax3.set_title('Mean Delta HbO: ild5')
+plt.show()
+
+im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild15, axis=0), all_epochs[0].pick('hbo').info,
+                      extrapolate='local', image_interp='cubic',
+                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax4, show=False)
+cbar = fig.colorbar(im, ax=ax4, cax=ax5)
+cbar.set_label('Mean DeltaHbO')
+ax4.set_title('Mean Delta HbO: ild15')
+plt.show()
 
 # ---------------------------------------------------------------
 # -----------------     Scatterplot of Mean HbO         ---------

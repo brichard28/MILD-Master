@@ -3,19 +3,13 @@
 % EPOCHING
 
 % 'fullpilot1','fullpilot2','fullpilot3','eeg_pilot_1','eeg_pilot_4','eeg_pilot_5','eeg_pilot_6','eeg_pilot_7','eeg_pilot_8'); % char();
-subID = ['mild_master_5']; % set current subject ID
+subID = ['mild_master_4']; % set current subject ID
 
 % Set directories
 whos_using = 'Bon';
 
-if whos_using == 'Ben'
-    addpath('/home/ben/Documents/MATLAB/eeglab2023.1/')
-    pre_pro_epoched_data_folder = '/home/ben/Documents/GitHub/fNIRSandGerbils/prepro_epoched_data/';
-elseif whos_using == 'Bon' % Ben Laptop
-    addpath('\Users\benri\Documents\eeglab2023.0\')
-    pre_pro_epoched_data_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
-
-end
+addpath('/home/ben/Documents/MATLAB/eeglab2023.1');
+pre_pro_epoched_data_folder = '/run/media/ben/TOSHIBA EXT/LAPTOP/GitHub/MILD-Master/prepro_epoched_data/';
 
 % Load dataset
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab; 
@@ -32,7 +26,7 @@ EEG.urevent(~ismember([EEG.urevent(:).type],[31231,63999])) = [];
 
 
 %check trigger latency distances, remove double triggers
-distance_threshold = 500;
+distance_threshold =256;
 all_latencies = [EEG.urevent(:).latency];
 all_types = [EEG.urevent(:).type];
 all_distances = diff(all_latencies);
@@ -66,19 +60,82 @@ EEG.urevent(urevents_to_remove) = [];
 %% epoch trigger for button press, save data
 if ~ismember(subID,{'mild_master_2'})
     % take the first trigger (10 min before)
+    EEG.event(1).type = '7070';
     index_button_press_start = EEG.event(1).latency;
-    button_press_data = EEG.data(:,index_button_press_start:index_button_press_start + (10*60*EEG.srate));
-    save(append(subID,"_button_press_data.mat"),'button_press_data','index_button_press_start');
+
+    EEG_button_press = pop_epoch( EEG, {"7070"}, [0 600], 'newname', [subID, 'button_press'], 'epochinfo', 'yes');
+
+    button_press_data_raw = EEG_button_press.data;
+
+
+
+    
+    
+    % Isolate average button press during buttonpress
+    PressTimesTable = readtable(append('/run/media/ben/TOSHIBA EXT/LAPTOP/GitHub/MILD-Master/RESULTS DATA/MILD-MASTER Behavior Files/mild-master__s_',strtrim(string(subID)),'__button_press_times.csv'),'ReadVariableNames',false,'FileType','text','Range','A2:ET2');
+
+    fs = 256;
+    eeg_time = 0:1/fs:((length(button_press_data_raw) - 1)/fs);
+    erp_window_start_time = -1000; % 100 ms before onset of word
+    erp_window_end_time = 1000; % 750 ms after onset of word
+
+    button_press_data_this_subject = [];
+    for ipress = 1:width(PressTimesTable)
+        this_time=strtrim(string(PressTimesTable{:,ipress}));
+        this_time=erase(this_time,"'");
+        this_time=erase(this_time,"[");
+        this_time=erase(this_time,"]");
+        this_time=str2double(this_time);
+
+        this_time = this_time + 702;
+
+        this_search_time = this_time/1000;
+        [~,this_eeg_index_start] = min(abs(eeg_time - (this_search_time + (erp_window_start_time/1000))));
+        [~,this_eeg_index_end] = min(abs(eeg_time - (this_search_time + (erp_window_end_time/1000))));
+
+        if this_eeg_index_end - this_eeg_index_start == 1537
+            this_eeg_index_end = this_eeg_index_end + 1;
+        end
+
+        button_press_data_this_subject = cat(3,button_press_data_this_subject,button_press_data_raw(:,this_eeg_index_start:this_eeg_index_end));
+    end
+
+    single_onset_time = linspace(erp_window_start_time,erp_window_end_time,size(button_press_data_this_subject,2));
+    [~,index_window_start] = min(abs(single_onset_time + 300));
+    [~,index_window_end] = min(abs(single_onset_time - 300));
+    mean_button_press= squeeze(mean(button_press_data_this_subject(:,index_window_start:index_window_end,:),3));
+
+        % Generate button press kernel (raised cosine, hanning window)
+    button_press_window = hann(length(mean_button_press));
+
+    button_press_kernel = [];
+    for ichannel = 1:32
+        button_press_kernel(ichannel,:) = button_press_window.*squeeze(mean_button_press(ichannel,:))';
+    end
+    figure;
+    plot(mean_button_press','r')
+    hold on
+    plot(button_press_kernel','k')
+    legend({'Raw','Smoothed'})
+
+    save(append(subID,"_button_press_data.mat"),'button_press_data_raw','button_press_window','mean_button_press','index_button_press_start','PressTimesTable');
 
     % remove triggers
     EEG.event(1) = [];
     EEG.urevent(1) = [];
 end
 
+%% Epoch without button press subtraction
+
+
+%% Perform button Press subtraction
+
+%% Epoch with button press subtraction
+
 
 %% all epochs
 
-EEG = pop_epoch( EEG, {"31231" , "63999"}, [0  16], 'newname', [subID, 'all epochs'], 'epochinfo', 'yes');
+EEG = pop_epoch( EEG, {"31231" , "63999"}, [-1  16], 'newname', [subID, 'all epochs'], 'epochinfo', 'yes');
 
 EEG = eeg_checkset( EEG );
 [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 2, 'gui', 'off');

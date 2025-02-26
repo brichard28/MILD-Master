@@ -16,9 +16,9 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
                     drop_short=False, reject=True,
                     short_regression=True,
                     negative_enhancement=False,
-                    snr_thres=3.5,
-                    sci_thres=0.8,
-                    filter_type='iir', filter_limits=[0.01, 0.3], # 0.01, 0.1
+                    snr_thres=1.5,
+                    sci_thres=0.2,
+                    filter_type='iir', filter_limits=[0.01, 0.1], # 0.01, 0.1
                     tddr=True):
     """
 
@@ -113,6 +113,9 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
         # visually inspect and mark bads at this point...
         # raw_od.plot(show_scrollbars=True,
         #             scalings='auto')
+        
+        
+                
 
         # ---------------------------------------------------------------
         # -----------------   Plot the FFT of each channel      ---------
@@ -120,12 +123,20 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
         # rejecting based on SNR from the fft plot - an alternative method
         fig_fft, bad_channels_total, SNR_dict = raw_nirx_channelwise_fft(raw_od, plot_steps, snr_thres=snr_thres)
         # raw_od.info['bads'] = bad_channels_total
+        
+        bads = []
+        for ich, this_ch_name in enumerate(raw_od.ch_names):
+            if SNR_dict[this_ch_name.replace(' 760','').replace(' 850','')] < snr_thres:
+                bads.append(this_ch_name)
+                
+            elif sci[ich] < sci_thres:
+                bads.append(this_ch_name)
 
-        agree = np.intersect1d(list(itertools.compress(raw_od.ch_names, sci < sci_thres)), bad_channels_total)
-        diff = np.setdiff1d(list(itertools.compress(raw_od.ch_names, sci < sci_thres)), bad_channels_total)
+        #agree = np.intersect1d(list(itertools.compress(raw_od.ch_names, sci < sci_thres)), bad_channels_total)
+        #diff = np.setdiff1d(list(itertools.compress(raw_od.ch_names, sci < sci_thres)), bad_channels_total)
 
         # set the bad channels to what the two methods agree upon
-        raw_od.info['bads'] = list(np.concatenate([agree, diff]))
+        raw_od.info['bads'] = bads #list(np.concatenate([agree, diff]))
         #raw_od.info['bads'] = list(itertools.compress(raw_od.ch_names, sci < sci_thres)) + list(bad_channels_total)
 
 
@@ -172,7 +183,7 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
     # if plot_steps:
     #     filter_fig, filter_axes = plt.subplots(nrows=2,ncols=1)
     #     curr_ax = filter_axes[0]
-    #     raw_OD_sc.plot_psd(average='mean', ax = filter_axes[0])
+    #     raw_OD_filt.plot_psd(average='mean', ax = filter_axes[0])
     #     curr_ax.set_xlim([0, 0.3])
     #     curr_ax.set_title('Before filtering', weight='bold', size='x-large')
 
@@ -191,11 +202,11 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
     else:
         raw_OD_filt = raw_OD_sc
 
-    # if plot_steps:
-    #     curr_ax = filter_axes[1]
-    #     raw_OD_filt.plot_psd(average='mean',ax = curr_ax)
-    #     curr_ax.set_xlim([0, 0.3])
-    #     curr_ax.set_title('After filtering', weight='bold', size='x-large')
+    if plot_steps:
+        curr_ax = plt.subplots(nrows=1,ncols=1)
+        raw_OD_filt.plot_psd(average='mean',ax = curr_ax)
+        curr_ax.set_xlim([0, 0.3])
+        curr_ax.set_title('After filtering', weight='bold', size='x-large')
         
 
     # if plot_steps:

@@ -13,7 +13,23 @@ elseif all(whos_using == 'Bon')
     prepro_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
 end
 
-curr_subject_ID = char('mild_master_1','mild_master_3','mild_master_4','mild_master_5'); % char();
+curr_subject_ID = char('mild_master_1',...
+    'mild_master_3',...
+    'mild_master_4',...
+    'mild_master_6',...
+    'mild_master_8',...
+    'mild_master_9',...
+    'mild_master_10',...
+    'mild_master_11',...
+    'mild_master_12',...
+    'mild_master_14',...
+    'mild_master_15',...
+    'mild_master_16',...
+    'mild_master_17',...
+    'mild_master_18',...
+    'mild_master_19',...
+    'mild_master_22',...
+    'mild_master_23'); % char();
 % Set analysis parameters
 erp_window_start_time = -50; % 100 ms before onset of word
 erp_window_end_time = 950; % 750 ms after onset of word
@@ -31,6 +47,7 @@ for isubject = 1:size(curr_subject_ID,1)
 
     % Load word onset times data
     WordTimesTable = readtable("C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master__s_" + strtrim(subID) + "__Word_Times.csv");
+
 
     % Read in click times, find the rows in the table for this subject
     BehaviorTable = readtable(dir_mildmaster,'FileType','spreadsheet','Format','auto');
@@ -52,11 +69,13 @@ for isubject = 1:size(curr_subject_ID,1)
 
     % Create empty arrays for ERPs
     data_by_target_onset = [];
+    data_by_masker_onset = [];
     data_by_button_press = [];
 
     data_by_lead_target_onset = [];
     data_by_lag_target_onset = [];
-
+    data_by_lead_masker_onset = [];
+    data_by_lag_masker_onset = [];
 
     % Create empty arrays for info for each ERP
     % Will contain subID, trial, and word (if target)
@@ -67,6 +86,9 @@ for isubject = 1:size(curr_subject_ID,1)
     ERP_info_lead_target = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
     ERP_info_lag_target = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
 
+    ERP_info_lead_masker = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
+    ERP_info_lag_masker = struct('SubID',{},'Trial',{},'Word',{},'Condition',{});
+
     % Load EEG for this subject
     epochs_filename = join([prepro_folder,strtrim(curr_subject_ID(isubject,:)),'all_epoch.mat'],'');
     this_EEG = load(epochs_filename);
@@ -75,13 +97,20 @@ for isubject = 1:size(curr_subject_ID,1)
     these_epochs = this_EEG.data; % 32 channels x Time x 240 trials
     num_tot_trials = size(these_epochs,3); % look into this
 
+
+    num_trials = size(this_EEG.data,3);
+    if subID == "mild_master_2"
+        num_trials = 78;
+    elseif ismember(subID,["mild_master_9 ","mild_master_10","mild_master_16","mild_master_18"])
+        num_trials = 119;
+    end
     % baseline all epochs to 1 second
 
 
 
     % Define time vector for extracting target ERPs
     eeg_time = this_EEG.times; % in milliseconds
-    resampled_audio_time = 0:1/fs:16;
+    resampled_audio_time = -1:1/fs:16;
     resampled_audio_time = resampled_audio_time.*1000;
 
 
@@ -94,13 +123,10 @@ for isubject = 1:size(curr_subject_ID,1)
     % Define time vector for extracting masker ERPs
 
     noise_thresh = 50; % 80;
-    num_trials = size(this_EEG.data,3);
-    if subID == "mild_master_2"
-        num_trials = 78;
-    end
+    
     for itrial = 1:num_trials% for each trial (should be 120)
         this_trial_masker = BehaviorTable.masker(rows_this_subject(itrial)); % find the masker type for this trial
-        if mod(itrial,10) == 0
+        if mod(itrial,20) == 0
             disp(itrial)
         end
         icondition = conditions(itrial);
@@ -141,7 +167,8 @@ for isubject = 1:size(curr_subject_ID,1)
         this_trial_click_times = table2array(this_subject_table(itrial,9:end));
         this_trial_click_times(isnan(this_trial_click_times)) = [];
         for iclick = 1:length(this_trial_click_times) % for each target word onset...
-            resampled_search_time = this_trial_click_times(iclick);
+            this_click_time = this_trial_click_times(iclick) + 0.702*fs;
+            resampled_search_time = this_click_time;
             button_press_delay = 0; % ms
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time + button_press_delay))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
@@ -183,7 +210,7 @@ for isubject = 1:size(curr_subject_ID,1)
             audio_onset_delay = 0;
         end
 
-        for ionset = 2:length(this_trial_target_times) % for each word pair onset, excluding the first
+        for ionset = 1:length(this_trial_target_times) % for each word pair onset, excluding the first
             if this_trial_whether_target_lead(ionset) == 1
                 resampled_search_time = this_trial_target_times(ionset)*1000 + audio_onset_delay;
             elseif this_trial_whether_target_lead(ionset) == 0
@@ -264,6 +291,91 @@ for isubject = 1:size(curr_subject_ID,1)
             end
         end
 
+
+
+
+        %% Same thing but for Masker
+        for ionset = 1:length(this_trial_masker_times) % for each word pair onset, excluding the first
+            if this_trial_whether_target_lead(ionset) == 1
+                resampled_search_time = this_trial_masker_times(ionset)*1000 + audio_onset_delay;
+            elseif this_trial_whether_target_lead(ionset) == 0
+                resampled_search_time = this_trial_masker_times(ionset)*1000 + audio_onset_delay;
+            end
+
+            [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
+            [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
+
+            if end_time - start_time == 204
+                end_time = end_time + 1;
+            end
+
+
+            % Reject epochs with amplitude above +/- 100 uV
+            if any(abs(these_epochs(:,start_time:end_time,itrial)) > noise_thresh,'all')
+                %disp('ERP rejected')
+                continue
+            end
+
+            % Isolate ERP
+
+            this_erp = these_epochs(:,start_time:end_time,itrial);
+            data_by_masker_onset = cat(3,data_by_masker_onset,this_erp);
+
+            % add to lead or lag ERPs, depending
+            if this_trial_whether_target_lead(ionset) == 1
+                data_by_lag_masker_onset = cat(3,data_by_lag_masker_onset,this_erp);
+            elseif this_trial_whether_target_lead(ionset) == 0
+                data_by_lead_masker_onset = cat(3,data_by_lead_masker_onset,this_erp);
+            end
+
+
+
+            % Append Info
+            if ~isempty(ERP_info_masker)
+                ERP_info_masker.SubID = [ERP_info_masker.SubID; curr_subject_ID(isubject,:)];
+                ERP_info_masker.Trial = [ERP_info_masker.Trial, itrial];
+                ERP_info_masker.Word = [ERP_info_masker.Word; this_trial_masker_words(ionset)];
+                ERP_info_masker.Condition = [ERP_info_masker.Condition, conditions(itrial)];
+            else
+                ERP_info_masker(1).SubID = curr_subject_ID(isubject,:);
+                ERP_info_masker(1).Trial = itrial;
+                ERP_info_masker(1).Word = this_trial_masker_words(ionset);
+                ERP_info_masker(1).Condition = conditions(itrial);
+            end
+
+            % lead data
+
+            if ~isempty(ERP_info_lead_masker) && this_trial_whether_target_lead(ionset) == 0
+                ERP_info_lead_masker.SubID = [ERP_info_lead_masker.SubID; curr_subject_ID(isubject,:)];
+                ERP_info_lead_masker.Trial = [ERP_info_lead_masker.Trial, itrial];
+                ERP_info_lead_masker.Word = [ERP_info_lead_masker.Word; this_trial_masker_words(ionset)];
+                ERP_info_lead_masker.OtherWord = [ERP_info_lead_masker.OtherWord; (ionset)];
+                ERP_info_lead_masker.Condition = [ERP_info_lead_masker.Condition, conditions(itrial)];
+            elseif isempty(ERP_info_lead_masker) && this_trial_whether_target_lead(ionset) == 0
+                ERP_info_lead_masker(1).SubID = curr_subject_ID(isubject,:);
+                ERP_info_lead_masker(1).Trial = itrial;
+                ERP_info_lead_masker(1).Word = this_trial_masker_words(ionset);
+                ERP_info_lead_masker.OtherWord = this_trial_masker_words(ionset);
+                ERP_info_lead_masker(1).Condition = conditions(itrial);
+            end
+
+            % lag data
+            if ~isempty(ERP_info_lag_masker) && this_trial_whether_target_lead(ionset) == 1
+                ERP_info_lag_masker.SubID = [ERP_info_lag_masker.SubID; curr_subject_ID(isubject,:)];
+                ERP_info_lag_masker.Trial = [ERP_info_lag_masker.Trial, itrial];
+                ERP_info_lag_masker.Word = [ERP_info_lag_masker.Word; this_trial_masker_words(ionset)];
+                ERP_info_lag_masker.OtherWord = [ERP_info_lag_masker.OtherWord; this_trial_target_words(ionset)];
+                ERP_info_lag_masker.Condition = [ERP_info_lag_masker.Condition, conditions(itrial)];
+            elseif isempty(ERP_info_lag_masker) && this_trial_whether_target_lead(ionset) == 1
+                ERP_info_lag_masker(1).SubID = curr_subject_ID(isubject,:);
+                ERP_info_lag_masker(1).Trial = itrial;
+                ERP_info_lag_masker(1).Word = this_trial_masker_words(ionset);
+                ERP_info_lag_masker(1).OtherWord = this_trial_target_words(ionset);
+
+                ERP_info_lag_masker(1).Condition = conditions(itrial);
+            end
+        end
+
     end
 
     %% Concatenate and baseline within each channel for this subject
@@ -283,26 +395,31 @@ for isubject = 1:size(curr_subject_ID,1)
     % all data
     data_by_button_press_baselined = nan(size(data_by_button_press));
     data_by_target_onset_baselined = nan(size(data_by_target_onset));
+    data_by_masker_onset_baselined = nan(size(data_by_masker_onset));
 
     % lead data
     data_by_lead_target_onset_baselined = nan(size(data_by_lead_target_onset));
+    data_by_lead_masker_onset_baselined = nan(size(data_by_lead_masker_onset));
 
     % lag data
     data_by_lag_target_onset_baselined = nan(size(data_by_lag_target_onset));
-
+    data_by_lag_masker_onset_baselined = nan(size(data_by_lag_masker_onset));
     % BOFA
-    data_by_both_lead_and_lag = cat(3,data_by_lead_target_onset,data_by_lag_target_onset);
-
+    data_by_both_lead = cat(3,data_by_lead_target_onset,data_by_lead_masker_onset);
+    data_by_both_lag = cat(3,data_by_lag_target_onset,data_by_lag_masker_onset);
     for ichannel = 1:32
         % all data
         data_by_button_press_baselined(ichannel,:,:) = data_by_button_press(ichannel,:,:) - mean(data_by_button_press(ichannel,baseline_start_index_buttonpress:baseline_end_index_buttonpress,:),'all');
         data_by_target_onset_baselined(ichannel,:,:) = data_by_target_onset(ichannel,:,:) - mean(data_by_target_onset(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_masker_onset_baselined(ichannel,:,:) = data_by_masker_onset(ichannel,:,:) - mean(data_by_masker_onset(ichannel,baseline_start_index:baseline_end_index,:),'all');
 
         % lead data
-        data_by_lead_target_onset_baselined(ichannel,:,:) = data_by_lead_target_onset(ichannel,:,:) - mean(data_by_both_lead_and_lag(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_lead_target_onset_baselined(ichannel,:,:) = data_by_lead_target_onset(ichannel,:,:) - mean(data_by_lead_target_onset(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_lead_masker_onset_baselined(ichannel,:,:) = data_by_lead_masker_onset(ichannel,:,:) - mean(data_by_lead_masker_onset(ichannel,baseline_start_index:baseline_end_index,:),'all');
 
         % lag data
-        data_by_lag_target_onset_baselined(ichannel,:,:) = data_by_lag_target_onset(ichannel,:,:) - mean(data_by_both_lead_and_lag(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_lag_target_onset_baselined(ichannel,:,:) = data_by_lag_target_onset(ichannel,:,:) - mean(data_by_lag_target_onset(ichannel,baseline_start_index:baseline_end_index,:),'all');
+        data_by_lag_masker_onset_baselined(ichannel,:,:) = data_by_lag_masker_onset(ichannel,:,:) - mean(data_by_lag_masker_onset(ichannel,baseline_start_index:baseline_end_index,:),'all');
 
     end
 
@@ -420,235 +537,235 @@ for isubject = 1:size(curr_subject_ID,1)
     %     sgtitle(subID)
 
     %% Plot frontocentral ERPs
-    y_min = -4;
-    y_max = 5;
-    figure;
-    subplot(1,4,1)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ITDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-    ylabel('Voltage (uV)','FontSize',18)
-
-    subplot(1,4,2)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('15 deg ITDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-    subplot(1,4,3)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    subplot(1,4,4)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
-    title('15 deg ILDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    sgtitle([subID,' Frontocentral ERPs'])
-
-    %% Plot Bash separately
-    y_min = -4;
-    y_max = 5;
-    figure;
-    subplot(1,4,1)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ITDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-    ylabel('Voltage (uV)','FontSize',18)
-
-    subplot(1,4,2)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('15 deg ITDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-    subplot(1,4,3)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    subplot(1,4,4)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
-    title('15 deg ILDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    sgtitle([subID,' Frontocentral ERPs BASH ONLY'])
-
-
-    %% Plot dash, gash
-
-    y_min = -4;
-    y_max = 5;
-    figure;
-    subplot(1,4,1)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ITDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-    ylabel('Voltage (uV)','FontSize',18)
-
-    subplot(1,4,2)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('15 deg ITDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-    subplot(1,4,3)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('5 deg ILDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    subplot(1,4,4)
-    hold on
-    p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
-    p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
-    title('15 deg ILDs','FontSize',18)
-    xline(0,'--r','LineWidth',2)
-    xline(250,'--b','LineWidth',2)
-    xline(600)
-    legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
-    ylim([y_min,y_max])
-    xlim([-100,750])
-    xlabel('Time (ms)','FontSize',18)
-
-
-    sgtitle([subID,' Frontocentral ERPs {DASH,GASH} ONLY'])
-
-
+%     y_min = -4;
+%     y_max = 5;
+%     figure;
+%     subplot(1,4,1)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ITDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+%     ylabel('Voltage (uV)','FontSize',18)
+% 
+%     subplot(1,4,2)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('15 deg ITDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+%     subplot(1,4,3)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ILDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     subplot(1,4,4)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset(isubject,frontocentral_channels,:),2)),'-b');
+%     title('15 deg ILDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     sgtitle([subID,' Frontocentral ERPs'])
+% 
+%     %% Plot Bash separately
+%     y_min = -4;
+%     y_max = 5;
+%     figure;
+%     subplot(1,4,1)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ITDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+%     ylabel('Voltage (uV)','FontSize',18)
+% 
+%     subplot(1,4,2)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('15 deg ITDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+%     subplot(1,4,3)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ILDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     subplot(1,4,4)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset_bash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset_bash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('15 deg ILDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     sgtitle([subID,' Frontocentral ERPs BASH ONLY'])
+% 
+% 
+%     %% Plot dash, gash
+% 
+%     y_min = -4;
+%     y_max = 5;
+%     figure;
+%     subplot(1,4,1)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd5_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd5_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ITDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+%     ylabel('Voltage (uV)','FontSize',18)
+% 
+%     subplot(1,4,2)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(itd15_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(itd15_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('15 deg ITDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+%     subplot(1,4,3)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild5_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild5_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('5 deg ILDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     subplot(1,4,4)
+%     hold on
+%     p1 = plot(single_onset_time,squeeze(mean(ild15_by_lead_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-r');
+%     p2 = plot(single_onset_time,squeeze(mean(ild15_by_lag_target_onset_dashgash(isubject,frontocentral_channels,:),2)),'-b');
+%     title('15 deg ILDs','FontSize',18)
+%     xline(0,'--r','LineWidth',2)
+%     xline(250,'--b','LineWidth',2)
+%     xline(600)
+%     legend([p1(1),p2(1)],{'Attend Lead','Attend Lag'})
+%     ylim([y_min,y_max])
+%     xlim([-100,750])
+%     xlabel('Time (ms)','FontSize',18)
+% 
+% 
+%     sgtitle([subID,' Frontocentral ERPs {DASH,GASH} ONLY'])
+% 
+% 
 
     %% Plot whole trial EEG at frontocentral channels in each condition
-    [~,baseline_start_index_wholetrial] = min(abs(eeg_time + 1000));
-    [~,baseline_end_index_wholetrial] = min(abs(eeg_time + 0));
-    these_epochs = these_epochs - mean(these_epochs(:,baseline_start_index_wholetrial:baseline_end_index_wholetrial,:),[2,3]);
-
-    figure;
-    %subplot(size(curr_subject_ID,1),1,isubject)
-    hold on;
-    p1 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,small_itd_cond)),[1,3])); % itd 50
-    p2 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,large_itd_cond)),[1,3])); % itd 500
-    p3 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,small_ild_cond)),[1,3])); % ild 5
-    p4 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,large_ild_cond)),[1,3])); % itd 5 + mag
-
-    %legend({'Scrambled','Unscrambled'})
-    if isubject == size(curr_subject_ID,1)
-        xlabel('Time (ms)','FontSize',18)
-    elseif isubject == round(size(curr_subject_ID,1)/2)
-        ylabel('Voltage (mV)','FontSize',18)
-    end
-    xline(0,'LineWidth',2)
-    xline(cue_dur*1000,'LineWidth',2)
-    xline([this_trial_target_times, this_trial_masker_times]*1000,'LineWidth',1)
-    title(subID)
-    legend([p1(1),p2(1),p3(1),p4(1)],{'itd5','itd15','ILD5deg','ILD5degMag'})
+%     [~,baseline_start_index_wholetrial] = min(abs(eeg_time + 1000));
+%     [~,baseline_end_index_wholetrial] = min(abs(eeg_time + 0));
+%     these_epochs = these_epochs - mean(these_epochs(:,baseline_start_index_wholetrial:baseline_end_index_wholetrial,:),[2,3]);
+% 
+%     figure;
+%     %subplot(size(curr_subject_ID,1),1,isubject)
+%     hold on;
+%     p1 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,small_itd_cond)),[1,3])); % itd 50
+%     p2 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,large_itd_cond)),[1,3])); % itd 500
+%     p3 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,small_ild_cond)),[1,3])); % ild 5
+%     p4 = plot(eeg_time,mean(these_epochs(frontocentral_channels,:,ismember(conditions,large_ild_cond)),[1,3])); % itd 5 + mag
+% 
+%     %legend({'Scrambled','Unscrambled'})
+%     if isubject == size(curr_subject_ID,1)
+%         xlabel('Time (ms)','FontSize',18)
+%     elseif isubject == round(size(curr_subject_ID,1)/2)
+%         ylabel('Voltage (mV)','FontSize',18)
+%     end
+%     xline(0,'LineWidth',2)
+%     xline(cue_dur*1000,'LineWidth',2)
+%     xline([this_trial_target_times, this_trial_masker_times]*1000,'LineWidth',1)
+%     title(subID)
+%     legend([p1(1),p2(1),p3(1),p4(1)],{'itd5','itd15','ILD5deg','ILD5degMag'})
 
     %% Calculate CWT spectrograms at each trial and channel
-    parietooccipital_channels = 11:20;
-    left_parietooccipital_channels = [11,12,14,15];
-    right_parietooccipital_channels = [17,18,19,20];
-    frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
-
-    M = 128;%fs*0.4;
-    window=hamming(M,'periodic');
-    noverlap=floor(0.75*M);
-
-    Ndft=128;
-    epoch_start_time = 0;
-    epoch_end_time = 16;
-    time_window = linspace(epoch_start_time, epoch_end_time, size(these_epochs, 2));
-
-    all_spectrograms_this_subject = nan(Ndft/2 + 1, 123, 32, size(these_epochs,3));
-    all_cwt_this_subject= cell(32,num_tot_trials);
-    freq_range= [1 50];
+%     parietooccipital_channels = 11:20;
+%     left_parietooccipital_channels = [11,12,14,15];
+%     right_parietooccipital_channels = [17,18,19,20];
+%     frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
+% 
+%     M = 128;%fs*0.4;
+%     window=hamming(M,'periodic');
+%     noverlap=floor(0.75*M);
+% 
+%     Ndft=128;
+%     epoch_start_time = 0;
+%     epoch_end_time = 16;
+%     time_window = linspace(epoch_start_time, epoch_end_time, size(these_epochs, 2));
+% 
+%     all_spectrograms_this_subject = nan(Ndft/2 + 1, 123, 32, size(these_epochs,3));
+%     all_cwt_this_subject= cell(32,num_trials);
+%     freq_range= [1 50];
     %     for ichannel=1:32
     %         for itrial=1:num_tot_trials
     %             spect_sub= these_epochs(ichannel,:,itrial);
@@ -668,9 +785,9 @@ for isubject = 1:size(curr_subject_ID,1)
     %             fc_cwt_to_plot(:,:,ichannel,itrial) = all_cwt_this_subject{frontocentral_channels(ichannel),itrial};
     %         end
     %     end
-    cmin = 50;
-    cmax = 125;
-    plot_time_limits = [-1, 6];
+%     cmin = 50;
+%     cmax = 125;
+%     plot_time_limits = [-1, 6];
     %     % Frontocentral channels
     %     figure;
     %     hold on
@@ -863,7 +980,7 @@ for isubject = 1:size(curr_subject_ID,1)
 
 
     %% SAVE INFO FOR THIS SUBBY
-    save(append('Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'.mat'),'data_by_target_onset_baselined','data_by_lead_target_onset_baselined','data_by_lag_target_onset_baselined','data_by_button_press_baselined','ERP_info_button_press','ERP_info_lead_target','ERP_info_lag_target','ERP_info_target','-v7.3')
+    save(append('Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'.mat'),'data_by_target_onset_baselined','data_by_lead_target_onset_baselined','data_by_lag_target_onset_baselined','data_by_masker_onset_baselined','data_by_lead_masker_onset_baselined','data_by_lag_masker_onset_baselined','data_by_button_press_baselined','ERP_info_button_press','ERP_info_lead_target','ERP_info_lag_target','ERP_info_target','ERP_info_lead_masker','ERP_info_lag_masker','ERP_info_masker','-v7.3')
 
 end
 

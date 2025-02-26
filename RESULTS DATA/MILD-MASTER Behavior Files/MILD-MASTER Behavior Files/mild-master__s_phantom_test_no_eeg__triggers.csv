@@ -1,0 +1,39 @@
+S,Trig,Condition
+phantom_test_no_eeg,4,side=r_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,5,side=r_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,6,side=r_itd=0_az=5_mag=0_lpf=0
+phantom_test_no_eeg,7,side=l_itd=0_az=5_mag=1_lpf=0
+phantom_test_no_eeg,8,side=l_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,9,side=l_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,10,side=r_itd=0_az= 5_mag=1_lpf=0
+phantom_test_no_eeg,11,side=l_itd=0_az=5_mag=0_lpf=0
+phantom_test_no_eeg,1,Inhale
+phantom_test_no_eeg,2,Exhale
+phantom_test_no_eeg,3,Hold_Breath
+phantom_test_no_eeg,4,side=r_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,5,side=r_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,6,side=r_itd=0_az=5_mag=0_lpf=0
+phantom_test_no_eeg,7,side=l_itd=0_az=5_mag=1_lpf=0
+phantom_test_no_eeg,8,side=l_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,9,side=l_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,10,side=r_itd=0_az= 5_mag=1_lpf=0
+phantom_test_no_eeg,11,side=l_itd=0_az=5_mag=0_lpf=0
+phantom_test_no_eeg,4,side=r_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,5,side=r_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,6,side=r_itd=0_az=5_mag=0_lpf=0
+phantom_test_no_eeg,7,side=l_itd=0_az=5_mag=1_lpf=0
+phantom_test_no_eeg,8,side=l_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,9,side=l_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,10,side=r_itd=0_az= 5_mag=1_lpf=0
+phantom_test_no_eeg,11,side=l_itd=0_az=5_mag=0_lpf=0
+phantom_test_no_eeg,1,Inhale
+phantom_test_no_eeg,2,Exhale
+phantom_test_no_eeg,3,Hold_Breath
+phantom_test_no_eeg,4,side=r_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,5,side=r_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,6,side=r_itd=0_az=5_mag=0_lpf=0
+phantom_test_no_eeg,7,side=l_itd=0_az=5_mag=1_lpf=0
+phantom_test_no_eeg,8,side=l_itd=50_az=0_mag=0_lpf=0
+phantom_test_no_eeg,9,side=l_itd=500_az=0_mag=0_lpf=0
+phantom_test_no_eeg,10,side=r_itd=0_az= 5_mag=1_lpf=0
+phantom_test_no_eeg,11,side=l_itd=0_az=5_mag=0_lpf=0

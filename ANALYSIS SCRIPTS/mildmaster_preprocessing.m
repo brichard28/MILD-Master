@@ -1,22 +1,22 @@
 % Primary Authors: Victoria Figarola, Benjamin Richardson 7/21/23
 % Secondary Authors: Emaya Anand, Maanasa Guru Adimurthy
 % PREPROCESSING for Scrambled Speech Project
-%tak22ing raw BDF file and saving it at .set file
+% taking raw BDF file and saving it at .set file
 % order = preprocessing, epoch, postprocessing, multsubjects
 %-------------------------------------------------------------------------------------------------------------------
 
-subID = 'mild_master_1'; % Set current subject ID
+subID = 'mild_master_32'; % Set current subject ID
 % Excel sheet parameters
-range_A = 'A1'; % Excel sheet 
-range_B = 'B1';
+range_A = 'A32'; % Excel sheet 
+range_B = 'B32';
 badchannels = 'channelsremoved.xlsx';
 % Set directories
-whos_using = 'Bon'; % Choose user for directory stuff
+whos_using = 'Ben'; % Choose user for directory stuff
 if whos_using == 'Ben'
     addpath('/home/ben/Documents/MATLAB/eeglab2023.1');
-    pre_pro_epoched_data_folder = '/home/ben/Documents/GitHub/fNIRSandGerbils/prepro_epoched_data/';
+    pre_pro_epoched_data_folder = '/run/media/ben/TOSHIBA EXT/LAPTOP/GitHub/MILD-Master/prepro_epoched_data';
     addpath(pre_pro_epoched_data_folder)
-    BDF_filename = ['/home/ben/Downloads/', subID, '.bdf'];
+    BDF_filename = ['/run/media/ben/TOSHIBA EXT/Downloads/', subID, '.bdf'];
 elseif whos_using == 'Ema'
     addpath('C:\Users\ema36\OneDrive\Documents\MATLAB\eeglab2023.0');
     pre_pro_epoched_data_folder = 'C:\Users\ema36\OneDrive\Documents\LiMN Things\fNIRSandGerbils\prepro_epoched_data';
@@ -26,7 +26,7 @@ elseif whos_using == 'Bon'
     addpath('C:\Users\benri\Documents\eeglab2023.1');
     pre_pro_epoched_data_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
     addpath(pre_pro_epoched_data_folder)
-    BDF_filename = ['C:\Users\benri\Downloads\', subID, '.bdf'];
+    BDF_filename = ['D:\Downloads\', subID, '.bdf'];
 elseif whos_using == 'Maa'
     addpath('C:\Users\maana\Documents\MATLAB\eeglab2023.0');
     pre_pro_epoched_data_folder = 'C:\Users\maana\Documents\GitHub\fNIRSandGerbils\prepro_epoched_data\';
@@ -38,11 +38,11 @@ end
 
 % Load in BDF files and Re-referencing to Externals (mastoids/earlobes)
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab; % load EEGLAB
-EEG = pop_biosig(BDF_filename, 'ref', [33 34], 'blockepoch', 'off', 'refoptions', {'keepref', 'off'}); % load in data, set reference as channels 33, 34 (mastoids)
+EEG = pop_biosig(BDF_filename, 'ref', [33,34], 'blockepoch', 'off', 'refoptions', {'keepref', 'off'}); % load in data, set reference as channels 33, 34 (mastoids)
 [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, 'gui', 'off');
 EEG = eeg_checkset( EEG );
 
-%removing extra channels
+%removing extra channelss
 EEG = pop_select(EEG, 'nochannel', {'EXG3','EXG4','EXG5','EXG6','EXG7','EXG8','GSR1','GSR2','Erg1','Erg2','Resp','Plet','Temp'});
 [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1, 'gui', 'off');
 EEG = eeg_checkset( EEG );
@@ -50,17 +50,12 @@ EEG = eeg_checkset( EEG );
 
 %adding in channel locations 
 if whos_using == 'Ben'
-    EEG=pop_chanedit(EEG, 'load',{'/home/ben/Documents/GitHub/MILD-Master/chan_locs_cart.txt', 'filetype', 'sfp'});
+    EEG=pop_chanedit(EEG, 'load',{'/run/media/ben/TOSHIBA EXT/LAPTOP/GitHub/MILD-Master/chan_locs_cart.txt', 'filetype', 'sfp'});
 elseif whos_using == 'Bon'
     EEG=pop_chanedit(EEG, 'load',{'C:\Users\benri\Documents\GitHub\MILD-Master\chan_locs_cart.txt', 'filetype', 'sfp'});
 end
 
 
-EEG = eeg_checkset( EEG );
-
-%downsampling to 256 Hz
-EEG = pop_resample( EEG, 256);
-[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 2, 'gui', 'off');
 EEG = eeg_checkset( EEG );
 
 %bandpass filter (order of 1)
@@ -75,6 +70,13 @@ bw = wo/17;
 [b,a] = iirnotch(wo,bw);
 EEG.data = filtfilt(b, a, double(EEG.data')); 
 EEG.data = EEG.data';
+
+
+%downsampling to 256 Hz
+EEG = pop_resample( EEG, 256);
+[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 2, 'gui', 'off');
+EEG = eeg_checkset( EEG );
+
 
 EEG = eeg_checkset( EEG );
 [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 3,'setname',[subID, 'Bandpassed'],'gui','on');

@@ -1,0 +1,20 @@
+S,Trig,Condition
+lights_on_cpod_on,4,side=r_itd=500_az=0_mag=0_lpf=0
+lights_on_cpod_on,5,side=r_itd=50_az=0_mag=0_lpf=0
+lights_on_cpod_on,6,side=r_itd=0_az=5_mag=0_lpf=0
+lights_on_cpod_on,7,side=l_itd=0_az=5_mag=1_lpf=0
+lights_on_cpod_on,8,side=l_itd=50_az=0_mag=0_lpf=0
+lights_on_cpod_on,9,side=l_itd=500_az=0_mag=0_lpf=0
+lights_on_cpod_on,10,side=r_itd=0_az= 5_mag=1_lpf=0
+lights_on_cpod_on,11,side=l_itd=0_az=5_mag=0_lpf=0
+lights_on_cpod_on,1,Inhale
+lights_on_cpod_on,2,Exhale
+lights_on_cpod_on,3,Hold_Breath
+lights_on_cpod_on,4,side=r_itd=500_az=0_mag=0_lpf=0
+lights_on_cpod_on,5,side=r_itd=50_az=0_mag=0_lpf=0
+lights_on_cpod_on,6,side=r_itd=0_az=5_mag=0_lpf=0
+lights_on_cpod_on,7,side=l_itd=0_az=5_mag=1_lpf=0
+lights_on_cpod_on,8,side=l_itd=50_az=0_mag=0_lpf=0
+lights_on_cpod_on,9,side=l_itd=500_az=0_mag=0_lpf=0
+lights_on_cpod_on,10,side=r_itd=0_az= 5_mag=1_lpf=0
+lights_on_cpod_on,11,side=l_itd=0_az=5_mag=0_lpf=0

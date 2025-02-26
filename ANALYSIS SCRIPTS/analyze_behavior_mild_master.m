@@ -3,10 +3,37 @@
 
 % Script to analyze behavioral sensitivity (d-prime) for MILD MASTER
 
-BehaviorTable = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx','Format','auto');
+BehaviorTable = readtable('D:\LAPTOP\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx','Format','auto');
 
 %subject_ID = char('itd_pilot1','itd_pilot2','itd_pilot3','itdpilot_4_5','itd_pilot5'); % itd pilot
-subject_ID = char('mild_master_1','mild_master_3','mild_master_4','mild_master_5');
+subject_ID = char('mild_master_1',...
+'mild_master_3',...
+'mild_master_4',...
+'mild_master_5',...
+'mild_master_6',...
+'mild_master_8',...
+'mild_master_9',...
+'mild_master_10',...
+'mild_master_11',...
+'mild_master_12',...
+'mild_master_14',...
+'mild_master_15',...
+'mild_master_16',...
+'mild_master_17',...
+'mild_master_18',...
+'mild_master_19',...
+'mild_master_20',...
+'mild_master_22',...
+'mild_master_23',...
+'mild_master_24',...
+'mild_master_25',...
+'mild_master_26',...
+'mild_master_27',...
+'mild_master_28',...
+'mild_master_29',...
+'mild_master_30',...
+'mild_master_31',...
+'mild_master_32'); % char();
 num_conditions = 8;
 
 all_hits = zeros(size(subject_ID,1),num_conditions);
@@ -36,6 +63,7 @@ all_num_masker_bash = zeros(size(subject_ID,1),num_conditions);
 
 fs = 44100;
 cue_dur = 1.5;
+rt_fig = figure;
 
 for isubject = 1:size(subject_ID,1) % For each subject...
     disp(string(subject_ID(isubject,:)))
@@ -43,7 +71,7 @@ for isubject = 1:size(subject_ID,1) % For each subject...
     total_clicks = 0;
 
     % Load the word times for this subject
-    WordTimesTable = readtable("C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master__s_" + strtrim(string(subject_ID(isubject,:))) + "__Word_Times.csv");
+    WordTimesTable = readtable("D:\LAPTOP\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master__s_" + strtrim(string(subject_ID(isubject,:))) + "__Word_Times.csv");
 
     run_count_per_condition = -1*ones(1,num_conditions); % array to keep track of which run in each condition we are on
 
@@ -64,13 +92,16 @@ for isubject = 1:size(subject_ID,1) % For each subject...
     small_ild_cond = [1,4];
     large_ild_cond = [2,5];
 
+
+    this_subject_bash_click_distances = [];
+
     % For each trial....
     for itrial = 1:length(rows_this_subject)
 
 
-        if mod(itrial,10) == 0
-            disp(itrial)
-        end
+%         if mod(itrial,10) == 0
+%             disp(itrial)
+%         end
 
         this_trial_condition = BehaviorTable.Condition(rows_this_subject(itrial)); % find the condition for this trial
         this_trial_masker = BehaviorTable.masker(rows_this_subject(itrial)); % find the masker type for this trial
@@ -84,6 +115,8 @@ for isubject = 1:size(subject_ID,1) % For each subject...
         click_distances = diff(this_trial_click_times);
         click_distances_to_remove = find(click_distances < 0.2);
         this_trial_click_times(click_distances_to_remove + 1) = [];
+
+        this_trial_click_times = this_trial_click_times + 0.702;
 
         which_soundfile_this_trial = BehaviorTable.Soundfile(rows_this_subject(itrial));
         which_soundfile_this_trial = cell2mat(which_soundfile_this_trial);
@@ -119,7 +152,7 @@ for isubject = 1:size(subject_ID,1) % For each subject...
         %% Hit and False Alarm Windows
 
         threshold_window_start = 0.2; %0.2
-        threshold_window_end =  1.0; % 1.0
+        threshold_window_end =  1.5; % 1.0
         tVec = 0:1/44100:16;
         hit_windows = zeros(1,length(tVec)); % create an empty array to define hit windows
         FA_windows = zeros(1,length(tVec)); % create an empty array to define false alarm windows
@@ -161,11 +194,43 @@ for isubject = 1:size(subject_ID,1) % For each subject...
             total_clicks = total_clicks + 1;
         end
 
-        % associate it with the correct condition
+        %% Calculate time difference between each click and each bash time
+        distances_click_to_target_bash= [];
+        for ibashtime = 1:length(this_trial_target_bash_times)
+            distances_click_to_target_bash(ibashtime,:) = this_trial_click_times - this_trial_target_bash_times(ibashtime);
+        end
+        distances_click_to_target_bash(distances_click_to_target_bash < 0) = nan;
+
+        %% Find the nearest color time to each click (minimum positive value of click_distances in each column)
+
+
+        [~,nearest_click] = min(abs(distances_click_to_target_bash),[],1); % find the nearest click to each target word
+        for i = 1:length(this_trial_click_times)
+            if isnan(distances_click_to_target_bash(:,i)) == ones(1,length(this_trial_target_bash_times)) % all of these clicks were before the first word
+                nearest_click(i) = nan;
+            else
+
+                this_subject_bash_click_distances = [this_subject_bash_click_distances, distances_click_to_target_bash(nearest_click(i),i)];
+            end
+
+        end
 
 
     end
+    save(append(string(subject_ID(isubject,:)),'bash_click_distances.mat'),'this_subject_bash_click_distances');
+    figure(rt_fig)
+    subplot(round(size(subject_ID,1)/5),8,isubject)
+    histogram(this_subject_bash_click_distances,100)
+    xlim([0,3])
 
+    [counts,edges] = histcounts(this_subject_bash_click_distances,100);
+    %[peakValue, peakIndex] = findpeaks(counts); % Find peak value and index
+    [peakValue, peakIndex] = max(counts);
+    peakXValue = edges(peakIndex); % Get the x-axis value corresponding to the peak
+
+
+
+    disp(append(string(subject_ID(isubject,:)),' most frequent bash reaction time: ',num2str(peakXValue*1000),' ms '))
     disp(append(string(subject_ID(isubject,:)),': ', num2str((clicks_not_counted/total_clicks)*100), '% of clicks not counted'))
 end
 
@@ -220,19 +285,30 @@ d_primes_collapsed(4,:) = mean(d_primes_all(:,large_ild_cond),2); % itd400 / ild
 
 figure;
 subplot(1,3,1)
-plot(1:4,d_primes_collapsed,'-o')
+plot(1:2,d_primes_collapsed(1:2,:),'-o')
+hold on
+plot(3:4,d_primes_collapsed(3:4,:),'-o')
+errorbar(1:4,mean(d_primes_collapsed,2),std(d_primes_collapsed,[],2)/sqrt(size(subject_ID,1) - 1),'ok','LineWidth',3)
 ylabel("d'",'FontSize',18)
 %xticklabels({'50','100','200','400'})
 xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
+
 subplot(1,3,2)
-plot(1:4,all_hit_rates_collapsed,'-o')
+plot(1:2,all_hit_rates_collapsed(1:2,:),'-o')
+hold on
+plot(3:4,all_hit_rates_collapsed(3:4,:),'-o')
+errorbar(1:4,mean(all_hit_rates_collapsed,2),std(all_hit_rates_collapsed,[],2)/sqrt(size(subject_ID,1) - 1),'ok','LineWidth',3)
 ylim([0 1])
 ylabel('Hit Rate','FontSize',18)
 %xticklabels({'50','100','200','400'})
 xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
 %xlabel('ITD (us)')
+
 subplot(1,3,3)
-plot(1:4,all_FA_rates_collapsed,'-o')
+plot(1:2,all_FA_rates_collapsed(1:2,:),'-o')
+hold on
+plot(3:4,all_FA_rates_collapsed(3:4,:),'-o')
+errorbar(1:4,mean(all_FA_rates_collapsed,2),std(all_FA_rates_collapsed,[],2)/sqrt(size(subject_ID,1) - 1),'ok','LineWidth',3)
 ylim([0 1])
 ylabel('FA Rate','FontSize',18)
 %xticklabels({'50','100','200','400'})

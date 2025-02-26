@@ -70,27 +70,34 @@ else:
 # all_fnirs_data_folders = [data_root + '2024-10-30/2024-10-30_001',
 #                           data_root + '2024-10-31/2024-10-31_001']
 
-all_fnirs_data_folders = [data_root +'2024-10-30/2024-10-30_001',
-                          data_root +'2024-10-31/2024-10-31_001',
-                          data_root + '2024-11-01/2024-11-01_001',
-                          data_root + '2024-11-05/2024-11-05_001',
-                          data_root + '2024-11-07/2024-11-07_001',
-                          data_root + '2024-11-08/2024-11-08_001',
-                          data_root + '2024-11-11/2024-11-11_001',
-                          data_root + '2024-11-12/2024-11-12_001',
-                          data_root + '2024-11-14/2024-11-14_001',
-                          data_root + '2024-11-21/2024-11-21_001',
-                          data_root + '2024-11-22/2024-11-22_001',
-                          data_root + '2024-12-02/2024-12-02_001',
-                          data_root + '2024-12-03/2024-12-03_001']
+# all_fnirs_data_folders = [data_root +'2024-10-30/2024-10-30_001',
+#                           data_root +'2024-10-31/2024-10-31_001',
+#                           data_root + '2024-11-01/2024-11-01_001',
+#                           data_root + '2024-11-05/2024-11-05_001',
+#                           data_root + '2024-11-07/2024-11-07_001',
+#                           data_root + '2024-11-08/2024-11-08_001',
+#                           data_root + '2024-11-11/2024-11-11_001',
+#                           data_root + '2024-11-12/2024-11-12_001',
+#                           data_root + '2024-11-14/2024-11-14_001',
+#                           data_root + '2024-11-21/2024-11-21_001',
+#                           data_root + '2024-11-22/2024-11-22_001',
+#                           data_root + '2024-12-02/2024-12-02_001',
+#                           data_root + '2024-12-03/2024-12-03_001']
+
+all_fnirs_data_folders = [data_root + '2024-10-24/2024-10-24_001', 
+                          data_root + '2024-10-24/2024-10-24_002', 
+                          data_root + '2024-10-24/2024-10-24_003', 
+                          data_root + '2024-10-24/2024-10-24_004']
 
 
 
 # All subject IDs
-subject_ID = ['dense_nirs_2','dense_nirs_3','dense_nirs_4','dense_nirs_5','dense_nirs_6','dense_nirs_7','dense_nirs_8','dense_nirs_9','dense_nirs_10','dense_nirs_11','dense_nirs_12','dense_nirs_13','dense_nirs_14']
+#subject_ID = ['dense_nirs_2','dense_nirs_3','dense_nirs_4','dense_nirs_5','dense_nirs_6','dense_nirs_7','dense_nirs_8','dense_nirs_9','dense_nirs_10','dense_nirs_11','dense_nirs_12','dense_nirs_13','dense_nirs_14']
+subject_ID = ['lights_on_cpod_on','lights_off_cpod_on','lights_on_cpod_off','lights_off_cpod_off']
 # The subjects we would like to run right now
-curr_subject_ID = ['dense_nirs_4','dense_nirs_6','dense_nirs_7','dense_nirs_8','dense_nirs_9','dense_nirs_11','dense_nirs_12','dense_nirs_13','dense_nirs_14']
+#curr_subject_ID = ['dense_nirs_4','dense_nirs_6','dense_nirs_7','dense_nirs_8','dense_nirs_9','dense_nirs_11','dense_nirs_12','dense_nirs_13','dense_nirs_14']
 # 'dense_nirs_5',
+curr_subject_ID = ['lights_off_cpod_on']
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 

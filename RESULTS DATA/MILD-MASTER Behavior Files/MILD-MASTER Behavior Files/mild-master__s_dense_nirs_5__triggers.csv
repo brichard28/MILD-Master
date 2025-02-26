@@ -1,0 +1,96 @@
+S,Trig,Condition
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,1,Inhale
+dense_nirs_5,2,Exhale
+dense_nirs_5,3,Hold_Breath
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,1,Inhale
+dense_nirs_5,2,Exhale
+dense_nirs_5,3,Hold_Breath
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,1,Inhale
+dense_nirs_5,2,Exhale
+dense_nirs_5,3,Hold_Breath
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,1,Inhale
+dense_nirs_5,2,Exhale
+dense_nirs_5,3,Hold_Breath
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,1,Inhale
+dense_nirs_5,2,Exhale
+dense_nirs_5,3,Hold_Breath
+dense_nirs_5,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_5,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_5,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_5,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_5,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_5,11,side=l_itd=0_az=5_mag=0_lpf=0
