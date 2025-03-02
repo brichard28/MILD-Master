@@ -14,7 +14,7 @@ import os
 import pandas as pd
 from collections import defaultdict
 
-mne.set_config('MNE_BROWSER_BACKEND', 'qt')
+# mne.set_config('MNE_BROWSER_BACKEND', 'qt')
 #from nirx_movement import mark_aux_movement_bad
 from mne_nirs.experimental_design import make_first_level_design_matrix
 from mne_nirs.statistics import run_glm, statsmodels_to_results
@@ -28,6 +28,8 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from mne_nirs.channels import picks_pair_to_idx
 from mne_nirs.visualisation import plot_glm_group_topo, plot_glm_surface_projection
 
+# Import StatsModels
+import statsmodels.formula.api as smf
 #from scipy import signal
 from scipy import stats
 
@@ -48,16 +50,18 @@ from plot_nirs import plot_nirs_evoked_error
 wdir = os.path.dirname(__file__)
 
 # Define Subject Files
-data_root = 'C:/Users/benri/Downloads/' 
-
 # Define Subject Files
 root = ''
-user = 'Desktop'
+user = 'Home'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
-else:
+elif user == 'Desktop':
     data_root = '/home/apclab/Downloads/'
+    mild_master_root  = '/home/apclab/Documents/GitHub/MILD-Master'
+elif user == 'Home':
+    data_root = '/home/ben/Downloads/'
+    mild_master_root = '/home/ben/Documents/GitHub/MILD-Master'
 
 all_fnirs_data_folders = [data_root + "2025-01-16/2025-01-16_001",
 data_root + "2025-01-20/2025-01-20_001",
@@ -164,7 +168,6 @@ curr_subject_ID = ['mild_master_1',
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-masker_type = 'speech' # type of masker to analyze on this run
 glm_dur = 5
 
 n_subjects = len(curr_subject_ID)
@@ -177,69 +180,72 @@ task_type = 'Ben_SvN'
 
 
 all_subjects_bad_channels = []
+group_df = pd.DataFrame()  # To store channel level results
 
 left_hem_channels = [[1,8],[1,7],[2,8],[2,7],[2,6],[3,7],[3,6],[3,5],[7,8],[7,7],[7,18],[7,17],[8,8],[8,7],[8,6],[8,18],
 [8,17],[8,16],[9,7],[9,6],[9,5],[9,17],[9,16],[9,15],[10,6],[10,5],[10,16],[10,15],[10,14],[10,21],[15,18],[15,17],[15,22],
 [16,18],[16,17],[16,16],[16,22],[16,23],[17,17],[17,16],[17,15],[17,21],[17,22],[17,23],[18,23],[18,22],[18,16],[18,15],[18,21],[19,15],[19,14],[19,21]]
 
-left_hem_channel_names = ["S1_D8 hbo",
-                          "S1_D7 hbo",
-                          "S2_D8 hbo",
-                          "S2_D7 hbo",
-                          "S2_D6 hbo",
-                          "S3_D7 hbo",
-                          "S3_D6 hbo",
-                          "S3_D5 hbo",
-                          "S7_D8 hbo",
-                          "S7_D7 hbo",
-                          "S7_D18 hbo",
-                          "S7_D17 hbo",
-                          "S8_D8 hbo",
-                          "S8_D7 hbo",
-                          "S8_D6 hbo",
-                          "S8_D18 hbo",
-                          "S8_D17 hbo",
-                          "S8_D16 hbo",
-                          "S9_D7 hbo",
-                          "S9_D6 hbo",
-                          "S9_D5 hbo",
-                          "S9_D17 hbo",
-                          "S9_D16 hbo",
-                          "S9_D15 hbo",
-                          "S10_D6 hbo",
-                          "S10_D5 hbo",
-                          "S10_D16 hbo",
-                          "S10_D15 hbo",
-                          "S10_D14 hbo",
-                          "S10_D21 hbo",
-                          "S15_D18 hbo",
-                          "S15_D17 hbo",
-                          "S15_D22 hbo",
-                          "S16_D18 hbo",
-                          "S16_D17 hbo",
-                          "S16_D16 hbo",
-                          "S16_D22 hbo",
-                          "S16_D23 hbo",
-                          "S17_D17 hbo",
-                          "S17_D16 hbo",
-                          "S17_D15 hbo",
-                          "S17_D21 hbo",
-                          "S17_D22 hbo",
-                          "S17_D23 hbo",
-                          "S18_D23 hbo",
-                          "S18_D22 hbo",
-                          "S18_D16 hbo",
-                          "S18_D15 hbo",
-                          "S18_D21 hbo",
-                          "S19_D15 hbo",
-                          "S19_D14 hbo",
-                          "S19_D21 hbo"]
+left_hem_channel_names = ["S" + str(value[0]) + "_D" + str(value[1]) + " hbo" for idx, value in enumerate(left_hem_channels)]
+# left_hem_channel_names = ["S1_D8 hbo",
+#                           "S1_D7 hbo",
+#                           "S2_D8 hbo",
+#                           "S2_D7 hbo",
+#                           "S2_D6 hbo",
+#                           "S3_D7 hbo",
+#                           "S3_D6 hbo",
+#                           "S3_D5 hbo",
+#                           "S7_D8 hbo",
+#                           "S7_D7 hbo",
+#                           "S7_D18 hbo",
+#                           "S7_D17 hbo",
+#                           "S8_D8 hbo",
+#                           "S8_D7 hbo",
+#                           "S8_D6 hbo",
+#                           "S8_D18 hbo",
+#                           "S8_D17 hbo",
+#                           "S8_D16 hbo",
+#                           "S9_D7 hbo",
+#                           "S9_D6 hbo",
+#                           "S9_D5 hbo",
+#                           "S9_D17 hbo",
+#                           "S9_D16 hbo",
+#                           "S9_D15 hbo",
+#                           "S10_D6 hbo",
+#                           "S10_D5 hbo",
+#                           "S10_D16 hbo",
+#                           "S10_D15 hbo",
+#                           "S10_D14 hbo",
+#                           "S10_D21 hbo",
+#                           "S15_D18 hbo",
+#                           "S15_D17 hbo",
+#                           "S15_D22 hbo",
+#                           "S16_D18 hbo",
+#                           "S16_D17 hbo",
+#                           "S16_D16 hbo",
+#                           "S16_D22 hbo",
+#                           "S16_D23 hbo",
+#                           "S17_D17 hbo",
+#                           "S17_D16 hbo",
+#                           "S17_D15 hbo",
+#                           "S17_D21 hbo",
+#                           "S17_D22 hbo",
+#                           "S17_D23 hbo",
+#                           "S18_D23 hbo",
+#                           "S18_D22 hbo",
+#                           "S18_D16 hbo",
+#                           "S18_D15 hbo",
+#                           "S18_D21 hbo",
+#                           "S19_D15 hbo",
+#                           "S19_D14 hbo",
+#                           "S19_D21 hbo"]
 
 
 right_hem_channels = [[4,4],[4,3],[4,2],[5,3],[5,2],[5,1],[6,2],[6,1],[11,13],[11,4],[11,3],[11,12],[11,11],[12,4],[12,3],
     [12,2],[12,12],[12,11],[12,10],[13,11],[13,10],[13,9],[13,3],[13,2],[13,1],[14,2],[14,1],[14,10],[14,9],[20,13],[20,12],
     [20,20],[21,20],[21,12],[21,11],[21,19],[22,20],[22,12],[22,11],[22,10],[22,19],[23,11],[23,10],[23,9],[23,19],[24,10],
     [24,9],[24,19]]
+right_hem_channel_names = ["S" + str(value[0]) + "_D" + str(value[1]) + " hbo" for idx, value in enumerate(right_hem_channels)]
 
 
 # set up the arrays to hold all subject data
@@ -375,7 +381,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
         this_sub_short_regression = False
 
     raw_haemo_temp, null = preprocess_NIRX(data, data_snirf, event_dict,
-                                           save=True,
+                                           save=False,
                                            savename=save_dir + f'{subject}_{task_type}_preproc_nirs.fif',
                                            plot_steps=False,
                                            crop=False, crop_low=0, crop_high=0,
@@ -595,37 +601,35 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
 
 
-    # Append stats df to a larger dataframe
+    # Append stats df to a group results
+    individual_results = glm_est.to_dataframe()
+    individual_results["ID"] = subject
+    # Convert to uM for nicer plotting below.
+    individual_results["theta"] = [t * 1.e6 for t in individual_results["theta"]]
 
-
+    group_df = pd.concat([group_df, individual_results], ignore_index=True)
 
     # GLM Topoplot just this participant
 
     glm_hbo = glm_est.copy().pick(picks="hbo")
-    conditions_to_plot = ['az_itd=5_az=0']
+    conditions_to_plot = ['az_itd=0_az=5','az_itd=0_az=15']
 
-    groups_single_chroma = dict(
-        Left_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), left_hem_channels,
-                                          on_missing='warning'),
-        Right_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), right_hem_channels,
-                                           on_missing='warning'))
+    this_sub_left_hem = [idx for idx, value in enumerate(glm_hbo.ch_names) if value in left_hem_channel_names]
+    this_sub_right_hem = [idx for idx, value in enumerate(glm_hbo.ch_names) if value in right_hem_channel_names]
 
-    this_sub_left_hem = [idx for idx, value in enumerate(left_hem_channel_names) if value in glm_hbo.ch_names]
-    #this_sub_right_hem = [idx for idx, value in enumerate(right_hem_channel_names) if value in glm_hbo.ch_names]
-
-    fig_topo, ax_topo = plt.subplots(nrows=1, ncols=1)
-    glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=conditions_to_plot, axes=ax_topo, colorbar=False, vlim=(-0.2, 0.2))
-    plt.savefig("/home/apclab/Documents/GitHub/MILD-Master/CASUAL FIGURES/" + subject + "_individual_topo.png")
+    fig_topo, ax_topo = plt.subplots(nrows=1, ncols=len(conditions_to_plot))
+    for icond, condition in enumerate(conditions_to_plot):
+        glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False, vlim=(-0.2, 0.2))
+        glm_hbo.copy().pick(this_sub_right_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False,vlim=(-0.2, 0.2))
+    plt.savefig(mild_master_root + "/CASUAL FIGURES/" + subject + "_individual_topo.png")
 
 ##############################
 ## Take mean during stim ####
 ############################
 
-pfc_channels = []
-stg_channels = []
 # Take Means
-index_stim_start = int(2*fs) # 8
-index_stim_end = int(13.6*fs)
+index_stim_start = int(-tmin*fs)
+index_stim_end = int((-tmin + 11.6)*fs)
 # itd5
 mean_during_stim_itd5 = np.nanmean(subject_data_itd5_baselined[:,:,index_stim_start:index_stim_end], axis=2)
 mean_during_stim_itd5_hbr = np.nanmean(subject_data_itd5_hbr_baselined[:,:,index_stim_start:index_stim_end], axis=2)
@@ -644,7 +648,7 @@ mean_during_stim_ild15_hbr = np.nanmean(subject_data_ild15_hbr_baselined[:,:,ind
 
 ## Save breath uncorrected and corrected GLM data
 
-# Uncorrected block averages
+# block averages
 names = ['S','Channel','Time_Index']
 index = pd.MultiIndex.from_product([range(s) for s in subject_data_itd5_baselined.shape], names = names)
 itd5_df = pd.DataFrame({'subject_data_itd5':subject_data_itd5_baselined.flatten()},index=index)['subject_data_itd5']
@@ -652,20 +656,10 @@ itd15_df = pd.DataFrame({'subject_data_itd15':subject_data_itd15_baselined.flatt
 ild5_df = pd.DataFrame({'subject_data_ild5':subject_data_ild5_baselined.flatten()},index=index)['subject_data_ild5']
 ild15_df = pd.DataFrame({'subject_data_ild15':subject_data_ild15_baselined.flatten()},index=index)['subject_data_ild15']
 z = pd.concat([itd5_df,itd15_df,ild5_df,ild15_df], ignore_index=True,axis=1)
-z.to_csv(f'all_subjects_uncorr_block_average_{masker_type}_masker.csv',index=True)
-
-# Corrected block averages
-names = ['S','Channel','Time_Index']
-index = pd.MultiIndex.from_product([range(s) for s in subject_data_itd5_bh_corr.shape], names = names)
-itd5_df = pd.DataFrame({'subject_data_itd5_bh_corr':subject_data_itd5_bh_corr.flatten()},index=index)['subject_data_itd5_bh_corr']
-itd15_df = pd.DataFrame({'subject_data_itd15_bh_corr':subject_data_itd15_bh_corr.flatten()},index=index)['subject_data_itd15_bh_corr']
-ild5_df = pd.DataFrame({'subject_data_ild5_bh_corr':subject_data_ild5_bh_corr.flatten()},index=index)['subject_data_ild5_bh_corr']
-ild15_df = pd.DataFrame({'subject_data_ild15_bh_corr':subject_data_ild15_bh_corr.flatten()},index=index)['subject_data_ild15_bh_corr']
-z = pd.concat([itd5_df,itd15_df,ild5_df,ild15_df], ignore_index=True,axis=1)
-z.to_csv(f'all_subjects_bh_corr_block_average_{masker_type}_masker.csv',index=True)
+z.to_csv(f'all_subjects_uncorr_block_average_hbo.csv',index=True)
 
 
-# Uncorrected block average means HBO
+# block average means HBO
 names = ['S','Channel']
 index = pd.MultiIndex.from_product([range(s) for s in mean_during_stim_itd5.shape], names = names)
 itd5_df = pd.DataFrame({'mean_during_stim_itd5':mean_during_stim_itd5.flatten()},index=index)['mean_during_stim_itd5']
@@ -673,7 +667,7 @@ itd15_df = pd.DataFrame({'mean_during_stim_itd15':mean_during_stim_itd15.flatten
 ild5_df = pd.DataFrame({'mean_during_stim_ild5':mean_during_stim_ild5.flatten()},index=index)['mean_during_stim_ild5']
 ild15_df = pd.DataFrame({'mean_during_stim_ild15':mean_during_stim_ild15.flatten()},index=index)['mean_during_stim_ild15']
 z = pd.concat([itd5_df,itd15_df,ild5_df,ild15_df], ignore_index=True,axis=1)
-z.to_csv(f'all_subjects_mean_during_stim_{masker_type}_masker.csv',index=True)
+z.to_csv(f'all_subjects_mean_during_stim_hbo.csv',index=True)
 
 
 # Uncorrected block average means HBR
@@ -684,7 +678,7 @@ itd15_df = pd.DataFrame({'mean_during_stim_itd15_hbr':mean_during_stim_itd15_hbr
 ild5_df = pd.DataFrame({'mean_during_stim_ild5_hbr':mean_during_stim_ild5_hbr.flatten()},index=index)['mean_during_stim_ild5_hbr']
 ild15_df = pd.DataFrame({'mean_during_stim_ild15_hbr':mean_during_stim_ild15_hbr.flatten()},index=index)['mean_during_stim_ild15_hbr']
 z = pd.concat([itd5_df,itd15_df,ild5_df,ild15_df], ignore_index=True,axis=1)
-z.to_csv(f'all_subjects_mean_during_stim_{masker_type}_masker_hbr.csv',index=True)
+z.to_csv(f'all_subjects_mean_during_stim_hbr.csv',index=True)
 
 # ---------------------------------------------------------------
 # -----------------     Subject Averaging                ---------
@@ -695,15 +689,42 @@ subject_data_itd15_GLM_mean = np.nanmean(1e6*subject_data_itd15_GLM, axis=0)
 subject_data_ild5_GLM_mean = np.nanmean(1e6*subject_data_ild5_GLM, axis=0)
 subject_data_ild15_GLM_mean = np.nanmean(1e6*subject_data_ild15_GLM, axis=0)
 
-subject_data_itd5_GLM_std = np.nanstd(1e6*subject_data_itd5_GLM, axis=0) / np.sqrt(n_subjects)
-subject_data_itd15_GLM_std = np.nanstd(1e6*subject_data_itd15_GLM, axis=0) / np.sqrt(n_subjects)
-subject_data_ild5_GLM_std = np.nanstd(1e6*subject_data_ild5_GLM, axis=0) / np.sqrt(n_subjects)
-subject_data_ild15_GLM_std = np.nanstd(1e6*subject_data_ild15_GLM, axis=0) / np.sqrt(n_subjects)
+subject_data_itd5_GLM_std = np.nanstd(1e6*subject_data_itd5_GLM, axis=0) / (np.sqrt(n_subjects)-1)
+subject_data_itd15_GLM_std = np.nanstd(1e6*subject_data_itd15_GLM, axis=0) / (np.sqrt(n_subjects)-1)
+subject_data_ild5_GLM_std = np.nanstd(1e6*subject_data_ild5_GLM, axis=0) / (np.sqrt(n_subjects)-1)
+subject_data_ild15_GLM_std = np.nanstd(1e6*subject_data_ild15_GLM, axis=0) / (np.sqrt(n_subjects)-1)
 
 
 # ---------------------------------------------------------------
 # -----------------     PLotting GLM Averages           ---------
 # ---------------------------------------------------------------
+
+caxis_lim = 0.2
+
+fig, ax_topo = plt.subplots(1, 4)
+groups_single_chroma = dict(
+    Left_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), left_hem_channels,
+                                      on_missing='warning'),
+    Right_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), right_hem_channels,
+                                       on_missing='warning'))
+# Run group level model and convert to dataframe
+group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
+group_results = group_results.query("Chroma in ['hbo']")
+ch_model = smf.mixedlm("theta ~ -1 + ch_name:Chroma:Condition",
+                       group_results, groups=group_results["ID"]).fit(method='nm')
+ch_model_df = statsmodels_to_results(ch_model)
+### Plot group results
+plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo"),
+                    ch_model_df.query("Condition in ['az_itd=5_az=0']"),                ####Change here####
+                    colorbar=False, axes=ax_topo[0],
+                    vlim=(-caxis_lim, caxis_lim), cmap='summer')
+
+# plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo").pick(groups_single_chroma['Right_Hemisphere']),
+#                     ch_model_df.query("Condition in ['az_itd=5_az=0']"),              ####Change here#####
+#                     colorbar=True, axes=ax_topo[0],
+#                     vlim=(-caxis_lim, caxis_lim), cmap='summer')
+plt.savefig(mild_master_root + "/CASUAL FIGURES/" + subject + "_group_topo.png")
+
 caxis_lim = 0.1
 
 fig, (ax1,ax2,ax3,ax4) = plt.subplots(1, 4)
@@ -737,7 +758,6 @@ im, _ = mne.viz.plot_topomap(subject_data_ild15_GLM_mean, all_epochs[0].pick('hb
 cbar = fig.colorbar(im, ax=ax4)
 cbar.set_label('Beta (a.u.)')
 ax4.set_title('GLM Beta: ild15')
-plt.show()
 
 
 
@@ -868,13 +888,3 @@ for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
         axes[idx].set_title(f"{cond}")
 axes[0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
 
-# GLM TOPOPLOT BROKEN UP BY HEMISPHERE
-caxis_lim = 0.15
-
-fig, ax_topo = plt.subplots(1, 5)
-plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo").pick(groups_single_chroma['Left_Hemisphere']),
-                    glm_est_df,  ####Change here####
-                    colorbar=False, axes=ax_topo,
-                    vlim=(-caxis_lim, caxis_lim), cmap='summer')
-
-plt.show()
