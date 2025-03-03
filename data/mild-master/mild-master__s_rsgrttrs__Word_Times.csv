@@ -1,6 +1,0 @@
-0_practice,0__practice__l=gash-gash-dash-dash-gash-dash-bash__r=gash-gash-bash-dash-bash-dash-dash.wav,Target,gash,11025,gash,46305,dash,81585,dash,116865,gash,141120,dash,187425,bash,211680
-0_practice,0__practice__l=gash-gash-dash-dash-gash-dash-bash__r=gash-gash-bash-dash-bash-dash-dash.wav,Masker,gash,0,gash,35280,bash,70560,dash,105840,bash,152145,dash,176400,dash,222705
-0_side=l_itd=0_az=5_mag=1,0__side=l_itd=0_az=5_mag=1__l=gash-dash-gash-gash-gash-bash-dash__r=bash-dash-gash-bash-dash-dash-dash.wav,Target,gash,11025,dash,35280,gash,70560,gash,116865,gash,152145,bash,187425,dash,222705
-0_side=l_itd=0_az=5_mag=1,0__side=l_itd=0_az=5_mag=1__l=gash-dash-gash-gash-gash-bash-dash__r=bash-dash-gash-bash-dash-dash-dash.wav,Masker,bash,0,dash,46305,gash,81585,bash,105840,dash,141120,dash,176400,dash,211680
-0_side=l_itd=0_az=60_mag=1,0__side=l_itd=0_az=60_mag=1__l=bash-dash-dash-dash-dash-dash-gash__r=dash-dash-bash-gash-bash-dash-gash.wav,Target,bash,11025,dash,46305,dash,81585,dash,116865,dash,152145,dash,176400,gash,222705
-0_side=l_itd=0_az=60_mag=1,0__side=l_itd=0_az=60_mag=1__l=bash-dash-dash-dash-dash-dash-gash__r=dash-dash-bash-gash-bash-dash-gash.wav,Masker,dash,0,dash,35280,bash,70560,gash,105840,bash,141120,dash,187425,gash,211680

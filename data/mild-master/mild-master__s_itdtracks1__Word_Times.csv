@@ -1,4 +1,0 @@
-0_practice,0__practice__l=gash-dash-gash-gash-bash-dash-gash__r=gash-dash-bash-dash-gash-gash-bash.wav,Target,gash,11025,dash,35280,gash,81585,gash,105840,bash,141120,dash,176400,gash,211680
-0_practice,0__practice__l=gash-dash-gash-gash-bash-dash-gash__r=gash-dash-bash-dash-gash-gash-bash.wav,Masker,gash,0,dash,46305,bash,70560,dash,116865,gash,152145,gash,187425,bash,222705
-0_side=l_itd=0_az=60_mag=1,0__side=l_itd=0_az=60_mag=1__l=bash-dash-gash-dash-dash-gash-bash__r=dash-gash-dash-bash-gash-gash-gash.wav,Target,bash,0,dash,35280,gash,70560,dash,105840,dash,141120,gash,187425,bash,222705
-0_side=l_itd=0_az=60_mag=1,0__side=l_itd=0_az=60_mag=1__l=bash-dash-gash-dash-dash-gash-bash__r=dash-gash-dash-bash-gash-gash-gash.wav,Masker,dash,11025,gash,46305,dash,81585,bash,116865,gash,152145,gash,176400,gash,211680
