@@ -52,7 +52,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Home'
+user = 'Desktop'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
@@ -141,29 +141,30 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_6',
 'mild_master_8',
 'mild_master_9',
-'mild_master_10',
-'mild_master_11',
-'mild_master_12',
-'mild_master_14',
-'mild_master_15',
-'mild_master_16',
-'mild_master_17',
-'mild_master_18',
-'mild_master_19',
-'mild_master_20',
-'mild_master_22',
-'mild_master_23',
-'mild_master_24',
-'mild_master_25',
-'mild_master_26',
-'mild_master_27',
-'mild_master_28',
-'mild_master_29',
-'mild_master_30',
-'mild_master_31',
-'mild_master_32',
-'mild_master_33',
-'mild_master_34']
+'mild_master_10']
+
+# 'mild_master_11',
+# 'mild_master_12',
+# 'mild_master_14',
+# 'mild_master_15',
+# 'mild_master_16',
+# 'mild_master_17',
+# 'mild_master_18',
+# 'mild_master_19',
+# 'mild_master_20',
+# 'mild_master_22',
+# 'mild_master_23',
+# 'mild_master_24',
+# 'mild_master_25',
+# 'mild_master_26',
+# 'mild_master_27',
+# 'mild_master_28',
+# 'mild_master_29',
+# 'mild_master_30',
+# 'mild_master_31',
+# 'mild_master_32',
+# 'mild_master_33',
+# 'mild_master_34']
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
@@ -465,7 +466,10 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
     chan_indices_bad_hbr = [i for i in range(len(chan_hbr)) if chan_hbr[i] in chan_hbr_bad]
     chan_indices_good_hbr = [i for i in range(len(chan_hbr)) if chan_hbr[i] not in chan_hbr_bad]
-    
+
+    all_chan = epochs.copy().info['ch_names']
+    chan_bad = list(epochs.copy().info['bads'])
+    chan_indices_good_all = [i for i in range(len(all_chan)) if all_chan[i] not in chan_bad]
     # split the data into speech, noise, control,
     data_itd5 = epochs["az_itd=5_az=0"].get_data(picks='hbo')
     data_itd15 = epochs["az_itd=15_az=0"].get_data(picks='hbo')
@@ -552,54 +556,30 @@ for ii, subject_num in enumerate(range(n_subjects)):
     
     
 
-    design_matrix_hbo = make_first_level_design_matrix(raw_haemo_filt_for_glm.pick(picks='hbo'),
+    design_matrix = make_first_level_design_matrix(raw_haemo_filt_for_glm,
                                                         drift_model=None,
                                                         high_pass=0.01,  # Must be specified per experiment
                                                         hrf_model='spm',
                                                         stim_dur=glm_dur)
     # # add_regs=filtered_signals)
 
-    design_matrix_hbo["Linear"] = np.arange(0, np.shape(design_matrix_hbo)[0])
+    design_matrix["Linear"] = np.arange(0, np.shape(design_matrix)[0])
     #design_matrix_hbo["ShortHbO"] = np.mean(raw_haemo_short.copy().pick(picks="hbo").get_data(), axis=0)
 
     #design_matrix_hbr["ShortHbR"] = np.mean(raw_haemo_short.copy().pick(picks="hbr").get_data(), axis=0)
     min_max_scaler = MinMaxScaler()
-    X_minmax = min_max_scaler.fit_transform(design_matrix_hbo)
-    design_matrix_min_max = pd.DataFrame(X_minmax, columns=design_matrix_hbo.columns.tolist())
-    # if False:
-    # # plotting optional
-    #     fig, ax1 = plt.subplots(figsize=(10, 6), nrows=1, ncols=1)
-    #     ax_img = plot_design_matrix(design_matrix_min_max, ax=ax1)
-    #     plt.show()
-    
-    #     s = mne_nirs.experimental_design.create_boxcar(raw_haemo_filt, stim_dur=glm_dur)
-    #     fig, ax2 = plt.subplots(figsize=(10, 6), nrows=1, ncols=1)
-    #     plt.plot(raw_haemo_filt.times[0:2000], s[0:2000, 3])
-    #     plt.plot(design_matrix_hbo['itd=500_az=0_mag=0'])
-    #     plt.legend(["Stimulus", "Expected Response"])
-    #     plt.xlabel("Time (s)")
-    #     plt.ylabel("Amplitude")
-    #     plt.show()
-
-    # print(f'running GLM for subject {ii + 1}')
+    X_minmax = min_max_scaler.fit_transform(design_matrix)
+    design_matrix_min_max = pd.DataFrame(X_minmax, columns=design_matrix.columns.tolist())
 
     # pre-whiten
     raw_haemo_filt_for_glm._data = np.subtract(raw_haemo_filt_for_glm._data,
                                             np.nanmean(raw_haemo_filt_for_glm._data, axis=1)[:, np.newaxis])
-    glm_est = run_glm(raw_haemo_filt_for_glm, design_matrix_hbo, noise_model='ar1')
+    glm_est = run_glm(raw_haemo_filt_for_glm, design_matrix, noise_model='ar1')
 
     # record the glm est for each condition, for each subject
     # will adjust the beta values by the BH correction method
 
     glm_est_df = glm_est.pick(picks='data').to_dataframe()
-
-    # # put into a larger array with all subjects data!
-    subject_data_itd5_GLM[ii, chan_indices_good_hbo] = glm_est_df.loc[glm_est_df['Condition'] == 'az_itd=5_az=0']['theta']
-    subject_data_itd15_GLM[ii, chan_indices_good_hbo] = glm_est_df.loc[glm_est_df['Condition'] == 'az_itd=15_az=0']['theta']
-    subject_data_ild5_GLM[ii, chan_indices_good_hbo] = glm_est_df.loc[glm_est_df['Condition'] == 'az_itd=0_az=5']['theta']
-    subject_data_ild15_GLM[ii, chan_indices_good_hbo] = glm_est_df.loc[glm_est_df['Condition'] == 'az_itd=0_az=15']['theta']
-
-
 
     # Append stats df to a group results
     individual_results = glm_est.to_dataframe()
@@ -709,10 +689,17 @@ groups_single_chroma = dict(
                                        on_missing='warning'))
 # Run group level model and convert to dataframe
 group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
-group_results = group_results.query("Chroma in ['hbo']")
+
+import seaborn as sns
+sns.catplot(x="Condition",y="theta",col="ID",hue="Chroma",data=group_results,col_wrap=5,errorbar=None,palette="muted",height=4, s=10)
+plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_participant.png")
+
 ch_model = smf.mixedlm("theta ~ -1 + ch_name:Chroma:Condition",
                        group_results, groups=group_results["ID"]).fit(method='nm')
 ch_model_df = statsmodels_to_results(ch_model)
+
+sns.catplot(x="Condition",y="Coef.",data=ch_model_df.query("Chroma == 'hbo'"), errorbar=None, palette="muted", height=4, s=10)
+plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_condition.png")
 ### Plot group results
 plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo"),
                     ch_model_df.query("Condition in ['az_itd=5_az=0']"),                ####Change here####
@@ -723,7 +710,7 @@ plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo"),
 #                     ch_model_df.query("Condition in ['az_itd=5_az=0']"),              ####Change here#####
 #                     colorbar=True, axes=ax_topo[0],
 #                     vlim=(-caxis_lim, caxis_lim), cmap='summer')
-plt.savefig(mild_master_root + "/CASUAL FIGURES/" + subject + "_group_topo.png")
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topo.png")
 
 caxis_lim = 0.1
 
