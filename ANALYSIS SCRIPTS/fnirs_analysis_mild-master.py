@@ -137,34 +137,33 @@ subject_ID = ['mild_master_1',
 curr_subject_ID = ['mild_master_1',
 'mild_master_3',
 'mild_master_4',
-'mild_master_5']
-
-# 'mild_master_6',
-# 'mild_master_8',
-# 'mild_master_9',
-# 'mild_master_10',
-# 'mild_master_11',
-# 'mild_master_12',
-# 'mild_master_14',
-# 'mild_master_15',
-# 'mild_master_16',
-# 'mild_master_17',
-# 'mild_master_18',
-# 'mild_master_19',
-# 'mild_master_20',
-# 'mild_master_22',
-# 'mild_master_23',
-# 'mild_master_24',
-# 'mild_master_25',
-# 'mild_master_26',
-# 'mild_master_27',
-# 'mild_master_28',
-# 'mild_master_29',
-# 'mild_master_30',
-# 'mild_master_31',
-# 'mild_master_32',
-# 'mild_master_33',
-# 'mild_master_34']
+'mild_master_5',
+'mild_master_6',
+'mild_master_8',
+'mild_master_9',
+'mild_master_10',
+'mild_master_11',
+'mild_master_12',
+'mild_master_14',
+'mild_master_15',
+'mild_master_16',
+'mild_master_17',
+'mild_master_18',
+'mild_master_19',
+'mild_master_20',
+'mild_master_22',
+'mild_master_23',
+'mild_master_24',
+'mild_master_25',
+'mild_master_26',
+'mild_master_27',
+'mild_master_28',
+'mild_master_29',
+'mild_master_30',
+'mild_master_31',
+'mild_master_32',
+'mild_master_33',
+'mild_master_34']
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
@@ -599,8 +598,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
     fig_topo, ax_topo = plt.subplots(nrows=1, ncols=len(conditions_to_plot))
     for icond, condition in enumerate(conditions_to_plot):
-        glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False, vlim=(-0.2, 0.2),sensors=False)
-        glm_hbo.copy().pick(this_sub_right_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False,vlim=(-0.2, 0.2),sensors=False)
+        glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False, vlim=(-0.2, 0.2))
+        glm_hbo.copy().pick(this_sub_right_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False,vlim=(-0.2, 0.2))
     plt.savefig(mild_master_root + "/CASUAL FIGURES/" + subject + "_individual_topo.png")
 
 ##############################
