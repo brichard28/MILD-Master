@@ -52,7 +52,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Desktop'
+user = 'Home'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
@@ -137,12 +137,12 @@ subject_ID = ['mild_master_1',
 curr_subject_ID = ['mild_master_1',
 'mild_master_3',
 'mild_master_4',
-'mild_master_5',
-'mild_master_6',
-'mild_master_8',
-'mild_master_9',
-'mild_master_10']
+'mild_master_5']
 
+# 'mild_master_6',
+# 'mild_master_8',
+# 'mild_master_9',
+# 'mild_master_10',
 # 'mild_master_11',
 # 'mild_master_12',
 # 'mild_master_14',
@@ -599,8 +599,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
     fig_topo, ax_topo = plt.subplots(nrows=1, ncols=len(conditions_to_plot))
     for icond, condition in enumerate(conditions_to_plot):
-        glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False, vlim=(-0.2, 0.2))
-        glm_hbo.copy().pick(this_sub_right_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False,vlim=(-0.2, 0.2))
+        glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False, vlim=(-0.2, 0.2),sensors=False)
+        glm_hbo.copy().pick(this_sub_right_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False,vlim=(-0.2, 0.2),sensors=False)
     plt.savefig(mild_master_root + "/CASUAL FIGURES/" + subject + "_individual_topo.png")
 
 ##############################
@@ -694,23 +694,37 @@ import seaborn as sns
 sns.catplot(x="Condition",y="theta",col="ID",hue="Chroma",data=group_results,col_wrap=5,errorbar=None,palette="muted",height=4, s=10)
 plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_participant.png")
 
-ch_model = smf.mixedlm("theta ~ -1 + ch_name:Chroma:Condition",
-                       group_results, groups=group_results["ID"]).fit(method='nm')
-ch_model_df = statsmodels_to_results(ch_model)
 
-sns.catplot(x="Condition",y="Coef.",data=ch_model_df.query("Chroma == 'hbo'"), errorbar=None, palette="muted", height=4, s=10)
-plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_condition.png")
+group_theta_for_catplot = group_results.groupby(by=['Chroma','ch_name','ID','Condition'],as_index=False)['theta'].mean()
+sns.catplot(x="Condition",y="theta",hue = "ID", data=group_theta_for_catplot.query("Chroma == 'hbo'"), errorbar=None, height=7, s=10, legend=False)
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_catplot.png")
+
+group_theta_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['theta'].mean()
+fig, topo_axes = plt.subplots(nrows=1, ncols=1,figsize=(18,36))
+this_info = raw_haemo_filt.copy().pick(picks="hbo")
+this_info.drop_channels([i for i in this_info.ch_names if i not in np.unique(group_theta_for_topoplot['ch_name'])])
+this_info = this_info.info
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']")['theta'],this_info,sensors=False, axes = topo_axes)
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot.png")
+
+# NOW SPLIT IT UP BY CHANNEL
+
+# ch_model = smf.mixedlm("theta ~ -1 + ch_name:Chroma:Condition",group_results, groups=group_results["ID"]).fit(method='nm')
+# ch_model_df = statsmodels_to_results(ch_model)
+
+# sns.catplot(x="Condition",y="Coef.",data=ch_model_df.query("Chroma == 'hbo'"), errorbar=None, palette="muted", height=4, s=10)
+# plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_condition.png")
 ### Plot group results
-plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo"),
-                    ch_model_df.query("Condition in ['az_itd=5_az=0']"),                ####Change here####
-                    colorbar=False, axes=ax_topo[0],
-                    vlim=(-caxis_lim, caxis_lim), cmap='summer')
+# plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo"),
+#                     ch_model_df.query("Condition in ['az_itd=5_az=0']"),                ####Change here####
+#                     colorbar=False, axes=ax_topo[0],
+#                     vlim=(-caxis_lim, caxis_lim), cmap='summer')
 
 # plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo").pick(groups_single_chroma['Right_Hemisphere']),
 #                     ch_model_df.query("Condition in ['az_itd=5_az=0']"),              ####Change here#####
 #                     colorbar=True, axes=ax_topo[0],
 #                     vlim=(-caxis_lim, caxis_lim), cmap='summer')
-plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topo.png")
+# plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topo.png")
 
 caxis_lim = 0.1
 
