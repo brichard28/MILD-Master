@@ -5,13 +5,13 @@
 % order = preprocessing, epoch, postprocessing, multsubjects
 %-------------------------------------------------------------------------------------------------------------------
 
-subID = 'mild_master_32'; % Set current subject ID
+subID = 'mild_master_40'; % Set current subject ID
 % Excel sheet parameters
-range_A = 'A32'; % Excel sheet 
-range_B = 'B32';
+range_A = 'A40'; % Excel sheet 
+range_B = 'B40';
 badchannels = 'channelsremoved.xlsx';
 % Set directories
-whos_using = 'Ben'; % Choose user for directory stuff
+whos_using = 'Bon'; % Choose user for directory stuff
 if whos_using == 'Ben'
     addpath('/home/ben/Documents/MATLAB/eeglab2023.1');
     pre_pro_epoched_data_folder = '/run/media/ben/TOSHIBA EXT/LAPTOP/GitHub/MILD-Master/prepro_epoched_data';
@@ -26,7 +26,7 @@ elseif whos_using == 'Bon'
     addpath('C:\Users\benri\Documents\eeglab2023.1');
     pre_pro_epoched_data_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
     addpath(pre_pro_epoched_data_folder)
-    BDF_filename = ['D:\Downloads\', subID, '.bdf'];
+    BDF_filename = ['C:\Users\benri\Downloads\', subID, '.bdf'];
 elseif whos_using == 'Maa'
     addpath('C:\Users\maana\Documents\MATLAB\eeglab2023.0');
     pre_pro_epoched_data_folder = 'C:\Users\maana\Documents\GitHub\fNIRSandGerbils\prepro_epoched_data\';
