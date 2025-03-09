@@ -150,7 +150,6 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_17',
 'mild_master_18',
 'mild_master_19',
-'mild_master_20',
 'mild_master_22',
 'mild_master_23',
 'mild_master_24',
@@ -187,58 +186,6 @@ left_hem_channels = [[1,8],[1,7],[2,8],[2,7],[2,6],[3,7],[3,6],[3,5],[7,8],[7,7]
 [16,18],[16,17],[16,16],[16,22],[16,23],[17,17],[17,16],[17,15],[17,21],[17,22],[17,23],[18,23],[18,22],[18,16],[18,15],[18,21],[19,15],[19,14],[19,21]]
 
 left_hem_channel_names = ["S" + str(value[0]) + "_D" + str(value[1]) + " hbo" for idx, value in enumerate(left_hem_channels)]
-# left_hem_channel_names = ["S1_D8 hbo",
-#                           "S1_D7 hbo",
-#                           "S2_D8 hbo",
-#                           "S2_D7 hbo",
-#                           "S2_D6 hbo",
-#                           "S3_D7 hbo",
-#                           "S3_D6 hbo",
-#                           "S3_D5 hbo",
-#                           "S7_D8 hbo",
-#                           "S7_D7 hbo",
-#                           "S7_D18 hbo",
-#                           "S7_D17 hbo",
-#                           "S8_D8 hbo",
-#                           "S8_D7 hbo",
-#                           "S8_D6 hbo",
-#                           "S8_D18 hbo",
-#                           "S8_D17 hbo",
-#                           "S8_D16 hbo",
-#                           "S9_D7 hbo",
-#                           "S9_D6 hbo",
-#                           "S9_D5 hbo",
-#                           "S9_D17 hbo",
-#                           "S9_D16 hbo",
-#                           "S9_D15 hbo",
-#                           "S10_D6 hbo",
-#                           "S10_D5 hbo",
-#                           "S10_D16 hbo",
-#                           "S10_D15 hbo",
-#                           "S10_D14 hbo",
-#                           "S10_D21 hbo",
-#                           "S15_D18 hbo",
-#                           "S15_D17 hbo",
-#                           "S15_D22 hbo",
-#                           "S16_D18 hbo",
-#                           "S16_D17 hbo",
-#                           "S16_D16 hbo",
-#                           "S16_D22 hbo",
-#                           "S16_D23 hbo",
-#                           "S17_D17 hbo",
-#                           "S17_D16 hbo",
-#                           "S17_D15 hbo",
-#                           "S17_D21 hbo",
-#                           "S17_D22 hbo",
-#                           "S17_D23 hbo",
-#                           "S18_D23 hbo",
-#                           "S18_D22 hbo",
-#                           "S18_D16 hbo",
-#                           "S18_D15 hbo",
-#                           "S18_D21 hbo",
-#                           "S19_D15 hbo",
-#                           "S19_D14 hbo",
-#                           "S19_D21 hbo"]
 
 
 right_hem_channels = [[4,4],[4,3],[4,2],[5,3],[5,2],[5,1],[6,2],[6,1],[11,13],[11,4],[11,3],[11,12],[11,11],[12,4],[12,3],
@@ -388,7 +335,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=1.5, sci_thres=0.6, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=2, sci_thres=0.9, filter_type='iir', filter_limits=[0.01,0.3])
 
 
     if subject != "mild_master_5":
@@ -687,7 +634,7 @@ groups_single_chroma = dict(
     Right_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), right_hem_channels,
                                        on_missing='warning'))
 # Run group level model and convert to dataframe
-group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
+group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']").query("Significant == True")
 
 import seaborn as sns
 sns.catplot(x="Condition",y="theta",col="ID",hue="Chroma",data=group_results,col_wrap=5,errorbar=None,palette="muted",height=4, s=10)
@@ -699,14 +646,48 @@ sns.catplot(x="Condition",y="theta",hue = "ID", data=group_theta_for_catplot.que
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_catplot.png")
 
 group_theta_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['theta'].mean()
-fig, topo_axes = plt.subplots(nrows=1, ncols=1,figsize=(18,36))
-this_info = raw_haemo_filt.copy().pick(picks="hbo")
-this_info.drop_channels([i for i in this_info.ch_names if i not in np.unique(group_theta_for_topoplot['ch_name'])])
-this_info = this_info.info
-mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']")['theta'],this_info,sensors=False, axes = topo_axes)
+fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,36))
+
+this_info_left = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_left.drop_channels([val for idx, val in enumerate(this_info_left.ch_names) if val not in left_hem_channel_names])
+this_info_left.drop_channels([i for i in this_info_left.ch_names if i not in np.unique(group_theta_for_topoplot['ch_name'])])
+this_info_left = this_info_left.info
+
+this_info_right = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_right.drop_channels([val for idx, val in enumerate(this_info_right.ch_names) if val not in right_hem_channel_names])
+this_info_right.drop_channels([i for i in this_info_right.ch_names if i not in np.unique(group_theta_for_topoplot['ch_name'])])
+this_info_right = this_info_right.info
+
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
+                     this_info_left,sensors=True, axes = topo_axes[0],
+                     extrapolate='local',vlim=(-0.2,0.2))
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
+                     this_info_right,sensors=True, axes = topo_axes[0],
+                     extrapolate='local',vlim=(-0.2,0.2))
+
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
+                     this_info_left,sensors=True, axes = topo_axes[1],
+                     extrapolate='local',vlim=(-0.2,0.2))
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
+                     this_info_right,sensors=True, axes = topo_axes[1],
+                     extrapolate='local',vlim=(-0.2,0.2))
+
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['theta'],
+                     this_info_left,sensors=True, axes = topo_axes[2],
+                     extrapolate='local',vlim=(-0.2,0.2))
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['theta'],
+                     this_info_right,sensors=True, axes = topo_axes[2],
+                     extrapolate='local',vlim=(-0.2,0.2))
+
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['theta'],
+                     this_info_left,sensors=True, axes = topo_axes[3],
+                     extrapolate='local')
+mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['theta'],
+                     this_info_right,sensors=True, axes = topo_axes[3],
+                     extrapolate='local',vlim=(-0.2,0.2))
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot.png")
 
-# NOW SPLIT IT UP BY CHANNEL
+# PUT A STAR ON CHANNELS THAT SHOW A SIGNIFICANT EFFECT OF CONDITION
 
 # ch_model = smf.mixedlm("theta ~ -1 + ch_name:Chroma:Condition",group_results, groups=group_results["ID"]).fit(method='nm')
 # ch_model_df = statsmodels_to_results(ch_model)
