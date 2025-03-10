@@ -2,9 +2,8 @@
 % Secondary Authors: Emaya Anand, Maanasa Guru Adimurthy
 % EPOCHING
 
-% 'fullpilot1','fullpilot2','fullpilot3','eeg_pilot_1','eeg_pilot_4','eeg_pilot_5','eeg_pilot_6','eeg_pilot_7','eeg_pilot_8'); % char();
-curr_subject_ID = char('mild_master_33','mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'); % char();
-
+% ,...
+curr_subject_ID = char('mild_master_29'); % char();
 mild_master_root = 'C:\Users\benri\Documents\GitHub\MILD-Master\';
 dir_mildmaster = append(mild_master_root,'RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx');
 
@@ -130,12 +129,21 @@ for isubject = 1:size(curr_subject_ID,1)
             button_press_kernel(ichannel,:) = button_press_window.*squeeze(mean_button_press(ichannel,:))';
         end
         figure(button_fig)
-        subplot(size(curr_subject_ID,1),8,isubject)
+        if size(curr_subject_ID,1) > 5
+            subplot(round(size(curr_subject_ID,1)/5),8,isubject)
+        else
+            subplot(round(size(curr_subject_ID,1)),4,isubject)
+        end
         plot(linspace(button_press_crop_start,button_press_crop_end,size(button_press_kernel,2)),squeeze(mean(button_press_kernel,1)),'k')
 
         save(append(subID,"_button_press_data.mat"),'button_press_data_raw','button_press_window','mean_button_press','index_button_press_start','PressTimesTable');
 
         % remove triggers
+        EEG.event(1) = [];
+        EEG.urevent(1) = [];
+    end
+
+    if subID == "mild_master_29"
         EEG.event(1) = [];
         EEG.urevent(1) = [];
     end
@@ -159,7 +167,7 @@ for isubject = 1:size(curr_subject_ID,1)
     trigger_times = [EEG.event(:).latency];
     if length(trigger_times) ~= 120
         disp('Not 120 triggeers, checking something...')
-        pause
+        %pause
     end
 
     this_subject_EEG_data = EEG.data;
@@ -169,6 +177,10 @@ for isubject = 1:size(curr_subject_ID,1)
     BehaviorTable = readtable(dir_mildmaster,'FileType','spreadsheet','Format','auto');
     rows_this_subject = find(BehaviorTable.S == strtrim(string(curr_subject_ID(isubject,:)))); % find the rows in the spreadsheet which belong to this subject
 
+    if length(rows_this_subject) == 119 && length(trigger_times) ==120
+       trigger_times(end) = [];
+       disp('119 recorded click lines')
+    end
     this_subject_table = BehaviorTable(rows_this_subject,:);
     WordTimesTable = readtable(append(mild_master_root,"RESULTS DATA\MILD-MASTER Behavior Files\mild-master__s_" + strtrim(string(curr_subject_ID(isubject,:))) + "__Word_Times.csv"));
 
