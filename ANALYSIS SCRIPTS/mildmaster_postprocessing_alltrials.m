@@ -64,7 +64,7 @@ curr_subject_ID = char('mild_master_1',...
 
 % Set analysis parameters
 erp_window_start_time = -50; % 100 ms before onset of word
-erp_window_end_time = 2000; % 750 ms after onset of word
+erp_window_end_time = 1500; % 750 ms after onset of word
 nsubjects = size(curr_subject_ID,1);
 word_length = 0.3;
 frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
@@ -198,7 +198,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
 
-            if end_time - start_time == 524
+            if end_time - start_time == 396
                 end_time = end_time + 1;
             end
 
@@ -240,7 +240,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
-            if end_time - start_time == 524
+            if end_time - start_time == 396
                 end_time = end_time + 1;
             end
 
@@ -482,7 +482,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
 
-            if end_time - start_time == 524
+            if end_time - start_time == 396
                 end_time = end_time + 1;
             end
 
@@ -524,7 +524,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
-            if end_time - start_time == 524
+            if end_time - start_time == 396
                 end_time = end_time + 1;
             end
 
