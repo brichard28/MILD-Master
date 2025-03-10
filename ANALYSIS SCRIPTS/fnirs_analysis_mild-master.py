@@ -52,7 +52,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Home'
+user = 'Desktop'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
@@ -95,7 +95,12 @@ data_root + "2025-02-19/2025-02-19_002",
 data_root + "2025-02-20/2025-02-20_001",
 data_root + "2025-02-20/2025-02-20_002",
 data_root + "2025-02-24/2025-02-24_001",
-data_root + "2025-02-24/2025-02-24_002"]
+data_root + "2025-02-24/2025-02-24_002",
+data_root + "2025-02-26/2025-02-26_002",
+data_root + "2025-02-27/2025-02-27_001",
+data_root + "2025-02-27/2025-02-27_002",
+data_root + "2025-03-03/2025-03-03_001",
+data_root + "2025-03-05/2025-03-05_001"]
 
 # All subject IDs
 subject_ID = ['mild_master_1',
@@ -130,7 +135,7 @@ subject_ID = ['mild_master_1',
 'mild_master_31',
 'mild_master_32',
 'mild_master_33',
-'mild_master_34']
+'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40']
 
 
 # The subjects we would like to run right now
@@ -162,7 +167,7 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_31',
 'mild_master_32',
 'mild_master_33',
-'mild_master_34']
+'mild_master_34'] # ,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
@@ -335,7 +340,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=2, sci_thres=0.9, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=1.5, sci_thres=0.6, filter_type='iir', filter_limits=[0.01,0.3])
 
 
     if subject != "mild_master_5":
@@ -383,7 +388,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     evoked_hbr_error = np.zeros((n_conditions,), dtype=object)
     vlim = 0.2
     n_conditions = 1
-    fig = plt.figure(figsize=(8, 5), dpi=200)
+    #fig = plt.figure(figsize=(8, 5), dpi=200)
     
     epochs_colors = ['r','g','b','y']
 
@@ -532,94 +537,85 @@ for ii, subject_num in enumerate(range(n_subjects)):
     individual_results["ID"] = subject
     # Convert to uM for nicer plotting below.
     individual_results["theta"] = [t * 1.e6 for t in individual_results["theta"]]
+    individual_results["mean_hbo"] = np.nan
+    individual_results["mean_hbr"] = np.nan
+
+    # Add mean hbo and mean hbr to individual_results
+    # Take Means
+    index_stim_start = int(-tmin * fs)
+    index_stim_end = int((-tmin + 11.6) * fs)
+    # itd5
+    mean_during_stim_itd5 = np.nanmean(subject_data_itd5_baselined[ii, :, index_stim_start:index_stim_end], axis=1)
+    mean_during_stim_itd5_hbr = np.nanmean(subject_data_itd5_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
+    # itd15
+    mean_during_stim_itd15 = np.nanmean(subject_data_itd15_baselined[ii, :, index_stim_start:index_stim_end], axis=1)
+    mean_during_stim_itd15_hbr = np.nanmean(subject_data_itd15_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
+    # ild5
+    mean_during_stim_ild5 = np.nanmean(subject_data_ild5_baselined[ii, :, index_stim_start:index_stim_end], axis=1)
+    mean_during_stim_ild5_hbr = np.nanmean(subject_data_ild5_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
+    # ild15
+    mean_during_stim_ild15 = np.nanmean(subject_data_ild15_baselined[ii, :, index_stim_start:index_stim_end], axis=1)
+    mean_during_stim_ild15_hbr = np.nanmean(subject_data_ild15_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
+
+    for idx, chan_idx in enumerate(chan_indices_good_hbo):
+        this_channel_name = chan_hbo[chan_idx]
+        individual_results.loc[(individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (individual_results['Condition'] == 'az_itd=5_az=0'), "mean_hbo"] = mean_during_stim_itd5[idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (
+                        individual_results['Condition'] == 'az_itd=15_az=0'), "mean_hbo"] = mean_during_stim_itd15[idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (
+                        individual_results['Condition'] == 'az_itd=0_az=5'), "mean_hbo"] = mean_during_stim_ild5[idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (
+                        individual_results['Condition'] == 'az_itd=0_az=15'), "mean_hbo"] = mean_during_stim_ild15[idx]
+
+    for idx, chan_idx in enumerate(chan_indices_good_hbr):
+        this_channel_name = chan_hbr[chan_idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbr') & (
+                        individual_results['Condition'] == 'az_itd=5_az=0'), "mean_hbr"] = mean_during_stim_itd5_hbr[idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbr') & (
+                    individual_results['Condition'] == 'az_itd=15_az=0'), "mean_hbr"] = mean_during_stim_itd15_hbr[idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbr') & (
+                    individual_results['Condition'] == 'az_itd=0_az=5'), "mean_hbr"] = mean_during_stim_ild5_hbr[idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbr') & (
+                    individual_results['Condition'] == 'az_itd=0_az=15'), "mean_hbr"] = mean_during_stim_ild15_hbr[idx]
+
+
+
+
 
     group_df = pd.concat([group_df, individual_results], ignore_index=True)
 
     # GLM Topoplot just this participant
 
     glm_hbo = glm_est.copy().pick(picks="hbo")
-    conditions_to_plot = ['az_itd=0_az=5','az_itd=0_az=15']
+    # conditions_to_plot = ['az_itd=0_az=5','az_itd=0_az=15']
+    #
+    # this_sub_left_hem = [idx for idx, value in enumerate(glm_hbo.ch_names) if value in left_hem_channel_names]
+    # this_sub_right_hem = [idx for idx, value in enumerate(glm_hbo.ch_names) if value in right_hem_channel_names]
+    #
+    # fig_topo, ax_topo = plt.subplots(nrows=1, ncols=len(conditions_to_plot))
+    # for icond, condition in enumerate(conditions_to_plot):
+    #     glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False, vlim=(-0.2, 0.2))
+    #     glm_hbo.copy().pick(this_sub_right_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False,vlim=(-0.2, 0.2))
+    # plt.savefig(mild_master_root + "/CASUAL FIGURES/" + subject + "_individual_topo.png")
 
-    this_sub_left_hem = [idx for idx, value in enumerate(glm_hbo.ch_names) if value in left_hem_channel_names]
-    this_sub_right_hem = [idx for idx, value in enumerate(glm_hbo.ch_names) if value in right_hem_channel_names]
+    if ii == 0:
+        fig, ax_hrf = plt.subplots(constrained_layout=True)
+        ax_hrf.plot(design_matrix["az_itd=5_az=0"])
+        ax_hrf.set(xlim=(845, 880), xlabel="Time (s)", ylabel="Amplitude")
+        plt.savefig(mild_master_root + "/CASUAL FIGURES/HRF_used.png")
+        plt.close(fig)
 
-    fig_topo, ax_topo = plt.subplots(nrows=1, ncols=len(conditions_to_plot))
-    for icond, condition in enumerate(conditions_to_plot):
-        glm_hbo.copy().pick(this_sub_left_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False, vlim=(-0.2, 0.2))
-        glm_hbo.copy().pick(this_sub_right_hem).plot_topo(conditions=condition, axes=ax_topo[icond], colorbar=False,vlim=(-0.2, 0.2))
-    plt.savefig(mild_master_root + "/CASUAL FIGURES/" + subject + "_individual_topo.png")
-
-##############################
-## Take mean during stim ####
-############################
-
-# Take Means
-index_stim_start = int(-tmin*fs)
-index_stim_end = int((-tmin + 11.6)*fs)
-# itd5
-mean_during_stim_itd5 = np.nanmean(subject_data_itd5_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-mean_during_stim_itd5_hbr = np.nanmean(subject_data_itd5_hbr_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-
-# itd15
-mean_during_stim_itd15 = np.nanmean(subject_data_itd15_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-mean_during_stim_itd15_hbr = np.nanmean(subject_data_itd15_hbr_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-
-# ild5
-mean_during_stim_ild5 = np.nanmean(subject_data_ild5_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-mean_during_stim_ild5_hbr = np.nanmean(subject_data_ild5_hbr_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-
-#ild15
-mean_during_stim_ild15 = np.nanmean(subject_data_ild15_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-mean_during_stim_ild15_hbr = np.nanmean(subject_data_ild15_hbr_baselined[:,:,index_stim_start:index_stim_end], axis=2)
-
-## Save breath uncorrected and corrected GLM data
-
-# block averages
-names = ['S','Channel','Time_Index']
-index = pd.MultiIndex.from_product([range(s) for s in subject_data_itd5_baselined.shape], names = names)
-itd5_df = pd.DataFrame({'subject_data_itd5':subject_data_itd5_baselined.flatten()},index=index)['subject_data_itd5']
-itd15_df = pd.DataFrame({'subject_data_itd15':subject_data_itd15_baselined.flatten()},index=index)['subject_data_itd15']
-ild5_df = pd.DataFrame({'subject_data_ild5':subject_data_ild5_baselined.flatten()},index=index)['subject_data_ild5']
-ild15_df = pd.DataFrame({'subject_data_ild15':subject_data_ild15_baselined.flatten()},index=index)['subject_data_ild15']
-z = pd.concat([itd5_df,itd15_df,ild5_df,ild15_df], ignore_index=True,axis=1)
-z.to_csv(f'all_subjects_uncorr_block_average_hbo.csv',index=True)
-
-
-# block average means HBO
-names = ['S','Channel']
-index = pd.MultiIndex.from_product([range(s) for s in mean_during_stim_itd5.shape], names = names)
-itd5_df = pd.DataFrame({'mean_during_stim_itd5':mean_during_stim_itd5.flatten()},index=index)['mean_during_stim_itd5']
-itd15_df = pd.DataFrame({'mean_during_stim_itd15':mean_during_stim_itd15.flatten()},index=index)['mean_during_stim_itd15']
-ild5_df = pd.DataFrame({'mean_during_stim_ild5':mean_during_stim_ild5.flatten()},index=index)['mean_during_stim_ild5']
-ild15_df = pd.DataFrame({'mean_during_stim_ild15':mean_during_stim_ild15.flatten()},index=index)['mean_during_stim_ild15']
-z = pd.concat([itd5_df,itd15_df,ild5_df,ild15_df], ignore_index=True,axis=1)
-z.to_csv(f'all_subjects_mean_during_stim_hbo.csv',index=True)
-
-
-# Uncorrected block average means HBR
-names = ['S','Channel']
-index = pd.MultiIndex.from_product([range(s) for s in mean_during_stim_itd5_hbr.shape], names = names)
-itd5_df = pd.DataFrame({'mean_during_stim_itd5_hbr':mean_during_stim_itd5_hbr.flatten()},index=index)['mean_during_stim_itd5_hbr']
-itd15_df = pd.DataFrame({'mean_during_stim_itd15_hbr':mean_during_stim_itd15_hbr.flatten()},index=index)['mean_during_stim_itd15_hbr']
-ild5_df = pd.DataFrame({'mean_during_stim_ild5_hbr':mean_during_stim_ild5_hbr.flatten()},index=index)['mean_during_stim_ild5_hbr']
-ild15_df = pd.DataFrame({'mean_during_stim_ild15_hbr':mean_during_stim_ild15_hbr.flatten()},index=index)['mean_during_stim_ild15_hbr']
-z = pd.concat([itd5_df,itd15_df,ild5_df,ild15_df], ignore_index=True,axis=1)
-z.to_csv(f'all_subjects_mean_during_stim_hbr.csv',index=True)
-
-# ---------------------------------------------------------------
-# -----------------     Subject Averaging                ---------
-# ---------------------------------------------------------------
-# # for each subject, take the beta values and compute a mean and standard error
-subject_data_itd5_GLM_mean = np.nanmean(1e6*subject_data_itd5_GLM, axis=0)
-subject_data_itd15_GLM_mean = np.nanmean(1e6*subject_data_itd15_GLM, axis=0)
-subject_data_ild5_GLM_mean = np.nanmean(1e6*subject_data_ild5_GLM, axis=0)
-subject_data_ild15_GLM_mean = np.nanmean(1e6*subject_data_ild15_GLM, axis=0)
-
-subject_data_itd5_GLM_std = np.nanstd(1e6*subject_data_itd5_GLM, axis=0) / (np.sqrt(n_subjects)-1)
-subject_data_itd15_GLM_std = np.nanstd(1e6*subject_data_itd15_GLM, axis=0) / (np.sqrt(n_subjects)-1)
-subject_data_ild5_GLM_std = np.nanstd(1e6*subject_data_ild5_GLM, axis=0) / (np.sqrt(n_subjects)-1)
-subject_data_ild15_GLM_std = np.nanstd(1e6*subject_data_ild15_GLM, axis=0) / (np.sqrt(n_subjects)-1)
-
+        fig, ax_design_matrix = plt.subplots(figsize=(10, 6), constrained_layout=True)
+        plot_design_matrix(design_matrix, ax=ax_design_matrix)
+        plt.savefig(mild_master_root + "/CASUAL FIGURES/GLM_regressors.png")
+        plt.close(fig)
 
 # ---------------------------------------------------------------
 # -----------------     PLotting GLM Averages           ---------
@@ -627,26 +623,25 @@ subject_data_ild15_GLM_std = np.nanstd(1e6*subject_data_ild15_GLM, axis=0) / (np
 
 caxis_lim = 0.2
 
-fig, ax_topo = plt.subplots(1, 4)
 groups_single_chroma = dict(
     Left_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), left_hem_channels,
                                       on_missing='warning'),
     Right_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), right_hem_channels,
                                        on_missing='warning'))
 # Run group level model and convert to dataframe
-group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']").query("Significant == True")
+group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
 
-import seaborn as sns
-sns.catplot(x="Condition",y="theta",col="ID",hue="Chroma",data=group_results,col_wrap=5,errorbar=None,palette="muted",height=4, s=10)
-plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_participant.png")
+# import seaborn as sns
+# sns.catplot(x="Condition",y="theta",col="ID",hue="Chroma",data=group_results,col_wrap=5,errorbar=None,palette="muted",height=4, s=10)
+# plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_participant.png")
 
 
-group_theta_for_catplot = group_results.groupby(by=['Chroma','ch_name','ID','Condition'],as_index=False)['theta'].mean()
-sns.catplot(x="Condition",y="theta",hue = "ID", data=group_theta_for_catplot.query("Chroma == 'hbo'"), errorbar=None, height=7, s=10, legend=False)
-plt.savefig(mild_master_root + "/CASUAL FIGURES/group_catplot.png")
+# group_theta_for_catplot = group_results.groupby(by=['Chroma','ch_name','ID','Condition'],as_index=False)['theta'].mean()
+# sns.catplot(x="Condition",y="theta",hue = "ID", data=group_theta_for_catplot.query("Chroma == 'hbo'"), errorbar=None, height=7, s=10, legend=False)
+# plt.savefig(mild_master_root + "/CASUAL FIGURES/group_catplot.png")
 
 group_theta_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['theta'].mean()
-fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,36))
+fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,10))
 
 this_info_left = raw_haemo_filt.copy().pick(picks="hbo")
 this_info_left.drop_channels([val for idx, val in enumerate(this_info_left.ch_names) if val not in left_hem_channel_names])
@@ -660,85 +655,35 @@ this_info_right = this_info_right.info
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',vlim=(-0.2,0.2))
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',vlim=(-0.2,0.2))
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',vlim=(-0.2,0.2))
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',vlim=(-0.2,0.2))
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',vlim=(-0.2,0.2))
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',vlim=(-0.2,0.2))
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[3],
-                     extrapolate='local')
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[3],
-                     extrapolate='local',vlim=(-0.2,0.2))
-plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot.png")
+                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta.png")
+plt.close(fig)
 
-# PUT A STAR ON CHANNELS THAT SHOW A SIGNIFICANT EFFECT OF CONDITION
 
-# ch_model = smf.mixedlm("theta ~ -1 + ch_name:Chroma:Condition",group_results, groups=group_results["ID"]).fit(method='nm')
-# ch_model_df = statsmodels_to_results(ch_model)
-
-# sns.catplot(x="Condition",y="Coef.",data=ch_model_df.query("Chroma == 'hbo'"), errorbar=None, palette="muted", height=4, s=10)
-# plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_condition.png")
-### Plot group results
-# plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo"),
-#                     ch_model_df.query("Condition in ['az_itd=5_az=0']"),                ####Change here####
-#                     colorbar=False, axes=ax_topo[0],
-#                     vlim=(-caxis_lim, caxis_lim), cmap='summer')
-
-# plot_glm_group_topo(raw_haemo_filt.copy().pick(picks="hbo").pick(groups_single_chroma['Right_Hemisphere']),
-#                     ch_model_df.query("Condition in ['az_itd=5_az=0']"),              ####Change here#####
-#                     colorbar=True, axes=ax_topo[0],
-#                     vlim=(-caxis_lim, caxis_lim), cmap='summer')
-# plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topo.png")
-
-caxis_lim = 0.1
-
-fig, (ax1,ax2,ax3,ax4) = plt.subplots(1, 4)
-im, _ = mne.viz.plot_topomap(subject_data_itd5_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='local',  image_interp='cubic',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax1, show=True)
-#cbar = fig.colorbar(im, ax=ax1)
-#cbar.set_label('Beta (a.u.)')
-ax1.set_title('GLM Beta: itd5')
-plt.show()
-
-im, _ = mne.viz.plot_topomap(subject_data_itd15_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='local',  image_interp='cubic',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax2, show=False)
-#cbar = fig.colorbar(im, ax=ax2)
-#cbar.set_label('Beta (a.u.)')
-ax2.set_title('GLM Beta: itd15')
-plt.show()
-
-im, _ = mne.viz.plot_topomap(subject_data_ild5_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='local', image_interp='cubic',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax3, show=False)
-#cbar = fig.colorbar(im, ax=ax3)
-#cbar.set_label('Beta (a.u.)')
-ax3.set_title('GLM Beta: ild5')
-plt.show()
-
-im, _ = mne.viz.plot_topomap(subject_data_ild15_GLM_mean, all_epochs[0].pick('hbo').info,
-                      extrapolate='local', image_interp='cubic',
-                              vlim=(-caxis_lim, caxis_lim), cmap ='summer', axes=ax4, show=False)
-cbar = fig.colorbar(im, ax=ax4)
-cbar.set_label('Beta (a.u.)')
-ax4.set_title('GLM Beta: ild15')
 
 
 
@@ -746,104 +691,53 @@ ax4.set_title('GLM Beta: ild15')
 
 # ---------------------------------------------------------------
 # -----------------     Topomap of Mean HbO             ---------
-caxis_min = -0.1
-caxis_max = 0.1
+#----------------------------------------------------------------
+caxis_lim = 0.2
+group_mean_hbo_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['mean_hbo'].mean()
+group_mean_hbo_for_topoplot.loc[np.isnan(group_mean_hbo_for_topoplot['mean_hbo']),"mean_hbo"] = 0
 
-all_epochs[0].pick('hbo').info['bads'] = []
+fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,10))
 
-fig, (ax1,ax2,ax3,ax4) = plt.subplots(1, 4)
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd5, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local',  image_interp='nearest',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax1, show=False)
-#cbar = fig.colorbar(im, ax=ax1)
-#cbar.set_label('Beta (a.u.)')
-ax1.set_title('Mean Delta HbO: itd5')
-plt.show()
+this_info_left = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_left.drop_channels([val for idx, val in enumerate(this_info_left.ch_names) if val not in left_hem_channel_names])
+this_info_left.drop_channels([i for i in this_info_left.ch_names if i not in np.unique(group_mean_hbo_for_topoplot['ch_name'])])
+this_info_left = this_info_left.info
 
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd15, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local',  image_interp='nearest',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax2, show=False)
-#cbar = fig.colorbar(im, ax=ax2)
-#cbar.set_label('Beta (a.u.)')
-ax2.set_title('Mean Delta HbO: itd15')
-plt.show()
+this_info_right = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_right.drop_channels([val for idx, val in enumerate(this_info_right.ch_names) if val not in right_hem_channel_names])
+this_info_right.drop_channels([i for i in this_info_right.ch_names if i not in np.unique(group_mean_hbo_for_topoplot['ch_name'])])
+this_info_right = this_info_right.info
 
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild5, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local', image_interp='nearest',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax3, show=False)
-#cbar = fig.colorbar(im, ax=ax3)
-#cbar.set_label('Beta (a.u.)')
-ax3.set_title('Mean Delta HbO: ild5')
-plt.show()
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
+                     this_info_left,sensors=True, axes = topo_axes[0],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
+                     this_info_right,sensors=True, axes = topo_axes[0],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
 
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild15, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local', image_interp='nearest',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax4, show=False)
-cbar = fig.colorbar(im, ax=ax4)
-cbar.set_label('Mean DeltaHbO')
-ax4.set_title('Mean Delta HbO: ild15')
-plt.show()
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
+                     this_info_left,sensors=True, axes = topo_axes[1],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
+                     this_info_right,sensors=True, axes = topo_axes[1],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
 
-caxis_min = -0.05
-caxis_max = 0.05
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
+                     this_info_left,sensors=True, axes = topo_axes[2],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
+                     this_info_right,sensors=True, axes = topo_axes[2],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
 
-mean_during_stim_itd5[np.isnan(mean_during_stim_itd5)] = 0
-mean_during_stim_itd15[np.isnan(mean_during_stim_itd15)] = 0
-mean_during_stim_ild5[np.isnan(mean_during_stim_ild5)] = 0
-mean_during_stim_ild15[np.isnan(mean_during_stim_ild15)] = 0
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
+                     this_info_left,sensors=True, axes = topo_axes[3],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
+mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
+                     this_info_right,sensors=True, axes = topo_axes[3],
+                     extrapolate='local',image_interp = 'cubic',vlim=(-caxis_lim,caxis_lim))
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_mean_hbo.png")
+plt.close(fig)
 
-all_epochs[0].pick('hbo').info['bads'] = []
-
-fig, (ax1,ax2,ax3,ax4,ax5) = plt.subplots(1, 5)
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd5, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local',  image_interp='cubic',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax1, show=False)
-#cbar = fig.colorbar(im, ax=ax1)
-#cbar.set_label('Beta (a.u.)')
-ax1.set_title('Mean Delta HbO: itd5')
-plt.show()
-
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_itd15, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local',  image_interp='cubic',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax2, show=False)
-#cbar = fig.colorbar(im, ax=ax2)
-#cbar.set_label('Beta (a.u.)')
-ax2.set_title('Mean Delta HbO: itd15')
-plt.show()
-
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild5, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local', image_interp='cubic',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax3, show=False)
-#cbar = fig.colorbar(im, ax=ax3)
-#cbar.set_label('Beta (a.u.)')
-ax3.set_title('Mean Delta HbO: ild5')
-plt.show()
-
-im, _ = mne.viz.plot_topomap(np.nanmean(mean_during_stim_ild15, axis=0), all_epochs[0].pick('hbo').info,
-                      extrapolate='local', image_interp='cubic',
-                              vlim=(caxis_min, caxis_max), cmap ='summer', axes=ax4, show=False)
-cbar = fig.colorbar(im, ax=ax4, cax=ax5)
-cbar.set_label('Mean DeltaHbO')
-ax4.set_title('Mean Delta HbO: ild15')
-plt.show()
-
-# ---------------------------------------------------------------
-# -----------------     Scatterplot of Mean HbO         ---------
-# ---------------------------------------------------------------
-# Build Data Frame
-mean_hbo_all_conditions = np.stack((mean_during_stim_itd5,mean_during_stim_itd15,
-                                          mean_during_stim_ild5,mean_during_stim_ild15),axis=0)
-
-mean_hbo_df = pd.DataFrame(columns=['MeanHbO','S','Condition'])
-
-mean_hbo_df['MeanHbO'] = pd.Series(np.ravel(mean_hbo_all_conditions))
-
-mean_hbo_df['S'] = pd.Series(np.tile(np.array([np.repeat(isub,np.size(mean_hbo_all_conditions,axis=2)) for isub in range(len(curr_subject_ID))]).ravel(),np.size(mean_hbo_all_conditions,axis=0)))
-mean_hbo_df['Condition'] = pd.Series(np.array([np.repeat(cond,np.size(mean_hbo_all_conditions,axis=1)*np.size(mean_hbo_all_conditions,axis=2)) for cond in conditions]).ravel())
-
-fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(12, 5))
-import seaborn as sns
-sns.lineplot(x="Condition", y="MeanHbO", hue="S", data=mean_hbo_df)
 
 # ---------------------------------------------------------------
 # -----------------     Topomap of Group Block Averages ---------
@@ -868,4 +762,27 @@ for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
         )
         axes[idx].set_title(f"{cond}")
 axes[0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
+plt.savefig(mild_master_root + "/CASUAL FIGURES/grand_average_block_averages.png")
+plt.close(fig)
+
+
+
+# ---------------------------------------------------------------
+# -----------------     Scatterplot of Mean HbO         ---------
+# ---------------------------------------------------------------
+# # Build Data Frame
+# mean_hbo_all_conditions = np.stack((mean_during_stim_itd5,mean_during_stim_itd15,
+#                                           mean_during_stim_ild5,mean_during_stim_ild15),axis=0)
+#
+# mean_hbo_df = pd.DataFrame(columns=['MeanHbO','S','Condition'])
+#
+# mean_hbo_df['MeanHbO'] = pd.Series(np.ravel(mean_hbo_all_conditions))
+#
+# mean_hbo_df['S'] = pd.Series(np.tile(np.array([np.repeat(isub,np.size(mean_hbo_all_conditions,axis=2)) for isub in range(len(curr_subject_ID))]).ravel(),np.size(mean_hbo_all_conditions,axis=0)))
+# mean_hbo_df['Condition'] = pd.Series(np.array([np.repeat(cond,np.size(mean_hbo_all_conditions,axis=1)*np.size(mean_hbo_all_conditions,axis=2)) for cond in conditions]).ravel())
+#
+# fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(12, 5))
+# import seaborn as sns
+# sns.lineplot(x="Condition", y="MeanHbO", hue="S", data=mean_hbo_df)
+# plt.savefig(mild_master_root + "/CASUAL FIGURES/mean_hbo_scatterplot.png")
 
