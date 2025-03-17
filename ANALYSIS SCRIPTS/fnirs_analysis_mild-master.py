@@ -8,42 +8,27 @@ Created on Wed Oct  9 19:47:20 2024
 import numpy as np
 import mne
 import math
-# matplotlib.use('TkAgg')
+import matplotlib
 from matplotlib import pyplot as plt
 import os
 import pandas as pd
 from collections import defaultdict
 
-# mne.set_config('MNE_BROWSER_BACKEND', 'qt')
+mne.set_config('MNE_BROWSER_BACKEND', 'qt')
 #from nirx_movement import mark_aux_movement_bad
 from mne_nirs.experimental_design import make_first_level_design_matrix
 from mne_nirs.statistics import run_glm, statsmodels_to_results
 from mne_nirs.channels import (get_long_channels,
                                get_short_channels)
-#import pandas as pd
 from nilearn.plotting import plot_design_matrix
 from run_preproc_NIRS import preprocess_NIRX
 from mne_nirs.io.snirf import read_snirf_aux_data
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from mne_nirs.channels import picks_pair_to_idx
 from mne_nirs.visualisation import plot_glm_group_topo, plot_glm_surface_projection
-
-# Import StatsModels
-import statsmodels.formula.api as smf
-#from scipy import signal
-from scipy import stats
-
-
-# Ben preprocessing specific imports
-from mne.preprocessing.nirs import optical_density, beer_lambert_law, temporal_derivative_distribution_repair, scalp_coupling_index
-from itertools import compress
-from mne_nirs.signal_enhancement import short_channel_regression
-from mne_modified_beer_lambert_law import mne_modified_beer_lambert_law
-from mne.io import read_raw_nirx
-from mpl_toolkits.mplot3d import Axes3D
-
-
 from plot_nirs import plot_nirs_evoked_error
+
+from scipy import signal
 # ---------------------------------------------------------------
 # -----------------          Data Parameters            ---------
 # ---------------------------------------------------------------
@@ -167,7 +152,7 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_31',
 'mild_master_32',
 'mild_master_33',
-'mild_master_34'] # ,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
+'mild_master_34'] #,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
@@ -340,7 +325,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=1.5, sci_thres=0.6, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.2])
 
 
     if subject != "mild_master_5":
@@ -358,7 +343,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -------------               Epoching                  ---------
     # ---------------------------------------------------------------
-    reject_criteria = None #dict(hbo=20e-6)#5e-6
+    reject_criteria = dict(hbo=5e-6)#5e-6
     #flat_criteria = dict(hbo=0.05e-6)
     
 
@@ -740,7 +725,7 @@ plt.close(fig)
 
 
 # ---------------------------------------------------------------
-# -----------------     Topomap of Group Block Averages ---------
+# -----------------     Grand Average Group Block Averages ---------
 # ---------------------------------------------------------------
 conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
 n_conditions = len(conditions)
@@ -765,7 +750,97 @@ axes[0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
 plt.savefig(mild_master_root + "/CASUAL FIGURES/grand_average_block_averages.png")
 plt.close(fig)
 
+# ---------------------------------------------------------------
+# -----------------     Topomap of Group Block Averages ---------
+# ---------------------------------------------------------------
+conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
+from mne.preprocessing.nirs import source_detector_distances, _channel_frequencies, \
+    _check_channels_ordered
+from mne.channels.layout import find_layout
+from copy import deepcopy
 
+# need a list of channel locations
+layout = find_layout(raw_haemo_filt.info)
+layout = deepcopy(layout)
+layout.pos[:, :2] -= layout.pos[:, :2].min(0)
+layout.pos[:, :2] /= layout.pos[:, :2].max(0)
+positions = layout.pos[:, :2] * 0.9
+
+# set up subplots
+fig = plt.figure(figsize=(5, 4), dpi=200)
+
+width, height = 0.05, 0.05
+lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, 0.2])
+# for each channel
+
+unique_positions = np.unique(positions)
+unique_markers = np.zeros(np.shape(unique_positions))
+for ii in range(len(layout.pos)):
+
+    this_channel_name = layout.names[ii]
+    print(this_channel_name)
+    pos = positions[ii, :]
+
+
+
+    # plot --- [lowerCorner_x, lowerCorner_y, width, height]
+    ax = fig.add_axes([pos[0]+width/2, pos[1], width, height])
+    this_cond_evoked = mne.combine_evoked(all_evokeds['az_itd=0_az=15'],'equal')
+
+    this_color = "w"
+    if "hbo" in this_channel_name:
+        this_color = "r"
+    elif "hbr" in this_channel_name:
+        this_color = "b"
+    mne.viz.plot_compare_evokeds(
+        {'az_itd=0_az=15': this_cond_evoked},
+        combine=None,
+        picks=this_channel_name,
+        axes=ax,
+        show=False,
+        colors=[this_color],
+        legend=False,
+        show_sensors=False,
+        ylim=lims,
+        ci=0.95,
+    )
+
+    ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
+    ax.patch.set_alpha(0)
+    ax.set_title(f'{layout.names[ii][:-4]}', fontsize=3, pad=0)
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_facecolor("none")
+
+# add an empty plot with labels
+ax = fig.add_axes([0.5, 0.075, 1.5*width, 1.5*height])
+mne.viz.plot_compare_evokeds(
+            {'az_itd=0_az=15': this_cond_evoked},
+            combine=None,
+            picks=this_channel_name,
+            axes=ax,
+            show=False,
+            show_sensors=False,
+            colors=["w"],
+            legend=False,
+            ylim=lims,
+            ci=0.95,
+        )
+ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
+ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+ax.set_xlabel('Time (s)', fontsize=4)
+ax.set_ylabel('DeltaHb (uM)', fontsize=4)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.tick_params(labelsize=4)
+
+plt.savefig(mild_master_root + "/CASUAL FIGURES/topomap_block_averages.png")
+plt.close(fig)
 
 # ---------------------------------------------------------------
 # -----------------     Scatterplot of Mean HbO         ---------
