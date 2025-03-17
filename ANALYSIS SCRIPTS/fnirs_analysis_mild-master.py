@@ -766,81 +766,82 @@ layout.pos[:, :2] -= layout.pos[:, :2].min(0)
 layout.pos[:, :2] /= layout.pos[:, :2].max(0)
 positions = layout.pos[:, :2] * 0.9
 
-# set up subplots
-fig = plt.figure(figsize=(5, 4), dpi=200)
+for idx, cond in enumerate(conditions):
+    # set up subplots
+    fig = plt.figure(figsize=(5, 4), dpi=200)
 
-width, height = 0.05, 0.05
-lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, 0.2])
-# for each channel
+    width, height = 0.05, 0.05
+    lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, 0.2])
+    # for each channel
 
-unique_positions = np.unique(positions)
-unique_markers = np.zeros(np.shape(unique_positions))
-for ii in range(len(layout.pos)):
+    unique_positions = np.unique(positions)
+    unique_markers = np.zeros(np.shape(unique_positions))
+    for ii in range(len(layout.pos)):
 
-    this_channel_name = layout.names[ii]
-    print(this_channel_name)
-    pos = positions[ii, :]
+        this_channel_name = layout.names[ii]
+        print(this_channel_name)
+        pos = positions[ii, :]
 
 
 
-    # plot --- [lowerCorner_x, lowerCorner_y, width, height]
-    ax = fig.add_axes([pos[0]+width/2, pos[1], width, height])
-    this_cond_evoked = mne.combine_evoked(all_evokeds['az_itd=0_az=15'],'equal')
+        # plot --- [lowerCorner_x, lowerCorner_y, width, height]
+        ax = fig.add_axes([pos[0]+width/2, pos[1], width, height])
+        this_cond_evoked = mne.combine_evoked(all_evokeds[cond],'equal')
 
-    this_color = "w"
-    if "hbo" in this_channel_name:
-        this_color = "r"
-    elif "hbr" in this_channel_name:
-        this_color = "b"
-    mne.viz.plot_compare_evokeds(
-        {'az_itd=0_az=15': this_cond_evoked},
-        combine=None,
-        picks=this_channel_name,
-        axes=ax,
-        show=False,
-        colors=[this_color],
-        legend=False,
-        show_sensors=False,
-        ylim=lims,
-        ci=0.95,
-    )
-
-    ax.xaxis.set_major_locator(plt.MaxNLocator(2))
-    ax.yaxis.set_major_locator(plt.MaxNLocator(2))
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
-    ax.patch.set_alpha(0)
-    ax.set_title(f'{layout.names[ii][:-4]}', fontsize=3, pad=0)
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_facecolor("none")
-
-# add an empty plot with labels
-ax = fig.add_axes([0.5, 0.075, 1.5*width, 1.5*height])
-mne.viz.plot_compare_evokeds(
-            {'az_itd=0_az=15': this_cond_evoked},
+        this_color = "w"
+        if "hbo" in this_channel_name:
+            this_color = "r"
+        elif "hbr" in this_channel_name:
+            this_color = "b"
+        mne.viz.plot_compare_evokeds(
+            {cond: this_cond_evoked},
             combine=None,
             picks=this_channel_name,
             axes=ax,
             show=False,
-            show_sensors=False,
-            colors=["w"],
+            colors=[this_color],
             legend=False,
+            show_sensors=False,
             ylim=lims,
             ci=0.95,
         )
-ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
-ax.xaxis.set_major_locator(plt.MaxNLocator(2))
-ax.yaxis.set_major_locator(plt.MaxNLocator(2))
-ax.set_xlabel('Time (s)', fontsize=4)
-ax.set_ylabel('DeltaHb (uM)', fontsize=4)
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.tick_params(labelsize=4)
 
-plt.savefig(mild_master_root + "/CASUAL FIGURES/topomap_block_averages.png")
-plt.close(fig)
+        ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+        ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
+        ax.patch.set_alpha(0)
+        ax.set_title(f'{layout.names[ii][:-4]}', fontsize=3, pad=0)
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        ax.set_facecolor("none")
+
+    # add an empty plot with labels
+    ax = fig.add_axes([0.5, 0.075, 1.5*width, 1.5*height])
+    mne.viz.plot_compare_evokeds(
+                {'az_itd=0_az=15': this_cond_evoked},
+                combine=None,
+                picks=this_channel_name,
+                axes=ax,
+                show=False,
+                show_sensors=False,
+                colors=["w"],
+                legend=False,
+                ylim=lims,
+                ci=0.95,
+            )
+    ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
+    ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.set_xlabel('Time (s)', fontsize=4)
+    ax.set_ylabel('DeltaHb (uM)', fontsize=4)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.tick_params(labelsize=4)
+
+    plt.savefig(mild_master_root + f"/CASUAL FIGURES/topomap_block_averages_{cond}.png")
+    plt.close(fig)
 
 # ---------------------------------------------------------------
 # -----------------     Scatterplot of Mean HbO         ---------
