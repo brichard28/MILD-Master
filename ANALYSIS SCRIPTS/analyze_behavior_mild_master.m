@@ -23,7 +23,6 @@ subject_ID = char('mild_master_1',...
     'mild_master_17',...
     'mild_master_18',...
     'mild_master_19',...
-    'mild_master_20',...
     'mild_master_22',...
     'mild_master_23',...
     'mild_master_24',...
@@ -34,7 +33,8 @@ subject_ID = char('mild_master_1',...
     'mild_master_29',...
     'mild_master_30',...
     'mild_master_31',...
-    'mild_master_32'); % char();
+    'mild_master_32','mild_master_33','mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',...
+    'mild_master_41','mild_master_42','mild_master_43','mild_master_44');
 num_conditions = 8;
 
 all_hits = zeros(size(subject_ID,1),num_conditions);
@@ -168,7 +168,7 @@ for isubject = 1:size(subject_ID,1) % For each subject...
 
         %% Hit and False Alarm Windows
 
-        threshold_window_start = 0.2; %0.2
+        threshold_window_start = 0.4; %0.2
         threshold_window_end =  1.5; % 1.0
         tVec = 0:1/44100:16;
         hit_windows = zeros(1,length(tVec)); % create an empty array to define hit windows
@@ -447,36 +447,61 @@ lag_d_primes_collapsed(4,:) = mean(lag_d_primes_all(:,large_ild_cond),2); % itla
 
 %% PLOT ALL
 figure;
+colors_to_use = ["g","m","g","m"];
+
 subplot(1,3,1)
-plot(1:2,d_primes_collapsed(1:2,:),'-o')
+plot(1:2,d_primes_collapsed(1:2,d_primes_collapsed(1,:) > d_primes_collapsed(2,:)),'-','Color',colors_to_use(1));
 hold on
-plot(3:4,d_primes_collapsed(3:4,:),'-o')
-errorbar(1:4,mean(d_primes_collapsed,2),std(d_primes_collapsed,[],2)/sqrt(size(subject_ID,1) - 1),'ok','LineWidth',3)
+plot(1:2,d_primes_collapsed(1:2,d_primes_collapsed(1,:) < d_primes_collapsed(2,:)),'-','Color',colors_to_use(2));
+
+plot(3:4,d_primes_collapsed(3:4,d_primes_collapsed(3,:) > d_primes_collapsed(4,:)),'-','Color',colors_to_use(1));
+hold on
+plot(3:4,d_primes_collapsed(3:4,d_primes_collapsed(3,:) < d_primes_collapsed(4,:)),'-','Color',colors_to_use(2));
+
+
+
+for iplot = 1:4
+    errorbar(iplot,mean(d_primes_collapsed(iplot,:),2),std(d_primes_collapsed(iplot,:),[],2)/sqrt(size(subject_ID,1) - 1),'o','Color',colors_to_use(iplot),'LineWidth',3)
+end
 ylabel("d'",'FontSize',18)
 %xticklabels({'50','100','200','400'})
 xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
 
 subplot(1,3,2)
-plot(1:2,all_hit_rates_collapsed(1:2,:),'-o')
+plot(1:2,all_hit_rates_collapsed(1:2,all_hit_rates_collapsed(1,:) > all_hit_rates_collapsed(2,:)),'-','Color',colors_to_use(1));
 hold on
-plot(3:4,all_hit_rates_collapsed(3:4,:),'-o')
-errorbar(1:4,mean(all_hit_rates_collapsed,2),std(all_hit_rates_collapsed,[],2)/sqrt(size(subject_ID,1) - 1),'ok','LineWidth',3)
-ylim([0 1])
-ylabel('Hit Rate','FontSize',18)
+plot(1:2,all_hit_rates_collapsed(1:2,all_hit_rates_collapsed(1,:) < all_hit_rates_collapsed(2,:)),'-','Color',colors_to_use(2));
+
+plot(3:4,all_hit_rates_collapsed(3:4,all_hit_rates_collapsed(3,:) > all_hit_rates_collapsed(4,:)),'-','Color',colors_to_use(1));
+hold on
+plot(3:4,all_hit_rates_collapsed(3:4,all_hit_rates_collapsed(3,:) < all_hit_rates_collapsed(4,:)),'-','Color',colors_to_use(2));
+
+
+
+for iplot = 1:4
+    errorbar(iplot,mean(all_hit_rates_collapsed(iplot,:),2),std(all_hit_rates_collapsed(iplot,:),[],2)/sqrt(size(subject_ID,1) - 1),'o','Color',colors_to_use(iplot),'LineWidth',3)
+end
+ylabel("Hit Rate",'FontSize',18)
 %xticklabels({'50','100','200','400'})
 xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
-%xlabel('ITD (us)')
 
 subplot(1,3,3)
-plot(1:2,all_FA_rates_collapsed(1:2,:),'-o')
+plot(1:2,all_FA_rates_collapsed(1:2,all_FA_rates_collapsed(1,:) > all_FA_rates_collapsed(2,:)),'-','Color',colors_to_use(1));
 hold on
-plot(3:4,all_FA_rates_collapsed(3:4,:),'-o')
-errorbar(1:4,mean(all_FA_rates_collapsed,2),std(all_FA_rates_collapsed,[],2)/sqrt(size(subject_ID,1) - 1),'ok','LineWidth',3)
-ylim([0 1])
-ylabel('FA Rate','FontSize',18)
+plot(1:2,all_FA_rates_collapsed(1:2,all_FA_rates_collapsed(1,:) < all_FA_rates_collapsed(2,:)),'-','Color',colors_to_use(2));
+
+plot(3:4,all_FA_rates_collapsed(3:4,all_FA_rates_collapsed(3,:) > all_FA_rates_collapsed(4,:)),'-','Color',colors_to_use(1));
+hold on
+plot(3:4,all_FA_rates_collapsed(3:4,all_FA_rates_collapsed(3,:) < all_FA_rates_collapsed(4,:)),'-','Color',colors_to_use(2));
+
+
+
+for iplot = 1:4
+    errorbar(iplot,mean(all_FA_rates_collapsed(iplot,:),2),std(all_FA_rates_collapsed(iplot,:),[],2)/sqrt(size(subject_ID,1) - 1),'o','Color',colors_to_use(iplot),'LineWidth',3)
+end
+ylabel("False Alarm Rate",'FontSize',18)
 %xticklabels({'50','100','200','400'})
 xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
-%xlabel('ITD (us)')
 
 %% PLOT BROKEN UP BY LEAD LAG
 % Lead vs. lag d-prime

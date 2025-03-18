@@ -112,7 +112,7 @@ for isubject = 1:size(curr_subject_ID,1)
     button_press_delay =0 ;
     single_onset_time = linspace(erp_window_start_time,erp_window_end_time,size(data_by_pair_onset_baselined,2));
     single_onset_time_buttonpress = linspace(erp_window_start_time + button_press_delay,erp_window_end_time,size(data_by_button_press_baselined,2));
-    frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
+    frontocentral_channels = [1,2,3,4,5,6,8,23,25,26,27,28,29,30,31,32];
     parietooccipital_channels = 11:20;
     cz_index = 32;
 
