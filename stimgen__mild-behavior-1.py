@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar 19 09:56:57 2025
+
+@author: benri
+"""
+
 import os, sys
 import getopt
 import matplotlib.pyplot as plt
@@ -22,55 +29,19 @@ and magnified ILD cues. Conditions include ITD50, ITD500, ILDAZ10, ILDAZ10MAG.
 
 def main(subjectID):
 
-    exp = 'mild-master'
+    exp = 'mild-behavior-1'
 
     # IMPORTANT: ind=0 of each variable should always be the practice condition
-    # variables = {
-    #     "side":      ['l',    'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',      ],
-    #     "itd":       ['0',    '50',     '50',     '500',    '500',    '0',      '0',      '0',      '0',      ],
-    #     "az":        ['0',    '0',      '0',      '0',      '0',      '15',      '15',      '15',      '15',      ],
-    #     "mag":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '1',      '1',      ],
-    #             }
-    
-    # variables for testing various ild azimuths
-    # variables = {
-    #     "side":      ['l',    'l', 'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',     'r' ],
-    #     "itd":       ['0',    '0', '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0'],
-    #     "az":        ['0',    '0', '0',      '5',      '5',      '10',      '10',      '30',     '30', '60', '60'  ],
-    #     "mag":       ['0',    '0', '1',      '0',      '1',      '0',      '1',      '0',      '1',      '0',      '1'],
-    #             }
-    
-    # variables for ITD pilot
-    # variables = {
-    #     "side":      ['l',    'l',      'r',      'l',      'r',      'l',      'r',      'l',      'r',      ],
-    #     "itd":       ['0',    '50',     '50',     '100',    '100',    '200',    '200',    '400',    '400',      ],
-    #     "az":        ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
-    #     "mag":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
-    #             }
-    
-    ## variables for ILD Pilot
-    #variables = {
-    #    "side":      ['l',    'r',      'l',      'r',      'l',      'r',      'l',      'r',      'l',     'r',      'l',      'r',      'l',      'r',      'l',      'r',      'l',     ],
-    #    "itd":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',     '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',     ],
-    #    "az":        ['0',    '5',      '5',      '5',      '5',      '10',     '10',     '10',       '10',    '5',      '5',      '5',      '5',      '10',     '10',     '10',       '10',   ],
-    #    "mag":       ['0',    '0',      '0',      '1',      '1',      '0',      '0',      '1',      '1' ,    '0',      '0',      '1',      '1',      '0',      '0',      '1',      '1' ,    ],
-    #    "lpf":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0' ,    '1',      '1',      '1',      '1',      '1',      '1',      '1',      '1' ,    ],
-    #            }
-        #"masker":    ['none', 'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp',     'sp', ],
-        #"ild":       ['0',    '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      '0',      ],
 
-    ## Variable for neuroimaging pilot
     variables = {
-        "side":      ['r',   'r',      'l',      'r',      'l',     'r',      'l',      'r',     'l',   ],
-        "itd":       ['0',   '0',      '0',      '0',      '0',     '0',      '0',      '0',     '0',   ],
-        "az_itd":    ['0',   '5',      '5',      '15',     '15',    '0',      '0',      '0',     '0',   ],
-        "az":        ['0',   '0',      '0',      '0',      '0',     '5',      '5',      '15',    '15',  ],
-        "mag":       ['0',   '0',      '0',      '0',      '0' ,    '0',      '0',      '0',     '0',   ],
-        "lpf":       ['0',   '0',      '0',      '0',      '0' ,    '0',      '0',      '0',     '0',   ],
+        "side":      ['r',   'r',      'l',      'r',      'l',     'r',      'l',      'r',     'l',   'r',   'l',   'r',   'l',   'r',   'l',   'r',   'l',   ],
+        "az":        ['0',   '5',      '5',      '15',     '15',    '5',      '5',      '15',    '15',  '5',   '5',   '15',  '15',  '5',   '5',  '15',   '15'    ],
+        "mag":       ['0',   '0',      '0',      '0',      '0' ,    '1',      '1',      '1',     '1',   '0',   '0',   '0',   '0' ,  '1',   '1',   '1',   '1',   ],
+        "word_type": ['0',   '0',      '0',      '0',      '0' ,    '0',      '0',      '0',     '0',   '1',   '1',   '1',   '1' ,  '1',   '1',   '1',   '1',   ],
                 }
      
     fs = 44100          # fs
-    n = 15           # # of trials
+    n = 8           # # of trials
     ntokens = 16         # # of tokens in a trial
     snr = 0
     t_path = './stim/bashdashgash/short'
@@ -109,7 +80,7 @@ def main(subjectID):
     t_toks_lpf = []
     for token in t_s:
         this_t_data,fs,_enc = sfread(os.path.join(t_path, t_name, token+".wav"))
-        this_t_lpf_data,fs,_enc = sfread(os.path.join(t_path, t_name+"_lpf", token+".wav"))
+        this_t_lpf_data,fs,_enc = sfread(os.path.join(t_path, t_name+"_no_sh", token+".wav"))
         #t_toks.append(this_t_data[:,0])
         t_toks.append(this_t_data)
         t_toks_lpf.append(this_t_lpf_data)
@@ -120,7 +91,7 @@ def main(subjectID):
     m_toks_lpf = []
     for token in m_s:
         this_m_data,fs,_enc = sfread(os.path.join(m_path, m_name, token+".wav"))
-        this_m_lpf_data,fs,_enc = sfread(os.path.join(m_path, m_name+"_lpf", token+".wav"))
+        this_m_lpf_data,fs,_enc = sfread(os.path.join(m_path, m_name+"_no_sh", token+".wav"))
         #m_toks.append(this_m_data[:,0])
         m_toks.append(this_m_data)
         m_toks_lpf.append(this_m_lpf_data)
@@ -139,7 +110,7 @@ def main(subjectID):
         tt_delay_data = np.zeros(psylab.signal.ms2samp(tt_delay*1000, fs))
 
     # ILD stuff
-    ild_bands = psylab.signal.logspace(62.5,8000,8) # psylab.signal.frequency.logspace(70, 2240, 5+1) # 5 1-oct bands
+    ild_bands = [125,250,500,1000,2000,4000,8000]#psylab.signal.logspace(62.5,8000,8) # psylab.signal.frequency.logspace(70, 2240, 5+1) # 5 1-oct bands
     ild_max_itd_us = 1000
     ild_max_ild_db = 32
     ild_wsize = 882
@@ -151,12 +122,20 @@ def main(subjectID):
 
     itd_ratio = np.linspace(0,ild_max_itd_us,ild_max_itd_us+1)/ild_max_itd_us
     fun = itd_ratio**ild_exponent
+    
+    input_to_log = np.linspace(1,10,len(itd_ratio))
+    l_fun = np.log10(input_to_log)
 
     # Here, no positive gain, only attenuation
-    ild_table_l = np.concatenate((nofun, -fun)) #np.concatenate((nofun, nofun))
-    ild_table_r = np.concatenate(((1-fun)*-1, nofun)) #np.concatenate((nofun, nofun))
+    
+    # LINEAR MAPS
+    #ild_table_l = np.concatenate((nofun, -fun)) #np.concatenate((nofun, nofun))
+    #ild_table_r = np.concatenate(((1-fun)*-1, nofun)) #np.concatenate((nofun, nofun))
 
-
+    # LOG MAPS
+    ild_table_l = np.concatenate((nofun, -l_fun))
+    ild_table_r = np.concatenate((np.flip(l_fun)*-1, nofun))
+    
     ## Vocoder stuff
     #voc_ch = 12
     #voc_f_lo = 125
@@ -279,10 +258,10 @@ def main(subjectID):
             #    m2_inds = np.random.randint(len(m_s), size=ntokens)
             #    if not (t_inds==m2_inds).any():
             #        break
-            if levels['lpf'] == '0':
+            if levels['word_type'] == '0': # INCLUDE 'SH'
                 curr_t_toks = t_toks
                 curr_m_toks = m_toks
-            elif levels['lpf'] == '1':
+            elif levels['word_type'] == '1': # EXCLUDE 'SH'
                 curr_t_toks = t_toks_lpf
                 curr_m_toks = m_toks_lpf
 

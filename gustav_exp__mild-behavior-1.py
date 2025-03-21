@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar 19 10:44:17 2025
+
+@author: benri
+"""
+
 
 # -*- coding: utf-8 -*-
 
@@ -83,7 +90,7 @@ def setup(exp):
 #    workdir = '/home/cbrown/work/Python'
 
     # General Experimental Variables
-    exp.name = 'mild-master'
+    exp.name = 'mild-behavior-1'
     exp.method = 'constant' # 'constant' for constant stimuli, or 'adaptive' for a staircase procedure (SRT, etc)
     # TODO: move logstring and datastring vars out of exp and into either method or experiment, so they can be properly enumerated at startup
 
@@ -120,7 +127,7 @@ def setup(exp):
     exp.stim.hold_dur = 15
     exp.stim.button_press_blocks = 5
     exp.stim.atten = 15
-    exp.stim.n = 15 # # of trials per condition
+    exp.stim.n = 8 # # of trials per condition
     exp.stim.wait_for_last_response_ms = 1000 # How long to wait after offset of audio for the last response
 
     if not exp.subjID:
@@ -662,7 +669,7 @@ def present_trial(exp):
             pause_after_run = False
             exp.user.break_after_run = False
 
-            if (exp.run.block+1)!= 0 and (exp.run.block+1)%40 == 0:
+            if (exp.run.block+1)!= 0 and (exp.run.block+1)%48 == 0:
                 exp.user.break_after_run = True
             while s.is_playing:
                 ret = exp.interface.get_resp(timeout=this_wait_ms/1000)
@@ -739,7 +746,7 @@ def prompt_response(exp):
 
 def post_trial(exp):
     #if not exp.gustav_is_go:
-    st = np.random.randint(10, 14)
+    st = 5 # np.random.randint(10, 14)
     start_ms = exp.interface.timestamp_ms()
     wait = True
     while wait:
@@ -749,11 +756,11 @@ def post_trial(exp):
             wait = False
         else:
             time_left = st - round((exp.interface.timestamp_ms() - start_ms) / 1000)
-            exp.interface.update_Prompt("""🮇▔▔▔▔▔▔▔▎
-🮇       ▎
-🮇▁▁▁▁▁▁▁▎""", show=True, redraw=True)
+            exp.interface.update_Prompt(""f"Wait {time_left} seconds or Click to Continue.""", show=True, redraw=True)
             time.sleep(.1)
             if time_left == 0:
+                wait = False
+            elif ret.isdigit():
                 wait = False
     if exp.user.break_after_run:
                 exp.interface.update_Prompt("Time to take a break!\nHit any key to when you are ready to continue...", show=True, redraw=True)

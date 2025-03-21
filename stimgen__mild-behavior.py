@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar 19 09:56:57 2025
+
+@author: benri
+"""
+
 import os, sys
 import getopt
 import matplotlib.pyplot as plt
