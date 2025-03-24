@@ -131,33 +131,33 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_6',
 'mild_master_8',
 'mild_master_9',
-'mild_master_10']
-# 'mild_master_11',
-# 'mild_master_12',
-# 'mild_master_14',
-# 'mild_master_15',
-# 'mild_master_16',
-# 'mild_master_17',
-# 'mild_master_18',
-# 'mild_master_19',
-# 'mild_master_22',
-# 'mild_master_23',
-# 'mild_master_24',
-# 'mild_master_25',
-# 'mild_master_26',
-# 'mild_master_27',
-# 'mild_master_28',
-# 'mild_master_29',
-# 'mild_master_30',
-# 'mild_master_31',
-# 'mild_master_32',
-# 'mild_master_33',
-# 'mild_master_34'] #,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
+'mild_master_10',
+'mild_master_11',
+'mild_master_12',
+'mild_master_14',
+'mild_master_15',
+'mild_master_16',
+'mild_master_17',
+'mild_master_18',
+'mild_master_19',
+'mild_master_22',
+'mild_master_23',
+'mild_master_24',
+'mild_master_25',
+'mild_master_26',
+'mild_master_27',
+'mild_master_28',
+'mild_master_29',
+'mild_master_30',
+'mild_master_31',
+'mild_master_32',
+'mild_master_33',
+'mild_master_34'] #,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-glm_dur = 5
+glm_dur = 4
 
 n_subjects = len(curr_subject_ID)
 
@@ -488,7 +488,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     
     raw_haemo_filt_for_glm.drop_channels(epochs.copy().info['bads'])
 
-    raw_haemo_filt_for_glm.annotations.set_durations(glm_dur)
+    #raw_haemo_filt_for_glm.annotations.set_durations(glm_dur)
     
     
 
