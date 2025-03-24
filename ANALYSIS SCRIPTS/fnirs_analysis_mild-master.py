@@ -542,8 +542,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     mean_during_stim_ild15 = np.nanmean(subject_data_ild15_baselined[ii, :, index_stim_start:index_stim_end], axis=1)
     mean_during_stim_ild15_hbr = np.nanmean(subject_data_ild15_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
 
-    for idx, chan_idx in enumerate(chan_indices_good_hbo):
-        this_channel_name = chan_hbo[chan_idx]
+    for idx, this_channel_name in enumerate(chan_hbo):
         individual_results.loc[(individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (individual_results['Condition'] == 'az_itd=5_az=0'), "mean_hbo"] = mean_during_stim_itd5[idx]
         individual_results.loc[
             (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (
@@ -555,8 +554,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
             (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (
                         individual_results['Condition'] == 'az_itd=0_az=15'), "mean_hbo"] = mean_during_stim_ild15[idx]
 
-    for idx, chan_idx in enumerate(chan_indices_good_hbr):
-        this_channel_name = chan_hbr[chan_idx]
+    for idx, this_channel_name in enumerate(chan_hbr):
         individual_results.loc[
             (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbr') & (
                         individual_results['Condition'] == 'az_itd=5_az=0'), "mean_hbr"] = mean_during_stim_itd5_hbr[idx]
@@ -615,7 +613,7 @@ groups_single_chroma = dict(
                                        on_missing='warning'))
 # Run group level model and convert to dataframe
 group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
-
+group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
 # import seaborn as sns
 # sns.catplot(x="Condition",y="theta",col="ID",hue="Chroma",data=group_results,col_wrap=5,errorbar=None,palette="muted",height=4, s=10)
 # plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_participant.png")
@@ -677,7 +675,7 @@ plt.close(fig)
 # ---------------------------------------------------------------
 # -----------------     Topomap of Mean HbO             ---------
 #----------------------------------------------------------------
-caxis_lim = 0.2
+caxis_lim = 0.15
 group_mean_hbo_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['mean_hbo'].mean()
 group_mean_hbo_for_topoplot.loc[np.isnan(group_mean_hbo_for_topoplot['mean_hbo']),"mean_hbo"] = 0
 
@@ -775,6 +773,7 @@ for idx, cond in enumerate(conditions):
     # for each channel
 
     unique_positions = np.unique(positions)
+
     unique_markers = np.zeros(np.shape(unique_positions))
     for ii in range(len(layout.pos)):
 
@@ -861,4 +860,6 @@ for idx, cond in enumerate(conditions):
 # import seaborn as sns
 # sns.lineplot(x="Condition", y="MeanHbO", hue="S", data=mean_hbo_df)
 # plt.savefig(mild_master_root + "/CASUAL FIGURES/mean_hbo_scatterplot.png")
+
+
 
