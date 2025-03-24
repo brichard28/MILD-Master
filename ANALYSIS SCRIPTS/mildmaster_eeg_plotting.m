@@ -3,32 +3,6 @@
 % Author: Benjamin Richardson
 % 10/14/2024
 
-% curr_subject_ID = char('mild_master_1',...
-%     'mild_master_3',...
-%     'mild_master_4',...
-%     'mild_master_5',...
-%     'mild_master_6',...
-%     'mild_master_8',...
-%     'mild_master_9',...
-%     'mild_master_10',...
-%     'mild_master_11',...
-%     'mild_master_12',...
-%     'mild_master_14',...
-%     'mild_master_15',...
-%     'mild_master_16',...
-%     'mild_master_17',...
-%     'mild_master_18',...
-%     'mild_master_19',...
-%     'mild_master_20',...
-%     'mild_master_22',...
-%     'mild_master_23',...
-%     'mild_master_24',...
-%     'mild_master_26',...
-%     'mild_master_27',...
-%     'mild_master_28',...
-%     'mild_master_30',...
-%     'mild_master_31',...
-%     'mild_master_32'); % char();
 curr_subject_ID = char('mild_master_1',...
     'mild_master_3',...
     'mild_master_4',...
@@ -57,6 +31,8 @@ curr_subject_ID = char('mild_master_1',...
     'mild_master_31',...
     'mild_master_32','mild_master_33','mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'); % char();
 
+
+mild_master_root = 'C:\Users\benri\Documents\GitHub\MILD-Master\';
 
 itd5_lead_bash_target_lag_nonbash_masker = [];
 itd5_lead_nonbash_target_lag_bash_masker = [];
@@ -155,387 +131,6 @@ for isubject = 1:size(curr_subject_ID,1)
 
     all_subjects_button_press(isubject,:,:) = squeeze(nanmean(data_by_button_press_baselined,3));
 end
-
-
-curr_channel_index = frontocentral_channels;
-
-
-% %% FC Target vs. Masker Lead
-% %ITD5 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ITD5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 5 deg ITDs Button Press Included','FontSize',24)
-% 
-% % ITD15
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure;
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 15 deg ITDs Button Press Included','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 5 deg ILDs Button Press Included','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild15
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 15 deg ILDs Button Press Included','FontSize',24)
-
-
-
-% %% PO Target vs. Masker Lead
-% curr_channel_index = parietooccipital_channels;
-% 
-% % Bash in target vs. Bash in masker vs. No bash at all
-% %ITD5 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ITD5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 5 deg ITDs Button Press Included','FontSize',24)
-% 
-% % ITD15
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure;
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 15 deg ITDs Button Press Included','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 5 deg ILDs Button Press Included','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild15
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 15 deg ILDs Button Press Included','FontSize',24)
-
-
 
 
 %% FC Bash Lead vs. Bash Lag vs. No Bash
@@ -1131,384 +726,6 @@ for isubject = 1:size(curr_subject_ID,1)
     all_subjects_button_press(isubject,:,:) = squeeze(nanmean(data_by_button_press_baselined,3));
 end
 
-curr_channel_index = frontocentral_channels;
-
-% %% FC Target Lead vs. Masker Lead
-% % Bash in target vs. Bash in masker vs. No bash at all
-% %ITD5 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ITD5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 5 deg ITDs Button Press Subtracted','FontSize',24)
-% 
-% % ITD15
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure;
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 15 deg ITDs Button Press Subtracted','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 5 deg ILDs Button Press Subtracted','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild15
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('FC 15 deg ILDs Button Press Subtracted','FontSize',24)
-% 
-% %% PO Target Lead vs. Masker Lead
-% curr_channel_index = parietooccipital_channels;
-% 
-% % Bash in target vs. Bash in masker vs. No bash at all
-% %ITD5 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ITD5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 5 deg ITDs Button Press Subtracted','FontSize',24)
-% 
-% % ITD15
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure;
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(itd15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 15 deg ITDs Button Press Subtracted','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild5
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 5 deg ILDs Button Press Subtracted','FontSize',24)
-% 
-% 
-% ymin = -4;
-% ymax = 5;
-% num_subjects = size(curr_subject_ID,1);
-% figure; % ild15
-% subplot(1,2,1)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% ylabel('Voltage (uV)','FontSize',18)
-% title('Target Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% 
-% subplot(1,2,2)
-% hold on
-% this_lead_bash_data = squeeze(nanmean(ild15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% this_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-% this_nonbash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-% 
-% 
-% p1 = shadedErrorBar(single_onset_time,nanmean(this_lead_bash_data,1),std(this_lead_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-b'});
-% p2 = shadedErrorBar(single_onset_time,nanmean(this_lag_bash_data,1),std(this_lag_bash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-g'});
-% p3 = shadedErrorBar(single_onset_time,nanmean(this_nonbash_data,1),std(this_nonbash_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-m'});
-% 
-% ylim([ymin,ymax])
-% xlim([erp_window_start_time,erp_window_end_time])
-% title('Masker Leads','FontSize',18)
-% xline(0,'--k','LineWidth',2)
-% xline(250,'--k','LineWidth',2)
-% legend([p1(1).mainLine,p2(1).mainLine,p3(1).mainLine],{'Bash Leads','Bash Lags','No Bash'})
-% xlabel('Time re: lead word onset (ms)','FontSize',18)
-% 
-% sgtitle('PO 15 deg ILDs Button Press Subtracted','FontSize',24)
-
-
-
 %% FC Bash Lead vs. Bash Lag vs. No Bash
 curr_channel_index = frontocentral_channels;
 %ITD5 
@@ -2025,36 +1242,263 @@ sgtitle('PO 15 deg ILDs Button Press Subtracted','FontSize',24)
 
 
 
+
+%% TOPOPLOTS
+eeglab;
+EEG_struct_for_topographies = load(append(mild_master_root,'prepro_epoched_data\epochs_for_topographies.mat'));
+EEG_struct_for_topographies = EEG_struct_for_topographies.EEG_yes_button_press;
+
+[~,p1_lead_start_index] = min(abs(single_onset_time - 85));
+[~,p1_lead_end_index] = min(abs(single_onset_time - 115));
+[~,n1_lead_start_index] = min(abs(single_onset_time - 135));
+[~,n1_lead_end_index] = min(abs(single_onset_time - 165));
+[~,p3_lead_start_index] = min(abs(single_onset_time - 350));
+[~,p3_lead_end_index] = min(abs(single_onset_time - 600));
+
+[~,p1_lag_start_index] = min(abs(single_onset_time - 85 - 250));
+[~,p1_lag_end_index] = min(abs(single_onset_time - 115 - 250));
+[~,n1_lag_start_index] = min(abs(single_onset_time - 135 - 250));
+[~,n1_lag_end_index] = min(abs(single_onset_time - 165 - 250));
+[~,p3_lag_start_index] = min(abs(single_onset_time - 350 - 250));
+[~,p3_lag_end_index] = min(abs(single_onset_time - 600 - 250));
+
+cmin = 0;
+cmax = 3.25;
+
+%% TOPOPLOTS OF P1 MINUS N1 LEADING WORD
+figure;
+sgtitle('P1 Minus N1 Leading Word','FontSize',18)
+
+subplot(2,4,1) % ITD5 Target Lead Bash
+this_data = squeeze(mean(itd5_lead_bash_target_lag_nonbash_masker(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(itd5_lead_bash_target_lag_nonbash_masker(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Target Lead Bash','FontSize',12)
+
+subplot(2,4,2) % ITD15 Target Lead Bash
+this_data = squeeze(mean(itd15_lead_bash_target_lag_nonbash_masker(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(itd15_lead_bash_target_lag_nonbash_masker(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Target Lead Bash','FontSize',12)
+
+subplot(2,4,3) % ILD5 Target Lead Bash
+this_data = squeeze(mean(ild5_lead_bash_target_lag_nonbash_masker(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(ild5_lead_bash_target_lag_nonbash_masker(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Target Lead Bash','FontSize',12)
+
+subplot(2,4,4) % ILD15 Target Lead Bash
+this_data = squeeze(mean(ild15_lead_bash_target_lag_nonbash_masker(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(ild15_lead_bash_target_lag_nonbash_masker(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Target Lead Bash','FontSize',12)
+
+
+subplot(2,4,5) % ITD5 Masker Lead Bash
+this_data = squeeze(mean(itd5_lead_bash_masker_lag_nonbash_target(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(itd5_lead_bash_masker_lag_nonbash_target(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Masker Lead Bash','FontSize',12)
+
+
+subplot(2,4,6) % ITD15 Masker Lead Bash
+this_data = squeeze(mean(itd15_lead_bash_masker_lag_nonbash_target(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(itd15_lead_bash_masker_lag_nonbash_target(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Masker Lead Bash','FontSize',12)
+
+subplot(2,4,7) % ILD5 Masker Lead Bash
+this_data = squeeze(mean(ild5_lead_bash_masker_lag_nonbash_target(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(ild5_lead_bash_masker_lag_nonbash_target(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Masker Lead Bash','FontSize',12)
+
+subplot(2,4,8) % ILD15 Masker Lead Bash
+this_data = squeeze(mean(ild15_lead_bash_masker_lag_nonbash_target(:,:,p1_lead_start_index:p1_lead_end_index),[1,3])) - squeeze(mean(ild15_lead_bash_masker_lag_nonbash_target(:,:,n1_lead_start_index:n1_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Masker Lead Bash','FontSize',12)
+this_colorbar=colorbar;
+this_colorbar.Position = [0.93 0.168 0.022 0.7];
+
+
+
+%% TOPOPLOTS OF P1 MINUS N1 LAGGING WORD 
+figure;
+sgtitle('P1 Minus N1 LAGGING Word','FontSize',18)
+
+subplot(2,4,1) % ITD5 Target Lag Bash
+this_data = squeeze(mean(itd5_lead_nonbash_masker_lag_bash_target(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(itd5_lead_nonbash_masker_lag_bash_target(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Target Lag Bash','FontSize',12)
+
+subplot(2,4,2) % ITD15 Target Lag Bash
+this_data = squeeze(mean(itd15_lead_nonbash_masker_lag_bash_target(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(itd15_lead_nonbash_masker_lag_bash_target(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Target Lag Bash','FontSize',12)
+
+subplot(2,4,3) % ILD5 Target Lag Bash
+this_data = squeeze(mean(ild5_lead_nonbash_masker_lag_bash_target(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(ild5_lead_nonbash_masker_lag_bash_target(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Target Lag Bash','FontSize',12)
+
+subplot(2,4,4) % ILD15 Target Lag Bash
+this_data = squeeze(mean(ild15_lead_nonbash_masker_lag_bash_target(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(ild15_lead_nonbash_masker_lag_bash_target(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Target Lag Bash','FontSize',12)
+
+
+subplot(2,4,5) % ITD5 Masker Lag Bash
+this_data = squeeze(mean(itd5_lead_nonbash_target_lag_bash_masker(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(itd5_lead_nonbash_target_lag_bash_masker(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Masker Lag Bash','FontSize',12)
+
+
+subplot(2,4,6) % ITD15 Masker Lag Bash
+this_data = squeeze(mean(itd15_lead_nonbash_target_lag_bash_masker(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(itd15_lead_nonbash_target_lag_bash_masker(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Masker Lag Bash','FontSize',12)
+
+subplot(2,4,7) % ILD5 Masker Lag Bash
+this_data = squeeze(mean(ild5_lead_nonbash_target_lag_bash_masker(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(ild5_lead_nonbash_target_lag_bash_masker(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Masker Lag Bash','FontSize',12)
+
+subplot(2,4,8) % ILD15 Masker Lag Bash
+this_data = squeeze(mean(ild15_lead_nonbash_target_lag_bash_masker(:,:,p1_lag_start_index:p1_lag_end_index),[1,3])) - squeeze(mean(ild15_lead_nonbash_target_lag_bash_masker(:,:,n1_lag_start_index:n1_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Masker Lag Bash','FontSize',12)
+this_colorbar=colorbar;
+this_colorbar.Position = [0.93 0.168 0.022 0.7];
+
+
+%% TOPOPLOTS OF P300
+cmin = 0;
+cmax = 2.5;
+
+% LEAD P300 
+figure;
+sgtitle('P300 Leading Word','FontSize',18)
+
+subplot(2,4,1) % ITD5 Target Lead Bash
+this_data = squeeze(mean(itd5_lead_bash_target_lag_nonbash_masker(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Target Lead Bash','FontSize',12)
+
+subplot(2,4,2) % ITD15 Target Lead Bash
+this_data = squeeze(mean(itd15_lead_bash_target_lag_nonbash_masker(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Target Lead Bash','FontSize',12)
+
+subplot(2,4,3) % ILD5 Target Lead Bash
+this_data = squeeze(mean(ild5_lead_bash_target_lag_nonbash_masker(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Target Lead Bash','FontSize',12)
+
+subplot(2,4,4) % ILD15 Target Lead Bash
+this_data = squeeze(mean(ild15_lead_bash_target_lag_nonbash_masker(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Target Lead Bash','FontSize',12)
+
+
+subplot(2,4,5) % ITD5 Masker Lead Bash
+this_data = squeeze(mean(itd5_lead_bash_masker_lag_nonbash_target(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Masker Lead Bash','FontSize',12)
+
+
+subplot(2,4,6) % ITD15 Masker Lead Bash
+this_data = squeeze(mean(itd15_lead_bash_masker_lag_nonbash_target(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Masker Lead Bash','FontSize',12)
+
+subplot(2,4,7) % ILD5 Masker Lead Bash
+this_data = squeeze(mean(ild5_lead_bash_masker_lag_nonbash_target(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Masker Lead Bash','FontSize',12)
+
+subplot(2,4,8) % ILD15 Masker Lead Bash
+this_data = squeeze(mean(ild15_lead_bash_masker_lag_nonbash_target(:,:,p3_lead_start_index:p3_lead_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Masker Lead Bash','FontSize',12)
+this_colorbar=colorbar;
+this_colorbar.Position = [0.93 0.168 0.022 0.7];
+
+
+% LAG P300 
+figure;
+sgtitle('P300 Lagging Word','FontSize',18)
+
+subplot(2,4,1) % ITD5 Target Lag Bash
+this_data = squeeze(mean(itd5_lead_nonbash_masker_lag_bash_target(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Target Lag Bash','FontSize',12)
+
+subplot(2,4,2) % ITD15 Target Lag Bash
+this_data = squeeze(mean(itd15_lead_nonbash_masker_lag_bash_target(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Target Lag Bash','FontSize',12)
+
+subplot(2,4,3) % ILD5 Target Lag Bash
+this_data = squeeze(mean(ild5_lead_nonbash_masker_lag_bash_target(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Target Lag Bash','FontSize',12)
+
+subplot(2,4,4) % ILD15 Target Lag Bash
+this_data = squeeze(mean(ild15_lead_nonbash_masker_lag_bash_target(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Target Lag Bash','FontSize',12)
+
+
+subplot(2,4,5) % ITD5 Masker Lag Bash
+this_data = squeeze(mean(itd5_lead_nonbash_target_lag_bash_masker(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD5 Masker Lag Bash','FontSize',12)
+
+
+subplot(2,4,6) % ITD15 Masker Lag Bash
+this_data = squeeze(mean(itd15_lead_nonbash_target_lag_bash_masker(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ITD15 Masker Lag Bash','FontSize',12)
+
+subplot(2,4,7) % ILD5 Masker Lag Bash
+this_data = squeeze(mean(ild5_lead_nonbash_target_lag_bash_masker(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD5 Masker Lag Bash','FontSize',12)
+
+subplot(2,4,8) % ILD15 Masker Lag Bash
+this_data = squeeze(mean(ild15_lead_nonbash_target_lag_bash_masker(:,:,p3_lag_start_index:p3_lag_end_index),[1,3]));
+topoplot(this_data, EEG_struct_for_topographies.chanlocs, 'maplimits',[cmin,cmax]);
+title('ILD15 Masker Lag Bash','FontSize',12)
+this_colorbar=colorbar;
+this_colorbar.Position = [0.93 0.168 0.022 0.7];
+
+
+
+
+
 %% Plot all button press during experiment
-button_press_delay = 0;
-single_onset_time_buttonpress = linspace(erp_window_start_time,erp_window_end_time,size(all_subjects_button_press,3));
-curr_channel_index=frontocentral_channels;
-ymin = -4;
-ymax = 5;
-num_subjects = size(curr_subject_ID,1);
-figure;
-hold on
-this_data = squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2));
-plot(single_onset_time_buttonpress,squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2)),'-k')
-p1 = shadedErrorBar(single_onset_time_buttonpress,nanmean(this_data,1),std(this_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-r'});
-ylim([ymin,ymax])
-xlim([erp_window_start_time,erp_window_end_time])
-ylabel('Voltage (uV)','FontSize',18)
-title('FC Button Press During Experiment','FontSize',18)
-
-
-single_onset_time_buttonpress = linspace(erp_window_start_time,erp_window_end_time,size(all_subjects_button_press,3));
-curr_channel_index=parietooccipital_channels;
-ymin = -4;
-ymax = 5;
-num_subjects = size(curr_subject_ID,1);
-figure;
-hold on
-this_data = squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2));
-plot(single_onset_time_buttonpress,squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2)),'-k')
-p1 = shadedErrorBar(single_onset_time_buttonpress,nanmean(this_data,1),std(this_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-r'});
-ylim([ymin,ymax])
-xlim([erp_window_start_time,erp_window_end_time])
-ylabel('Voltage (uV)','FontSize',18)
-title('PO Button Press During Experiment','FontSize',18)
+% button_press_delay = 0;
+% single_onset_time_buttonpress = linspace(erp_window_start_time,erp_window_end_time,size(all_subjects_button_press,3));
+% curr_channel_index=frontocentral_channels;
+% ymin = -4;
+% ymax = 5;
+% num_subjects = size(curr_subject_ID,1);
+% figure;
+% hold on
+% this_data = squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2));
+% plot(single_onset_time_buttonpress,squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2)),'-k')
+% p1 = shadedErrorBar(single_onset_time_buttonpress,nanmean(this_data,1),std(this_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-r'});
+% ylim([ymin,ymax])
+% xlim([erp_window_start_time,erp_window_end_time])
+% ylabel('Voltage (uV)','FontSize',18)
+% title('FC Button Press During Experiment','FontSize',18)
+% 
+% 
+% single_onset_time_buttonpress = linspace(erp_window_start_time,erp_window_end_time,size(all_subjects_button_press,3));
+% curr_channel_index=parietooccipital_channels;
+% ymin = -4;
+% ymax = 5;
+% num_subjects = size(curr_subject_ID,1);
+% figure;
+% hold on
+% this_data = squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2));
+% plot(single_onset_time_buttonpress,squeeze(nanmean(all_subjects_button_press(:,curr_channel_index,:),2)),'-k')
+% p1 = shadedErrorBar(single_onset_time_buttonpress,nanmean(this_data,1),std(this_data,[],1)./(sqrt(num_subjects - 1)),'lineProps',{'-r'});
+% ylim([ymin,ymax])
+% xlim([erp_window_start_time,erp_window_end_time])
+% ylabel('Voltage (uV)','FontSize',18)
+% title('PO Button Press During Experiment','FontSize',18)
 

@@ -230,7 +230,7 @@ for isubject = 1:size(curr_subject_ID,1)
         %% ISOLATE WORD PAIR ONSETS
 
         this_trial_pair_onset_times = 2:0.6:11;
-        for ionset = 2:length(this_trial_pair_onset_times) % for each word pair onset, excluding the first
+        for ionset = 2:length(this_trial_pair_onset_times)-1 % for each word pair onset, excluding the first and the last
             if this_trial_whether_target_lead(ionset) == 1
                 resampled_search_time = this_trial_pair_onset_times(ionset)*1000;
             elseif this_trial_whether_target_lead(ionset) == 0
@@ -514,7 +514,7 @@ for isubject = 1:size(curr_subject_ID,1)
         %% ISOLATE WORD PAIR ONSETS
 
         this_trial_pair_onset_times = 2:0.6:11;
-        for ionset = 2:length(this_trial_pair_onset_times) % for each word pair onset, excluding the first
+        for ionset = 2:length(this_trial_pair_onset_times)-1 % for each word pair onset, excluding the first and the last
             if this_trial_whether_target_lead(ionset) == 1
                 resampled_search_time = this_trial_pair_onset_times(ionset)*1000;
             elseif this_trial_whether_target_lead(ionset) == 0
