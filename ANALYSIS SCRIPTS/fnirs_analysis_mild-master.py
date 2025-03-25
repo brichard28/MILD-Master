@@ -124,30 +124,30 @@ subject_ID = ['mild_master_1',
 
 
 # The subjects we would like to run right now
-curr_subject_ID = ['mild_master_1',
-'mild_master_3',
-'mild_master_4',
-'mild_master_5',
-'mild_master_6',
-'mild_master_8',
-'mild_master_9',
-'mild_master_10',
-'mild_master_11',
-'mild_master_12',
-'mild_master_14',
-'mild_master_15',
-'mild_master_16',
-'mild_master_17',
-'mild_master_18',
-'mild_master_19',
-'mild_master_22',
-'mild_master_23',
-'mild_master_24',
-'mild_master_25',
-'mild_master_26',
-'mild_master_27',
-'mild_master_28',
-'mild_master_29',
+# 'mild_master_1',
+# 'mild_master_3',
+# 'mild_master_4',
+# 'mild_master_5',
+# 'mild_master_6',
+# 'mild_master_8',
+# 'mild_master_9',
+# 'mild_master_10',
+# 'mild_master_11',
+# 'mild_master_12',
+# 'mild_master_14',
+# 'mild_master_15',
+# 'mild_master_16',
+# 'mild_master_17',
+# 'mild_master_18',
+# 'mild_master_19',
+# 'mild_master_22',
+# 'mild_master_23',
+# 'mild_master_24',
+# 'mild_master_25',
+# 'mild_master_26',
+# 'mild_master_27',
+# 'mild_master_28',
+curr_subject_ID = ['mild_master_29',
 'mild_master_30',
 'mild_master_31',
 'mild_master_32',
@@ -240,7 +240,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     
     
     
-    os.environ["OMP_NUM_THREADS"] = "1"
+    #os.environ["OMP_NUM_THREADS"] = "1"
     
     subject = curr_subject_ID[ii]
     task_type = 'mild-master'
@@ -252,7 +252,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     plot_steps = False
 
     # ---------------------------------------------------------------
-    # -----------------      Load the Data        ---------
+    # -----------------      Load the Data        -------------------
     # ---------------------------------------------------------------
     data = mne.io.read_raw_nirx(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}_config.hdr",
                                     verbose=False, preload=True)
@@ -481,7 +481,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # raw_haemo_filt_crop.resample(5)
     # raw_haemo_short_crop.resample(5)
     
-    raw_haemo_filt_for_glm = get_long_channels(raw_haemo_filt).copy()
+    raw_haemo_filt_for_glm = raw_haemo_filt.copy()
     
     # drop bad channels from glm
     all_subjects_bad_channels.append([epochs.copy().info['bads']])
@@ -571,6 +571,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
 
 
+
+    individual_results.to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_glm_results.csv")
 
     group_df = pd.concat([group_df, individual_results], ignore_index=True)
 
