@@ -121,7 +121,7 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
         # -----------------   Plot the FFT of each channel      ---------
         # ---------------------------------------------------------------
         # rejecting based on SNR from the fft plot - an alternative method
-        fig_fft, bad_channels_total, SNR_dict = raw_nirx_channelwise_fft(raw_od, plot_steps, snr_thres=snr_thres)
+        fig_fft, bad_channels_FFT, SNR_dict = raw_nirx_channelwise_fft(raw_od, plot_steps, snr_thres=snr_thres)
         # raw_od.info['bads'] = bad_channels_total
         
         bads = []
@@ -132,12 +132,14 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
             elif sci[ich] < sci_thres:
                 bads.append(this_ch_name)
 
-        #agree = np.intersect1d(list(itertools.compress(raw_od.ch_names, sci < sci_thres)), bad_channels_total)
+        bad_channels_SCI = list(itertools.compress(raw_od.ch_names, sci < sci_thres))
+        agree = np.intersect1d(bad_channels_SCI, bad_channels_FFT)
         #diff = np.setdiff1d(list(itertools.compress(raw_od.ch_names, sci < sci_thres)), bad_channels_total)
 
+        print(f"{len(bad_channels_FFT)} channels rejected by FFT")
+        print(f"{len(bad_channels_SCI)} channels rejected by SCI")
         # set the bad channels to what the two methods agree upon
-        raw_od.info['bads'] = bads #list(np.concatenate([agree, diff]))
-        #raw_od.info['bads'] = list(itertools.compress(raw_od.ch_names, sci < sci_thres)) + list(bad_channels_total)
+        raw_od.info['bads'] = list(np.unique(np.concatenate(bad_channels_SCI,bad_channels_FFT)))
 
 
     # ---------------------------------------------------------------
@@ -154,59 +156,57 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
     #                         scalings='auto')
 
     # ---------------------------------------------------------------
-    # -----               High-pass Filter the Data            ------
+    # -----               Band-pass Filter the Data            ------
     # ---------------------------------------------------------------
     if filter_limits[0] is not None:
         if filter_type == 'iir':
-            raw_od_corrected = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=None,
-                                                      l_trans_bandwidth=filter_limits[0],
+            raw_OD_filt = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=filter_limits[1],
+                                                      l_trans_bandwidth=filter_limits[0],h_trans_bandwidth=filter_limits[1],
                                                       method='iir', phase='zero',
-                                                      iir_params={'order': 1, 'ftype': 'butter', 'output': 'sos'})
+                                                      iir_params={'order': 2, 'ftype': 'butter', 'output': 'sos'})
 
         elif filter_type == 'fir':
-            raw_od_corrected = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=None,
+            raw_OD_filt = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=None,
                                                       l_trans_bandwidth=filter_limits[0],
                                                       method='fir')
     else:
-        raw_od_corrected = corrected_tddr
-
-    raw_od_corrected = corrected_tddr
+        raw_OD_filt = corrected_tddr
     # ---------------------------------------------------------------
     # ----      Remove the short-channel information          -------
     # ---------------------------------------------------------------
     if short_regression is True:
-        raw_OD_sc = mne_nirs.signal_enhancement.short_channel_regression(raw_od_corrected)
+        raw_OD_sc = mne_nirs.signal_enhancement.short_channel_regression(raw_OD_filt)
         # raw_OD_sc = short_channel_regression_OD(raw_od_corrected)
     else:
-        raw_OD_sc = raw_od_corrected
+        raw_OD_sc = raw_OD_filt
 
-    # if plot_steps:
-    #     filter_fig, filter_axes = plt.subplots(nrows=2,ncols=1)
-    #     curr_ax = filter_axes[0]
-    #     raw_OD_filt.plot_psd(average='mean', ax = filter_axes[0])
-    #     curr_ax.set_xlim([0, 0.3])
-    #     curr_ax.set_title('Before filtering', weight='bold', size='x-large')
+    if plot_steps:
+        filter_fig, filter_axes = plt.subplots(nrows=2,ncols=1)
+        curr_ax = filter_axes[0]
+        raw_OD_filt.plot_psd(average='mean', ax = filter_axes[0])
+        curr_ax.set_xlim([0, 0.3])
+        curr_ax.set_title('Before filtering', weight='bold', size='x-large')
 
     # # ---------------------------------------------------------------
     # # -----               Low-pass Filter the Data            ------
     # # ---------------------------------------------------------------
-    if filter_limits[1] is not None:
-        if filter_type == 'iir':
-            raw_OD_filt = raw_OD_sc.filter(l_freq=None, h_freq=filter_limits[1],
-                                                 h_trans_bandwidth=filter_limits[1] / 2, method='iir', phase='zero',
-                                                 iir_params={'order': 1, 'ftype': 'butter', 'output': 'sos'})
+    # if filter_limits[1] is not None:
+    #     if filter_type == 'iir':
+    #         raw_OD_filt = raw_OD_sc.filter(l_freq=None, h_freq=filter_limits[1],
+    #                                              h_trans_bandwidth=filter_limits[1] / 2, method='iir', phase='zero',
+    #                                              iir_params={'order': 1, 'ftype': 'butter', 'output': 'sos'})
 
-        elif filter_type == 'fir':
-            raw_OD_filt = raw_OD_sc.filter(l_freq=None, h_freq=filter_limits[1],
-                                                 h_trans_bandwidth=filter_limits[1] / 2, method='fir', phase='zero')
-    else:
-        raw_OD_filt = raw_OD_sc
+    #     elif filter_type == 'fir':
+    #         raw_OD_filt = raw_OD_sc.filter(l_freq=None, h_freq=filter_limits[1],
+    #                                              h_trans_bandwidth=filter_limits[1] / 2, method='fir', phase='zero')
+    # else:
+    #     raw_OD_filt = raw_OD_sc
 
-    if plot_steps:
-        curr_ax = plt.subplots(nrows=1,ncols=1)
-        raw_OD_filt.plot_psd(average='mean',ax = curr_ax)
-        curr_ax.set_xlim([0, 0.3])
-        curr_ax.set_title('After filtering', weight='bold', size='x-large')
+    # if plot_steps:
+    #     curr_ax = plt.subplots(nrows=1,ncols=1)
+    #     raw_OD_filt.plot_psd(average='mean',ax = curr_ax)
+    #     curr_ax.set_xlim([0, 0.3])
+    #     curr_ax.set_title('After filtering', weight='bold', size='x-large')
         
 
     # if plot_steps:

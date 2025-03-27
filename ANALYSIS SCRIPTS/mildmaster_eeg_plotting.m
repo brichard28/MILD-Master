@@ -1248,19 +1248,19 @@ eeglab;
 EEG_struct_for_topographies = load(append(mild_master_root,'prepro_epoched_data\epochs_for_topographies.mat'));
 EEG_struct_for_topographies = EEG_struct_for_topographies.EEG_yes_button_press;
 
-[~,p1_lead_start_index] = min(abs(single_onset_time - 85));
-[~,p1_lead_end_index] = min(abs(single_onset_time - 115));
-[~,n1_lead_start_index] = min(abs(single_onset_time - 135));
-[~,n1_lead_end_index] = min(abs(single_onset_time - 165));
-[~,p3_lead_start_index] = min(abs(single_onset_time - 350));
-[~,p3_lead_end_index] = min(abs(single_onset_time - 600));
+[~,p1_lead_start_index] = min(abs(single_onset_time - 90));
+[~,p1_lead_end_index] = min(abs(single_onset_time - 110));
+[~,n1_lead_start_index] = min(abs(single_onset_time - 140));
+[~,n1_lead_end_index] = min(abs(single_onset_time - 150));
+[~,p3_lead_start_index] = min(abs(single_onset_time - 450));
+[~,p3_lead_end_index] = min(abs(single_onset_time - 550));
 
-[~,p1_lag_start_index] = min(abs(single_onset_time - 85 - 250));
-[~,p1_lag_end_index] = min(abs(single_onset_time - 115 - 250));
-[~,n1_lag_start_index] = min(abs(single_onset_time - 135 - 250));
-[~,n1_lag_end_index] = min(abs(single_onset_time - 165 - 250));
-[~,p3_lag_start_index] = min(abs(single_onset_time - 350 - 250));
-[~,p3_lag_end_index] = min(abs(single_onset_time - 600 - 250));
+[~,p1_lag_start_index] = min(abs(single_onset_time - 90 - 250));
+[~,p1_lag_end_index] = min(abs(single_onset_time - 110 - 250));
+[~,n1_lag_start_index] = min(abs(single_onset_time - 140 - 250));
+[~,n1_lag_end_index] = min(abs(single_onset_time - 150 - 250));
+[~,p3_lag_start_index] = min(abs(single_onset_time - 450 - 250));
+[~,p3_lag_end_index] = min(abs(single_onset_time - 550 - 250));
 
 cmin = 0;
 cmax = 3.25;

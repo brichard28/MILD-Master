@@ -70,11 +70,16 @@ all_data %>% group_by(Spatialization) %>% shapiro_test(mean_hbo)
 
 
 
-##### LMEM Model #############
-model <- mixed(mean_hbo ~ Spatialization + (1|ID) + (1|ch_name),
+
+
+
+##### LMEM Model HbO #############
+model_hbo <- mixed(mean_hbo ~ Spatialization + (1|ID) + (1|ch_name),
                        data= subset(all_data, Chroma == "hbo"), 
                        control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
-model
+model_hbo
+
+
 
 # Pairwise Comparisons (treatment coding)
 
@@ -111,6 +116,7 @@ summary(lmer_ild15deg)
 
 ##### Mean HbO Plot ##########
 mean_hbo_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="mean_hbo", groupvars=c("ID","Spatialization"))
+mean_hbo_data$Spatialization <- ordered(mean_hbo_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
 plothbo <- ggplot(data = mean_hbo_data, aes(x = Spatialization, y = mean_hbo,group = ID)) +
   geom_line(size=1, position=position_dodge(width=0.3)) + 
   geom_errorbar(aes(x=Spatialization, ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
@@ -124,17 +130,54 @@ plothbo <- ggplot(data = mean_hbo_data, aes(x = Spatialization, y = mean_hbo,gro
 grid.arrange(plothbo, ncol=1, widths = c(1))
 
 
+
+##### LMEM Model Beta #############
+model_beta <- mixed(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                    data= subset(all_data, Chroma == "hbo"), 
+                    control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
+model_beta
+
+# ITD5deg as reference
+all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=5_az=0")
+lmer_itd5deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                     data= subset(all_data, Chroma == "hbo"), 
+                     control = lmerControl(optimizer = "bobyqa"))#
+summary(lmer_itd5deg_beta)
+
+# ITD15deg as reference
+all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=15_az=0")
+lmer_itd15deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                          data= subset(all_data, Chroma == "hbo"), 
+                          control = lmerControl(optimizer = "bobyqa"))#
+summary(lmer_itd15deg_beta)
+
+# ILD5deg as reference
+all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=0_az=5")
+lmer_ild5deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                          data= subset(all_data, Chroma == "hbo"), 
+                          control = lmerControl(optimizer = "bobyqa"))#
+summary(lmer_ild5deg_beta)
+
+# ILD15deg as reference
+all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=0_az=15")
+lmer_ild15deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                          data= subset(all_data, Chroma == "hbo"), 
+                          control = lmerControl(optimizer = "bobyqa"))#
+summary(lmer_ild15deg_beta)
+
 ##### Beta Plot ##########
-beta_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="theta", groupvars=c("ID","Spatialization"), na.rm = TRUE)
-plot_beta <- ggplot(data = beta_data, aes(x = Spatialization, y = theta,group = ID)) +
+beta_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="theta", groupvars=c("ID","Spatialization","ch_name"), na.rm = TRUE)
+beta_data$Spatialization <- ordered(beta_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
+plot_beta <- ggplot(data = beta_data, aes(x = Spatialization, y = theta,group = ch_name)) +
   geom_line(size=1, position=position_dodge(width=0.3)) + 
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(-0.2,0.2) +
+  ylim(-0.3,0.2) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
   theme(legend.position="none")
 
 grid.arrange(plot_beta, ncol=1, widths = c(1))
+

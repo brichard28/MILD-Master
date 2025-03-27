@@ -157,7 +157,7 @@ curr_subject_ID = ['mild_master_29',
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-glm_dur = 4
+glm_dur = 5
 
 n_subjects = len(curr_subject_ID)
 
@@ -313,7 +313,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     events, event_dict = mne.events_from_annotations(data, verbose=False)
 
     if subject != "mild_master_5":
-        this_sub_short_regression = True
+        this_sub_short_regression = False
     else:
         this_sub_short_regression = False
 
@@ -325,7 +325,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.2])
+                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.5])
 
 
     if subject != "mild_master_5":
@@ -493,20 +493,20 @@ for ii, subject_num in enumerate(range(n_subjects)):
     
 
     design_matrix = make_first_level_design_matrix(raw_haemo_filt_for_glm,
-                                                        drift_model='cosine',
+                                                        drift_model=None,
                                                         high_pass=0.01,  # Must be specified per experiment
                                                         hrf_model='spm',
                                                         stim_dur=glm_dur)
     # # add_regs=filtered_signals)
 
     design_matrix["Linear"] = np.arange(0, np.shape(design_matrix)[0])
-    #design_matrix_hbo["ShortHbO"] = np.mean(raw_haemo_short.copy().pick(picks="hbo").get_data(), axis=0)
-
-    #design_matrix_hbr["ShortHbR"] = np.mean(raw_haemo_short.copy().pick(picks="hbr").get_data(), axis=0)
-    min_max_scaler = MinMaxScaler()
-    X_minmax = min_max_scaler.fit_transform(design_matrix)
-    design_matrix_min_max = pd.DataFrame(X_minmax, columns=design_matrix.columns.tolist())
-
+    design_matrix["ShortHbO"] = np.mean(raw_haemo_short.copy().pick(picks="hbo").get_data(), axis=0)
+    #design_matrix["ShortHbR"] = np.mean(raw_haemo_short.copy().pick(picks="hbr").get_data(), axis=0)
+    
+    # TODO: Normalize design matrix such that the maximum of each column is 1
+    design_matrix_normalized = design_matrix.copy()
+    design_matrix_normalized._data = design_matrix_normalized._data/np.max(np.abs(design_matrix_normalized._data),axis=1)
+    
     # pre-whiten
     raw_haemo_filt_for_glm._data = np.subtract(raw_haemo_filt_for_glm._data,
                                             np.nanmean(raw_haemo_filt_for_glm._data, axis=1)[:, np.newaxis])
@@ -521,7 +521,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     individual_results = glm_est.to_dataframe()
     individual_results["ID"] = subject
     # Convert to uM for nicer plotting below.
-    individual_results["theta"] = [t * 1.e6 for t in individual_results["theta"]]
+    #individual_results["theta"] = [t * 1.e6 for t in individual_results["theta"]]
     individual_results["mean_hbo"] = np.nan
     individual_results["mean_hbr"] = np.nan
 
@@ -567,9 +567,6 @@ for ii, subject_num in enumerate(range(n_subjects)):
         individual_results.loc[
             (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbr') & (
                     individual_results['Condition'] == 'az_itd=0_az=15'), "mean_hbr"] = mean_during_stim_ild15_hbr[idx]
-
-
-
 
 
     individual_results.to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_glm_results.csv")
