@@ -180,6 +180,28 @@ right_hem_channel_names = ["S" + str(value[0]) + "_D" + str(value[1]) + " hbo" f
 group_df = pd.DataFrame()  # To store channel level results
 
 
+# load in an example raw_haemo for this montage
+data = mne.io.read_raw_nirx(f"{curr_fnirs_data_folders[0]}/{curr_fnirs_data_folders[0][-14:]}_config.hdr",
+                                    verbose=False, preload=True)
+data_snirf = mne.io.read_raw_snirf(f"{curr_fnirs_data_folders[0]}/{curr_fnirs_data_folders[0][-14:]}.snirf",
+                                    optode_frame="mri", preload=True)
+events, event_dict = mne.events_from_annotations(data, verbose=False)
+raw_haemo_for_plotting, null = preprocess_NIRX(data, data_snirf, event_dict,
+                                           save=False,
+                                           savename='non.fif',
+                                           plot_steps=False,
+                                           crop=False, crop_low=0, crop_high=0,
+                                           events_modification=False, reject=True,
+                                           short_regression=False, events_from_snirf=False,
+                                           drop_short=False, negative_enhancement=False,
+                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.5])
+raw_haemo_for_plotting.info['bads'] = []
+
+
+
+
+
+
 for ii, subject_num in enumerate(range(n_subjects)):
     subject = curr_subject_ID[ii]
     individual_results = pd.read_csv(mild_master_root + "/RESULTS DATA/" + subject + "_glm_results.csv")
@@ -189,12 +211,12 @@ group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','
 group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
 
 
-caxis_lim = 0.2
+caxis_lim = 0.1
 
 groups_single_chroma = dict(
-    Left_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), left_hem_channels,
+    Left_Hemisphere=picks_pair_to_idx(raw_haemo_for_plotting.copy().pick(picks='hbo'), left_hem_channels,
                                       on_missing='warning'),
-    Right_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), right_hem_channels,
+    Right_Hemisphere=picks_pair_to_idx(raw_haemo_for_plotting.copy().pick(picks='hbo'), right_hem_channels,
                                        on_missing='warning'))
 
 
@@ -202,43 +224,43 @@ groups_single_chroma = dict(
 group_theta_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['theta'].mean()
 fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,10))
 
-this_info_left = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_left = raw_haemo_for_plotting.copy().pick(picks="hbo")
 this_info_left.drop_channels([val for idx, val in enumerate(this_info_left.ch_names) if val not in left_hem_channel_names])
 this_info_left.drop_channels([i for i in this_info_left.ch_names if i not in np.unique(group_theta_for_topoplot['ch_name'])])
 this_info_left = this_info_left.info
 
-this_info_right = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_right = raw_haemo_for_plotting.copy().pick(picks="hbo")
 this_info_right.drop_channels([val for idx, val in enumerate(this_info_right.ch_names) if val not in right_hem_channel_names])
 this_info_right.drop_channels([i for i in this_info_right.ch_names if i not in np.unique(group_theta_for_topoplot['ch_name'])])
 this_info_right = this_info_right.info
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[3],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[3],
-                     extrapolate='local',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta.png")
 plt.close(fig)
 
@@ -257,12 +279,12 @@ group_mean_hbo_for_topoplot.loc[np.isnan(group_mean_hbo_for_topoplot['mean_hbo']
 
 fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,10))
 
-this_info_left = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_left = raw_haemo_for_plotting.copy().pick(picks="hbo")
 this_info_left.drop_channels([val for idx, val in enumerate(this_info_left.ch_names) if val not in left_hem_channel_names])
 this_info_left.drop_channels([i for i in this_info_left.ch_names if i not in np.unique(group_mean_hbo_for_topoplot['ch_name'])])
 this_info_left = this_info_left.info
 
-this_info_right = raw_haemo_filt.copy().pick(picks="hbo")
+this_info_right = raw_haemo_for_plotting.copy().pick(picks="hbo")
 this_info_right.drop_channels([val for idx, val in enumerate(this_info_right.ch_names) if val not in right_hem_channel_names])
 this_info_right.drop_channels([i for i in this_info_right.ch_names if i not in np.unique(group_mean_hbo_for_topoplot['ch_name'])])
 this_info_right = this_info_right.info

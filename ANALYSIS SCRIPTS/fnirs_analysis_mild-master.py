@@ -124,7 +124,7 @@ subject_ID = ['mild_master_1',
 
 
 # The subjects we would like to run right now
-# 'mild_master_1',
+# curr_subject_ID = ['mild_master_1',
 # 'mild_master_3',
 # 'mild_master_4',
 # 'mild_master_5',
@@ -134,20 +134,20 @@ subject_ID = ['mild_master_1',
 # 'mild_master_10',
 # 'mild_master_11',
 # 'mild_master_12',
-# 'mild_master_14',
-# 'mild_master_15',
-# 'mild_master_16',
-# 'mild_master_17',
-# 'mild_master_18',
-# 'mild_master_19',
-# 'mild_master_22',
-# 'mild_master_23',
-# 'mild_master_24',
-# 'mild_master_25',
-# 'mild_master_26',
-# 'mild_master_27',
-# 'mild_master_28',
-curr_subject_ID = ['mild_master_29',
+# 'mild_master_14']
+curr_subject_ID = ['mild_master_15',
+'mild_master_16',
+'mild_master_17',
+'mild_master_18',
+'mild_master_19',
+'mild_master_22',
+'mild_master_23',
+'mild_master_24',
+'mild_master_25',
+'mild_master_26',
+'mild_master_27',
+'mild_master_28',
+'mild_master_29',
 'mild_master_30',
 'mild_master_31',
 'mild_master_32',
@@ -343,7 +343,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -------------               Epoching                  ---------
     # ---------------------------------------------------------------
-    reject_criteria = dict(hbo=5e-6)#5e-6
+    # reject_criteria = dict(hbo=5e-6)#5e-6
     #flat_criteria = dict(hbo=0.05e-6)
     
 
@@ -351,7 +351,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                         event_id=event_dict,  # event_dict_total,
                         tmin=tmin, tmax=tmax,
                         baseline= (tmin, 0),
-                        reject = reject_criteria,
+                      #   reject = reject_criteria,
                        # flat = flat_criteria,
                         preload=True, detrend=None, verbose=True,
                         on_missing='warn')
@@ -500,12 +500,14 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # # add_regs=filtered_signals)
 
     design_matrix["Linear"] = np.arange(0, np.shape(design_matrix)[0])
-    design_matrix["ShortHbO"] = np.mean(raw_haemo_short.copy().pick(picks="hbo").get_data(), axis=0)
+    if subject != "mild_master_5":
+        design_matrix["ShortHbO"] = np.mean(raw_haemo_short.copy().pick(picks="hbo").get_data(), axis=0)
     #design_matrix["ShortHbR"] = np.mean(raw_haemo_short.copy().pick(picks="hbr").get_data(), axis=0)
     
     # TODO: Normalize design matrix such that the maximum of each column is 1
     design_matrix_normalized = design_matrix.copy()
-    design_matrix_normalized._data = design_matrix_normalized._data/np.max(np.abs(design_matrix_normalized._data),axis=1)
+    for column in design_matrix_normalized.columns:
+        design_matrix_normalized[column] = design_matrix_normalized[column]/design_matrix_normalized[column].abs().max()
     
     # pre-whiten
     raw_haemo_filt_for_glm._data = np.subtract(raw_haemo_filt_for_glm._data,
@@ -521,7 +523,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     individual_results = glm_est.to_dataframe()
     individual_results["ID"] = subject
     # Convert to uM for nicer plotting below.
-    #individual_results["theta"] = [t * 1.e6 for t in individual_results["theta"]]
+    individual_results["theta"] = [t * 1.e6 for t in individual_results["theta"]]
     individual_results["mean_hbo"] = np.nan
     individual_results["mean_hbr"] = np.nan
 
