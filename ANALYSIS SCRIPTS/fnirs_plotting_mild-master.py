@@ -204,15 +204,15 @@ raw_haemo_for_plotting.info['bads'] = []
 
 for ii, subject_num in enumerate(range(n_subjects)):
     subject = curr_subject_ID[ii]
-    individual_results = pd.read_csv(mild_master_root + "/RESULTS DATA/" + subject + "_glm_results.csv")
+    individual_results = pd.read_csv(mild_master_root + "/RESULTS DATA/" + subject + "_results.csv")
     group_df = pd.concat([group_df, individual_results], ignore_index=True)
 
 group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
 group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
 
 
-caxis_lim = 0.1
-
+caxis_min = -0.1
+caxis_max = 0.1
 groups_single_chroma = dict(
     Left_Hemisphere=picks_pair_to_idx(raw_haemo_for_plotting.copy().pick(picks='hbo'), left_hem_channels,
                                       on_missing='warning'),
@@ -236,31 +236,31 @@ this_info_right = this_info_right.info
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['theta'],
                      this_info_left,sensors=True, axes = topo_axes[3],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[3],
-                     extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta.png")
 plt.close(fig)
 
@@ -273,7 +273,8 @@ plt.close(fig)
 # ---------------------------------------------------------------
 # -----------------     Topomap of Mean HbO             ---------
 #----------------------------------------------------------------
-caxis_lim = 0.15
+caxis_min = -0.1
+caxis_max = 0.1
 group_mean_hbo_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['mean_hbo'].mean()
 group_mean_hbo_for_topoplot.loc[np.isnan(group_mean_hbo_for_topoplot['mean_hbo']),"mean_hbo"] = 0
 
@@ -291,30 +292,30 @@ this_info_right = this_info_right.info
 
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
                      this_info_left,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
                      this_info_right,sensors=True, axes = topo_axes[0],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
                      this_info_left,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
                      this_info_right,sensors=True, axes = topo_axes[1],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
                      this_info_left,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
                      this_info_right,sensors=True, axes = topo_axes[2],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['mean_hbo'],
                      this_info_left,sensors=True, axes = topo_axes[3],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['mean_hbo'],
                      this_info_right,sensors=True, axes = topo_axes[3],
-                     extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
+                     extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_mean_hbo.png")
 plt.close(fig)

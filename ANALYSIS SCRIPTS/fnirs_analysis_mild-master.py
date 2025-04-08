@@ -124,35 +124,35 @@ subject_ID = ['mild_master_1',
 
 
 # The subjects we would like to run right now
-# curr_subject_ID = ['mild_master_1',
-# 'mild_master_3',
-# 'mild_master_4',
-# 'mild_master_5',
-# 'mild_master_6',
-# 'mild_master_8',
-# 'mild_master_9',
-# 'mild_master_10',
-# 'mild_master_11',
-# 'mild_master_12',
-# 'mild_master_14']
-curr_subject_ID = ['mild_master_15',
-'mild_master_16',
-'mild_master_17',
-'mild_master_18',
-'mild_master_19',
-'mild_master_22',
-'mild_master_23',
-'mild_master_24',
-'mild_master_25',
-'mild_master_26',
-'mild_master_27',
-'mild_master_28',
-'mild_master_29',
-'mild_master_30',
-'mild_master_31',
-'mild_master_32',
-'mild_master_33',
-'mild_master_34'] #,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
+curr_subject_ID = ['mild_master_1',
+'mild_master_3',
+'mild_master_4',
+'mild_master_5',
+'mild_master_6',
+'mild_master_8',
+'mild_master_9',
+'mild_master_10',
+'mild_master_11',
+'mild_master_12',
+'mild_master_14']
+# curr_subject_ID = ['mild_master_15',
+# 'mild_master_16',
+# 'mild_master_17',
+# 'mild_master_18',
+# 'mild_master_19',
+# 'mild_master_22',
+# 'mild_master_23',
+# 'mild_master_24',
+# 'mild_master_25',
+# 'mild_master_26',
+# 'mild_master_27',
+# 'mild_master_28',
+# 'mild_master_29',
+# 'mild_master_30',
+# 'mild_master_31',
+# 'mild_master_32',
+# 'mild_master_33',
+# 'mild_master_34'] #,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
@@ -325,7 +325,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.5])
+                                           snr_thres=1.5, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.5])
 
 
     if subject != "mild_master_5":
@@ -571,7 +571,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
                     individual_results['Condition'] == 'az_itd=0_az=15'), "mean_hbr"] = mean_during_stim_ild15_hbr[idx]
 
 
-    individual_results.to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_glm_results.csv")
+    individual_results.to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_results.csv")
+    epochs.to_data_frame(long_format=True).to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_epochs.csv")
 
     group_df = pd.concat([group_df, individual_results], ignore_index=True)
 
@@ -600,6 +601,10 @@ for ii, subject_num in enumerate(range(n_subjects)):
         plot_design_matrix(design_matrix, ax=ax_design_matrix)
         plt.savefig(mild_master_root + "/CASUAL FIGURES/GLM_regressors.png")
         plt.close(fig)
+
+
+
+
 
 # ---------------------------------------------------------------
 # -----------------     PLotting GLM Averages           ---------
