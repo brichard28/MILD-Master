@@ -115,9 +115,9 @@ summary(lmer_ild15deg)
 
 
 ##### Mean HbO Plot ##########
-mean_hbo_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="mean_hbo", groupvars=c("ID","Spatialization"))
+mean_hbo_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="mean_hbo", groupvars=c("ch_name","Spatialization"))
 mean_hbo_data$Spatialization <- ordered(mean_hbo_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
-plothbo <- ggplot(data = mean_hbo_data, aes(x = Spatialization, y = mean_hbo,group = ID)) +
+plothbo <- ggplot(data = mean_hbo_data, aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
   geom_line(size=1, position=position_dodge(width=0.3)) + 
   geom_errorbar(aes(x=Spatialization, ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(x = Spatialization, y = mean_hbo, color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
@@ -132,7 +132,7 @@ grid.arrange(plothbo, ncol=1, widths = c(1))
 
 
 ##### LMEM Model Beta #############
-model_beta <- mixed(theta ~ Spatialization + (1|ID) + (1|ch_name),
+model_beta <- mixed(theta ~ Spatialization + (1|ID) + (1| ch_name),
                     data= subset(all_data, Chroma == "hbo"), 
                     control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
 model_beta
