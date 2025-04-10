@@ -7,6 +7,7 @@ library(dplyr)
 library(plyr)
 library(car)
 require(gridExtra)
+library(emmeans)
 
 #### Data Preparation ###########
 # Load in Data
@@ -63,7 +64,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 
 
 # Check for normality, remove outliers
-all_data %>% group_by(Spatialization) %>% shapiro_test(mean_hbo)
+#all_data %>% group_by(Spatialization) %>% shapiro_test(mean_hbo)
 
 
 
@@ -165,7 +166,9 @@ lmer_ild15deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
                           control = lmerControl(optimizer = "bobyqa"))#
 summary(lmer_ild15deg_beta)
 
-##### Beta Plot ##########
+##### Beta Plots ##########
+
+# One line per channel
 beta_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="theta", groupvars=c("Spatialization","ch_name"), na.rm = TRUE)
 beta_data$Spatialization <- ordered(beta_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
 plot_beta <- ggplot(data = beta_data, aes(x = Spatialization, y = theta,group = ch_name)) +
@@ -181,3 +184,32 @@ plot_beta <- ggplot(data = beta_data, aes(x = Spatialization, y = theta,group = 
 
 grid.arrange(plot_beta, ncol=1, widths = c(1))
 
+
+
+# mean over everything
+beta_data_overall <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="theta", groupvars=c("Spatialization"), na.rm = TRUE)
+beta_data_overall <- beta_data_overall %>% mutate(Spatialization = fct_relevel(Spatialization, "az_itd=5_az=0", "az_itd=15_az=0", "az_itd=0_az=5", "az_itd=0_az=15"))
+plot_beta_overall <- ggplot(data = beta_data_overall, aes(x = Spatialization, y = theta)) +
+  geom_line(size=1, position=position_dodge(width=0.3)) + 
+  geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
+  geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
+  labs(x="",y="Mean Beta") +
+  ylim(0,0.05) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  theme(legend.position="none")
+
+grid.arrange(plot_beta_overall, ncol=1, widths = c(1))
+
+
+
+# Is there a significant effect of channel?
+model_beta_with_channels <- mixed(theta ~ Spatialization * ch_name + (1|ID),
+                    data= subset(all_data, Chroma == "hbo"), 
+                    control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
+model_beta_with_channels
+
+EMM_beta <- emmeans(model_beta_with_channels, ~ Spatialization * ch_name)
+pairs(EMM_beta, simple = "Spatialization", adjust = "bonferroni")
+pairs(EMM_beta, simple = "ch_name", adjust = "bonferroni")
