@@ -130,17 +130,17 @@ subject_ID = ['mild_master_1',
 
 
 # The subjects we would like to run right now
-curr_subject_ID = ['mild_master_1',
-'mild_master_3',
-'mild_master_4',
-'mild_master_5',
-'mild_master_6',
-'mild_master_8',
-'mild_master_9',
-'mild_master_10',
-'mild_master_11',
-'mild_master_12',
-'mild_master_14']
+# curr_subject_ID = ['mild_master_1',
+# 'mild_master_3',
+# 'mild_master_4',
+# 'mild_master_5',
+# 'mild_master_6',
+# 'mild_master_8',
+# 'mild_master_9',
+# 'mild_master_10',
+# 'mild_master_11',
+# 'mild_master_12',
+# 'mild_master_14']
 # curr_subject_ID = ['mild_master_15',
 # 'mild_master_16',
 # 'mild_master_17',
@@ -157,9 +157,9 @@ curr_subject_ID = ['mild_master_1',
 # 'mild_master_30',
 # 'mild_master_31',
 # 'mild_master_32',
-# 'mild_master_33',
-# 'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
-# 'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
+# 'mild_master_33']
+curr_subject_ID = ['mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
+'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
