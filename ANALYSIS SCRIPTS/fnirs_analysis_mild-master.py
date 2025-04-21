@@ -14,7 +14,7 @@ import os
 import pandas as pd
 from collections import defaultdict
 
-mne.set_config('MNE_BROWSER_BACKEND', 'qt')
+# mne.set_config('MNE_BROWSER_BACKEND', 'qt')
 #from nirx_movement import mark_aux_movement_bad
 from mne_nirs.experimental_design import make_first_level_design_matrix
 from mne_nirs.statistics import run_glm, statsmodels_to_results
@@ -37,7 +37,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Desktop'
+user = 'Home'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
@@ -275,6 +275,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------  
     
     if subject != "mild_master_1":
+        data_snirf.annotations.delete([0]) # remove the trigger from button press exercise
         data.annotations.rename({'5.0':	'az_itd=0_az=5',
     '6.0':	'az_itd=0_az=15',
     '7.0':	'az_itd=5_az=0',
@@ -310,8 +311,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     '11':	'az_itd=15_az=0'})
         
     
-    # Trying out shifting the trigger to the stim onset (rather than cue)
-    #data_snirf.annotations.onset = data_snirf.annotations.onset + 0.702
+
     
     # ---------------------------------------------------------------
     # -------------               Preprocessing             ---------

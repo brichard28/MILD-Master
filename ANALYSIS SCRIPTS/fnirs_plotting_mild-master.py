@@ -8,7 +8,7 @@ import os
 import pandas as pd
 from collections import defaultdict
 
-mne.set_config('MNE_BROWSER_BACKEND', 'qt')
+#mne.set_config('MNE_BROWSER_BACKEND', 'qt')
 #from nirx_movement import mark_aux_movement_bad
 from mne_nirs.experimental_design import make_first_level_design_matrix
 from mne_nirs.statistics import run_glm, statsmodels_to_results
@@ -31,7 +31,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Desktop'
+user = 'Home'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
@@ -79,7 +79,12 @@ data_root + "2025-02-26/2025-02-26_002",
 data_root + "2025-02-27/2025-02-27_001",
 data_root + "2025-02-27/2025-02-27_002",
 data_root + "2025-03-03/2025-03-03_001",
-data_root + "2025-03-05/2025-03-05_001"]
+data_root + "2025-03-05/2025-03-05_001",
+data_root + "2025-03-10/2025-03-10_001",
+data_root + "2025-03-12/2025-03-12_001",
+data_root + "2025-03-12/2025-03-12_002",
+data_root + "2025-03-17/2025-03-17_001",
+data_root + "2025-03-18/2025-03-18_001"]
 
 # All subject IDs
 subject_ID = ['mild_master_1',
@@ -114,9 +119,10 @@ subject_ID = ['mild_master_1',
 'mild_master_31',
 'mild_master_32',
 'mild_master_33',
-'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40']
+'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
+'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
 
-
+# The subjects we would like to run right now
 # The subjects we would like to run right now
 curr_subject_ID = ['mild_master_1',
 'mild_master_3',
@@ -146,8 +152,8 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_31',
 'mild_master_32',
 'mild_master_33',
-'mild_master_34'] #,'mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'
-
+'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
+'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
@@ -220,6 +226,10 @@ groups_single_chroma = dict(
                                        on_missing='warning'))
 
 
+
+# ---------------------------------------------------------------
+# -----------------     Topomap of Mean Beta            ---------
+#----------------------------------------------------------------
 
 group_theta_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['theta'].mean()
 fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,10))
@@ -318,4 +328,84 @@ mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_
                      this_info_right,sensors=True, axes = topo_axes[3],contours = 0,
                      extrapolate='local',image_interp = 'linear',vlim=(caxis_min,caxis_max))
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_mean_hbo.png")
+plt.close(fig)
+
+
+
+
+# ---------------------------------------------------------------
+# -----------------     Topomap of Mean Beta Contrasts           ---------
+#----------------------------------------------------------------
+small_itd_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
+large_itd_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
+small_itd_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
+large_itd_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
+
+small_ild_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
+large_ild_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
+small_ild_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
+large_ild_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
+
+
+caxis_min = -0.075
+caxis_max = 0.075
+fig, topo_contrast_axes = plt.subplots(nrows=3, ncols=2,figsize=(18,10))
+
+# Large ITD - Small ITD
+mne.viz.plot_topomap(large_itd_data_left - small_itd_data_left,
+                     this_info_left,sensors=True, axes = topo_contrast_axes[0, 0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(large_itd_data_right - small_itd_data_right,
+                     this_info_right,sensors=True, axes = topo_contrast_axes[0, 0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+topo_contrast_axes[0,0].set_title("Large ITD - Small ITD")
+
+# Large ILD - Small ILD
+mne.viz.plot_topomap(large_ild_data_left - small_ild_data_left,
+                     this_info_left,sensors=True, axes = topo_contrast_axes[0, 1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(large_ild_data_right - small_ild_data_right,
+                     this_info_right,sensors=True, axes = topo_contrast_axes[0, 1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+topo_contrast_axes[0, 1].set_title("Large ILD - Small ILD")
+
+
+# Small ITD - Small ILD
+mne.viz.plot_topomap(small_itd_data_left - small_ild_data_left,
+                     this_info_left,sensors=True, axes = topo_contrast_axes[1,0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(small_itd_data_right - small_ild_data_right,
+                     this_info_right,sensors=True, axes = topo_contrast_axes[1,0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+topo_contrast_axes[1,0].set_title("Small ITD - Small ILD")
+
+# Large ITD - Large ILD
+mne.viz.plot_topomap(large_itd_data_left - large_ild_data_left,
+                     this_info_left,sensors=True, axes = topo_contrast_axes[1,1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(large_itd_data_right - large_ild_data_right,
+                     this_info_right,sensors=True, axes = topo_contrast_axes[1,1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+topo_contrast_axes[1,1].set_title("Large ITD - Large ILD")
+
+
+# Small ITD - Large ILD
+mne.viz.plot_topomap(small_itd_data_left - large_ild_data_left,
+                     this_info_left,sensors=True, axes = topo_contrast_axes[2,0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(small_itd_data_right - large_ild_data_right,
+                     this_info_right,sensors=True, axes = topo_contrast_axes[2,0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+topo_contrast_axes[2,0].set_title("Small ITD - Large ILD")
+
+# Large ITD - Small ILD
+mne.viz.plot_topomap(large_itd_data_left - small_ild_data_left,
+                     this_info_left,sensors=True, axes = topo_contrast_axes[2,1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(large_itd_data_right - small_ild_data_right,
+                     this_info_right,sensors=True, axes = topo_contrast_axes[2,1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+topo_contrast_axes[2,1].set_title("Large ITD - Small ILD")
+
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta_contrasts.png")
 plt.close(fig)
