@@ -579,7 +579,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
 
     individual_results.to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_results.csv")
-    epochs.to_data_frame(long_format=True).to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_epochs.csv")
+    #epochs.to_data_frame(long_format=True).to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_epochs.csv")
 
     group_df = pd.concat([group_df, individual_results], ignore_index=True)
 
