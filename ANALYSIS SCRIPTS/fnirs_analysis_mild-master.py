@@ -37,7 +37,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Home'
+user = 'Desktop'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
@@ -332,7 +332,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=1.5, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.5])
+                                           snr_thres=1.5, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
 
 
     if subject != "mild_master_5":
@@ -625,8 +625,8 @@ groups_single_chroma = dict(
     Right_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), right_hem_channels,
                                        on_missing='warning'))
 # Run group level model and convert to dataframe
-group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
-group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
+# group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
+# group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
 # import seaborn as sns
 # sns.catplot(x="Condition",y="theta",col="ID",hue="Chroma",data=group_results,col_wrap=5,errorbar=None,palette="muted",height=4, s=10)
 # plt.savefig(mild_master_root + "/CASUAL FIGURES/beta_values_by_participant.png")
