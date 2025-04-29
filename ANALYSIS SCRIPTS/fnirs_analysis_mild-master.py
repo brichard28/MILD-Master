@@ -130,35 +130,35 @@ subject_ID = ['mild_master_1',
 
 
 # The subjects we would like to run right now
-# curr_subject_ID = ['mild_master_1',
-# 'mild_master_3',
-# 'mild_master_4',
-# 'mild_master_5',
-# 'mild_master_6',
-# 'mild_master_8',
-# 'mild_master_9',
-# 'mild_master_10',
-# 'mild_master_11',
-# 'mild_master_12',
-# 'mild_master_14']
-# curr_subject_ID = ['mild_master_15',
-# 'mild_master_16',
-# 'mild_master_17',
-# 'mild_master_18',
-# 'mild_master_19',
-# 'mild_master_22',
-# 'mild_master_23',
-# 'mild_master_24',
-# 'mild_master_25',
-# 'mild_master_26',
-# 'mild_master_27',
-# 'mild_master_28',
-# 'mild_master_29',
-# 'mild_master_30',
-# 'mild_master_31',
-# 'mild_master_32',
-# 'mild_master_33']
-curr_subject_ID = ['mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
+curr_subject_ID = ['mild_master_1',
+'mild_master_3',
+'mild_master_4',
+'mild_master_5',
+'mild_master_6',
+'mild_master_8',
+'mild_master_9',
+'mild_master_10',
+'mild_master_11',
+'mild_master_12',
+'mild_master_14',
+'mild_master_15',
+'mild_master_16',
+'mild_master_17',
+'mild_master_18',
+'mild_master_19',
+'mild_master_22',
+'mild_master_23',
+'mild_master_24',
+'mild_master_25',
+'mild_master_26',
+'mild_master_27',
+'mild_master_28',
+'mild_master_29',
+'mild_master_30',
+'mild_master_31',
+'mild_master_32',
+'mild_master_33',
+'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
 'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
@@ -536,8 +536,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
     # Add mean hbo and mean hbr to individual_results
     # Take Means
-    index_stim_start = int(-tmin * fs)
-    index_stim_end = int((-tmin + 11.6) * fs)
+    index_stim_start = int((-tmin + 2) * fs)
+    index_stim_end = int((-tmin + 8) * fs)
     # itd5
     mean_during_stim_itd5 = np.nanmean(subject_data_itd5_baselined[ii, :, index_stim_start:index_stim_end], axis=1)
     mean_during_stim_itd5_hbr = np.nanmean(subject_data_itd5_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
@@ -611,6 +611,101 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
 
 
+caxis_lim = 0.2
+
+# ---------------------------------------------------------------
+# -----------------     Topomap of Group Block Averages ---------
+# ---------------------------------------------------------------
+conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
+from mne.preprocessing.nirs import source_detector_distances, _channel_frequencies, \
+    _check_channels_ordered
+from mne.channels.layout import find_layout
+from copy import deepcopy
+
+# need a list of channel locations
+layout = find_layout(raw_haemo_filt.info)
+layout = deepcopy(layout)
+layout.pos[:, :2] -= layout.pos[:, :2].min(0)
+layout.pos[:, :2] /= layout.pos[:, :2].max(0)
+positions = layout.pos[:, :2] * 0.9
+
+for idx, cond in enumerate(conditions):
+    # set up subplots
+    fig = plt.figure(figsize=(5, 4), dpi=200)
+
+    width, height = 0.05, 0.05
+    lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, 0.2])
+    # for each channel
+
+    unique_positions = np.unique(positions)
+
+    unique_markers = np.zeros(np.shape(unique_positions))
+    for ii in range(len(layout.pos)):
+
+        this_channel_name = layout.names[ii]
+        print(this_channel_name)
+        pos = positions[ii, :]
+
+
+
+        # plot --- [lowerCorner_x, lowerCorner_y, width, height]
+        ax = fig.add_axes([pos[0]+width/2, pos[1], width, height])
+        this_cond_evoked = mne.combine_evoked(all_evokeds[cond],'equal')
+
+        this_color = "w"
+        if "hbo" in this_channel_name:
+            this_color = "r"
+        elif "hbr" in this_channel_name:
+            this_color = "b"
+        mne.viz.plot_compare_evokeds(
+            {cond: this_cond_evoked},
+            combine=None,
+            picks=this_channel_name,
+            axes=ax,
+            show=False,
+            colors=[this_color],
+            legend=False,
+            show_sensors=False,
+            ylim=lims,
+            ci=0.95,
+        )
+
+        ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+        ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
+        ax.patch.set_alpha(0)
+        ax.set_title(f'{layout.names[ii][:-4]}', fontsize=3, pad=0)
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        ax.set_facecolor("none")
+
+    # add an empty plot with labels
+    ax = fig.add_axes([0.5, 0.075, 1.5*width, 1.5*height])
+    mne.viz.plot_compare_evokeds(
+                {'az_itd=0_az=15': this_cond_evoked},
+                combine=None,
+                picks=this_channel_name,
+                axes=ax,
+                show=False,
+                show_sensors=False,
+                colors=["w"],
+                legend=False,
+                ylim=lims,
+                ci=0.95,
+            )
+    ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
+    ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.set_xlabel('Time (s)', fontsize=4)
+    ax.set_ylabel('DeltaHb (uM)', fontsize=4)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.tick_params(labelsize=4)
+
+    plt.savefig(mild_master_root + f"/CASUAL FIGURES/topomap_block_averages_{cond}.png")
+    plt.close(fig)
 
 
 # ---------------------------------------------------------------
@@ -760,100 +855,6 @@ for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
 axes[0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
 plt.savefig(mild_master_root + "/CASUAL FIGURES/grand_average_block_averages.png")
 plt.close(fig)
-
-# ---------------------------------------------------------------
-# -----------------     Topomap of Group Block Averages ---------
-# ---------------------------------------------------------------
-conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
-from mne.preprocessing.nirs import source_detector_distances, _channel_frequencies, \
-    _check_channels_ordered
-from mne.channels.layout import find_layout
-from copy import deepcopy
-
-# need a list of channel locations
-layout = find_layout(raw_haemo_filt.info)
-layout = deepcopy(layout)
-layout.pos[:, :2] -= layout.pos[:, :2].min(0)
-layout.pos[:, :2] /= layout.pos[:, :2].max(0)
-positions = layout.pos[:, :2] * 0.9
-
-for idx, cond in enumerate(conditions):
-    # set up subplots
-    fig = plt.figure(figsize=(5, 4), dpi=200)
-
-    width, height = 0.05, 0.05
-    lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, 0.2])
-    # for each channel
-
-    unique_positions = np.unique(positions)
-
-    unique_markers = np.zeros(np.shape(unique_positions))
-    for ii in range(len(layout.pos)):
-
-        this_channel_name = layout.names[ii]
-        print(this_channel_name)
-        pos = positions[ii, :]
-
-
-
-        # plot --- [lowerCorner_x, lowerCorner_y, width, height]
-        ax = fig.add_axes([pos[0]+width/2, pos[1], width, height])
-        this_cond_evoked = mne.combine_evoked(all_evokeds[cond],'equal')
-
-        this_color = "w"
-        if "hbo" in this_channel_name:
-            this_color = "r"
-        elif "hbr" in this_channel_name:
-            this_color = "b"
-        mne.viz.plot_compare_evokeds(
-            {cond: this_cond_evoked},
-            combine=None,
-            picks=this_channel_name,
-            axes=ax,
-            show=False,
-            colors=[this_color],
-            legend=False,
-            show_sensors=False,
-            ylim=lims,
-            ci=0.95,
-        )
-
-        ax.xaxis.set_major_locator(plt.MaxNLocator(2))
-        ax.yaxis.set_major_locator(plt.MaxNLocator(2))
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
-        ax.patch.set_alpha(0)
-        ax.set_title(f'{layout.names[ii][:-4]}', fontsize=3, pad=0)
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-        ax.set_facecolor("none")
-
-    # add an empty plot with labels
-    ax = fig.add_axes([0.5, 0.075, 1.5*width, 1.5*height])
-    mne.viz.plot_compare_evokeds(
-                {'az_itd=0_az=15': this_cond_evoked},
-                combine=None,
-                picks=this_channel_name,
-                axes=ax,
-                show=False,
-                show_sensors=False,
-                colors=["w"],
-                legend=False,
-                ylim=lims,
-                ci=0.95,
-            )
-    ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
-    ax.xaxis.set_major_locator(plt.MaxNLocator(2))
-    ax.yaxis.set_major_locator(plt.MaxNLocator(2))
-    ax.set_xlabel('Time (s)', fontsize=4)
-    ax.set_ylabel('DeltaHb (uM)', fontsize=4)
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.tick_params(labelsize=4)
-
-    plt.savefig(mild_master_root + f"/CASUAL FIGURES/topomap_block_averages_{cond}.png")
-    plt.close(fig)
 
 # ---------------------------------------------------------------
 # -----------------     Scatterplot of Mean HbO         ---------

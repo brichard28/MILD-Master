@@ -31,7 +31,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Laptop'
+user = 'Desktop'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
     mild_master_root = 'C:/Users/benri/Documents/GitHub/MILD-Master'
@@ -43,7 +43,7 @@ elif user == 'Home':
     data_root = '/home/ben/Downloads/'
     mild_master_root = '/home/ben/Documents/GitHub/MILD-Master'
 
-all_fnirs_data_folders = [data_root + "2025-04-24/2025-04-24_001", # 01-16
+all_fnirs_data_folders = [data_root + "2025-01-16/2025-01-16_001", # 01-16
 data_root + "2025-01-20/2025-01-20_001",
 data_root + "2025-01-20/2025-01-20_002",
 data_root + "2025-01-20/2025-01-20_003",
@@ -201,7 +201,7 @@ raw_haemo_for_plotting, null = preprocess_NIRX(data, data_snirf, event_dict,
                                            events_modification=False, reject=True,
                                            short_regression=False, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.5])
+                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
 raw_haemo_for_plotting.info['bads'] = []
 
 

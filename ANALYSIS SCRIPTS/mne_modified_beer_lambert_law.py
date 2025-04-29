@@ -127,7 +127,8 @@ def _load_absorption(freqs):
 
     # C:/Users/benri/Anaconda3/Lib/site-packages
     # /home/apclab/MILD-Master/lib/python3.13/site-packages
-    extinction_fname = op.join(r'C:/Users/benri/Anaconda3/Lib/site-packages/mne/data/',
+    # C:/Users/benri/Anaconda3/Lib/site-packages
+    extinction_fname = op.join(r'/home/apclab/MILD-Master/lib/python3.13/site-packages/mne/data/',
                                'extinction_coef.mat')
     a = loadmat(extinction_fname)['extinct_coef']
 
