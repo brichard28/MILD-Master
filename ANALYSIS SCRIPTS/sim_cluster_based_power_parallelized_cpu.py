@@ -142,10 +142,6 @@ curr_subject_ID = ['mild_master_1',
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-print("Starting script...")
-
-start_time = time.time()
-
 conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
 
 save_dir = mild_master_root + "/RESULTS DATA/"
@@ -166,7 +162,7 @@ beta_small_itd = beta_small_itd_df.copy().pivot(index='ch_name',columns='ID',val
 beta_large_itd = beta_large_itd_df.copy().pivot(index='ch_name',columns='ID',values='theta').to_numpy().T
 beta_small_ild = beta_small_ild_df.copy().pivot(index='ch_name',columns='ID',values='theta').to_numpy().T
 beta_large_ild = beta_large_ild_df.copy().pivot(index='ch_name',columns='ID',values='theta').to_numpy().T
-# Compute adjacency
+
 
 # Load raw haemo
 data = mne.io.read_raw_nirx(f"{curr_fnirs_data_folders[0]}/{curr_fnirs_data_folders[0][-14:]}_config.hdr",
@@ -182,19 +178,19 @@ raw_haemo_for_plotting, null = preprocess_NIRX(data, data_snirf, event_dict,
                                            events_modification=False, reject=True,
                                            short_regression=False, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.5])
+                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
 raw_haemo_for_plotting.info['bads'] = []
 info = get_long_channels(raw_haemo_for_plotting).pick(picks='hbo').info
+
+
+# Compute adjacency
 n_channels = len(info.ch_names)
 pos, outlines = mne_compute_channel_positions(info, n_channels)
 adjacency_sparse = mne_cluster_based_adjacency_nirs(info=info, pos=pos, threshold_mm=20)
 
 alpha = 0.05
-n_iter = 1000
-
 
 ch_sorted = np.unique(beta_small_itd_df['ch_name'])
-
 ch_ind = [np.where(ch_n == np.array(info.ch_names))[0] for i, ch_n in enumerate(ch_sorted)]
 
 # Put data in format for X
@@ -207,7 +203,7 @@ beta_large_ild_reind = np.squeeze(beta_large_ild[:, ch_ind])
 
 T_obs, clusters, cluster_p_values, H0, significant_channels = (
     mne_cluster_based_permutation_test_cpu(adjacency_sparse=adjacency_sparse,
-                                           X=[beta_large_itd_reind, beta_large_ild_reind]))
+                                           X=[beta_small_itd_reind, beta_large_itd_reind]))
 
 
 

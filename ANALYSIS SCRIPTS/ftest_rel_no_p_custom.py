@@ -42,18 +42,21 @@ def ftest_rel_no_p_custom(*args):
     diff = condition1 - condition2
 
     # Calculate the variance of the differences (for each channel)
-    var = np.var(diff, axis=0, ddof=1)  # Using ddof=1 for unbiased variance
+    var = np.nanvar(diff, axis=0, ddof=1)  # Using ddof=1 for unbiased variance
     sigma = 0  # no correction to start, but we can try 1e-3
 
     # Apply regularization if sigma > 0
     limit = sigma * np.max(var)
-
     var += limit
 
     # Compute the mean of the differences (for each channel)
-    mean_diff = np.mean(diff, axis=0)
+    mean_diff = np.nanmean(diff, axis=0)
+    
+    # compute the standard error
+    sem = np.sqrt(var) / np.sqrt(diff.shape[0])
 
-    t_stat = mean_diff / np.sqrt(var / diff.shape[0])
+    t_stat = mean_diff / sem
+    # before, the above denonminator (sem) was np.sqrt(var / diff.shape[0]), which wouldn't quite be the standard error
 
     f_stat = np.square(t_stat)
 
