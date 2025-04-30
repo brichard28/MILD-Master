@@ -18,7 +18,7 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
                     negative_enhancement=False,
                     snr_thres=1.5,
                     sci_thres=0.2,
-                    filter_type='iir', filter_limits=[0.01, 0.1], # 0.01, 0.1
+                    filter_type='iir', filter_limits=[0.01, 0.3], # 0.01, 0.1
                     tddr=True):
     """
 
@@ -161,7 +161,7 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
     if filter_limits[0] is not None:
         if filter_type == 'iir':
             raw_OD_filt = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=filter_limits[1],
-                                                      l_trans_bandwidth=filter_limits[0],h_trans_bandwidth=filter_limits[1],
+                                                      l_trans_bandwidth=filter_limits[0],h_trans_bandwidth=filter_limits[1] / 2,
                                                       method='iir', phase='zero',
                                                       iir_params={'order': 1, 'ftype': 'butter', 'output': 'sos'})
 

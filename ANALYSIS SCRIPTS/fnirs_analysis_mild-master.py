@@ -332,7 +332,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=1.5, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=2.0, sci_thres=0.5, filter_type='iir', filter_limits=[0.01,0.3])
 
 
     if subject != "mild_master_5":
@@ -537,7 +537,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # Add mean hbo and mean hbr to individual_results
     # Take Means
     index_stim_start = int((-tmin + 2) * fs)
-    index_stim_end = int((-tmin + 8) * fs)
+    index_stim_end = int((-tmin + 11.6) * fs)
     # itd5
     mean_during_stim_itd5 = np.nanmean(subject_data_itd5_baselined[ii, :, index_stim_start:index_stim_end], axis=1)
     mean_during_stim_itd5_hbr = np.nanmean(subject_data_itd5_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
