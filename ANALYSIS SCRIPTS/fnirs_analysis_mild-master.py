@@ -170,7 +170,7 @@ n_subjects = len(curr_subject_ID)
 
 n_long_channels = 101
 fs = 6.8
-tmin, tmax = -2, 16
+tmin, tmax = -10, 30
 n_timepoints = math.ceil((tmax - tmin)*fs)
 task_type = 'Ben_SvN'
 
@@ -332,7 +332,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=2.0, sci_thres=0.5, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=1.5, sci_thres=0.5, filter_type='iir', filter_limits=[0.01,0.3])
 
 
     if subject != "mild_master_5":
@@ -350,15 +350,15 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -------------               Epoching                  ---------
     # ---------------------------------------------------------------
-    # reject_criteria = dict(hbo=5e-6)#5e-6
+    reject_criteria = dict(hbo=20e-6)#5e-6
     #flat_criteria = dict(hbo=0.05e-6)
     
 
     epochs = mne.Epochs(raw_haemo_filt, events,  # events_block,
                         event_id=event_dict,  # event_dict_total,
                         tmin=tmin, tmax=tmax,
-                        baseline= (tmin, 0),
-                      #   reject = reject_criteria,
+                        baseline= (-5, 0),
+                       # reject = reject_criteria,
                        # flat = flat_criteria,
                         preload=True, detrend=None, verbose=True,
                         on_missing='warn')
@@ -552,7 +552,9 @@ for ii, subject_num in enumerate(range(n_subjects)):
     mean_during_stim_ild15_hbr = np.nanmean(subject_data_ild15_hbr_baselined[ii, :, index_stim_start:index_stim_end],axis=1)
 
     for idx, this_channel_name in enumerate(chan_hbo):
-        individual_results.loc[(individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (individual_results['Condition'] == 'az_itd=5_az=0'), "mean_hbo"] = mean_during_stim_itd5[idx]
+        individual_results.loc[
+            (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (
+                    individual_results['Condition'] == 'az_itd=5_az=0'), "mean_hbo"] = mean_during_stim_itd5[idx]
         individual_results.loc[
             (individual_results['ch_name'] == this_channel_name) & (individual_results['Chroma'] == 'hbo') & (
                         individual_results['Condition'] == 'az_itd=15_az=0'), "mean_hbo"] = mean_during_stim_itd15[idx]
