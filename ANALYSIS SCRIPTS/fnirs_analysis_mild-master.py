@@ -29,6 +29,10 @@ from mne_nirs.visualisation import plot_glm_group_topo, plot_glm_surface_project
 from plot_nirs import plot_nirs_evoked_error
 
 from scipy import signal
+
+from mne.preprocessing.nirs import source_detector_distances, _channel_frequencies, _check_channels_ordered
+from mne.channels.layout import find_layout
+from copy import deepcopy
 # ---------------------------------------------------------------
 # -----------------          Data Parameters            ---------
 # ---------------------------------------------------------------
@@ -37,7 +41,7 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Desktop'
+user = 'Home'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
 
@@ -170,7 +174,7 @@ n_subjects = len(curr_subject_ID)
 
 n_long_channels = 101
 fs = 6.8
-tmin, tmax = -10, 30
+tmin, tmax = -5, 30
 n_timepoints = math.ceil((tmax - tmin)*fs)
 task_type = 'Ben_SvN'
 
@@ -316,15 +320,18 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -------------               Preprocessing             ---------
     # ---------------------------------------------------------------
+    if subject != "mild_master_1": # Remove first trigger (from button press)
+        data.annotations.delete(0)
     
     events, event_dict = mne.events_from_annotations(data, verbose=False)
 
+
     if subject != "mild_master_5":
-        this_sub_short_regression = False
+        this_sub_short_regression = True
     else:
         this_sub_short_regression = False
 
-    raw_haemo_temp, null = preprocess_NIRX(data, data_snirf, event_dict,
+    raw_haemo_temp, raw_haemo_filt_no_short_temp, null = preprocess_NIRX(data, data_snirf, event_dict,
                                            save=False,
                                            savename=save_dir + f'{subject}_{task_type}_preproc_nirs.fif',
                                            plot_steps=False,
@@ -332,13 +339,15 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=1.5, sci_thres=0.5, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
 
 
     if subject != "mild_master_5":
         raw_haemo_short = get_short_channels(raw_haemo_temp)
 
+
     raw_haemo_filt = get_long_channels(raw_haemo_temp)
+    raw_haemo_filt_no_short = get_long_channels(raw_haemo_filt_no_short_temp)
 
     # extra_regressors = aux_snirf.reset_index(drop=True)
     #
@@ -350,7 +359,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -------------               Epoching                  ---------
     # ---------------------------------------------------------------
-    reject_criteria = dict(hbo=20e-6)#5e-6
+    reject_criteria = dict(hbo=80e-6)#5e-6
     #flat_criteria = dict(hbo=0.05e-6)
     
 
@@ -358,19 +367,105 @@ for ii, subject_num in enumerate(range(n_subjects)):
                         event_id=event_dict,  # event_dict_total,
                         tmin=tmin, tmax=tmax,
                         baseline= (-5, 0),
-                       # reject = reject_criteria,
+                        reject = reject_criteria,
                        # flat = flat_criteria,
                         preload=True, detrend=None, verbose=True,
                         on_missing='warn')
     #epochs.plot_drop_log()
     #plt.show()
-    #epochs.drop_bad()
+    indices_to_drop = [n for n, dl in enumerate(epochs.drop_log) if len(dl)]
+    epochs.drop_bad()
     
     all_epochs.append(epochs)
     
     
     n_conditions = 4
     conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
+
+    # Topoplot of this individual's block averages
+    # need a list of channel locations
+    layout = find_layout(raw_haemo_filt.info)
+    layout = deepcopy(layout)
+    layout.pos[:, :2] -= layout.pos[:, :2].min(0)
+    layout.pos[:, :2] /= layout.pos[:, :2].max(0)
+    positions = layout.pos[:, :2] * 0.9
+    # set up subplots
+    fig = plt.figure(figsize=(5, 4), dpi=200)
+
+    width, height = 0.05, 0.05
+    lims = dict(hbo=[-0.3, 0.3], hbr=[-0.3, 0.3])
+    # for each channel
+
+    unique_positions = np.unique(positions)
+
+    unique_markers = np.zeros(np.shape(unique_positions))
+    for ichannel in range(len(layout.pos)):
+
+        this_channel_name = layout.names[ichannel]
+        print(this_channel_name)
+        pos = positions[ichannel, :]
+
+        # plot --- [lowerCorner_x, lowerCorner_y, width, height]
+        ax = fig.add_axes([pos[0] + width / 2, pos[1], width, height])
+        this_evoked = epochs.average() #mne.combine_evoked(epochs, 'equal')
+
+        this_color = "w"
+        if "hbo" in this_channel_name:
+            this_color = "r"
+        elif "hbr" in this_channel_name:
+            this_color = "b"
+        mne.viz.plot_compare_evokeds(
+            {'block_average': this_evoked},
+            combine=None,
+            picks=this_channel_name,
+            axes=ax,
+            show=False,
+            colors=[this_color],
+            legend=False,
+            show_sensors=False,
+            ylim=lims,
+            ci=0.95,
+        )
+
+        ax.xaxis.set_ticks([0, 11.6, tmax])
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
+        ax.patch.set_alpha(0)
+        ax.set_title(f'{layout.names[ichannel][:-4]}', fontsize=3, pad=0)
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        ax.set_facecolor("none")
+
+    # add an empty plot with labels
+    ax = fig.add_axes([0.5, 0.075, 1.5 * width, 1.5 * height])
+    mne.viz.plot_compare_evokeds(
+        {'az_itd=0_az=15': this_evoked},
+        combine=None,
+        picks=this_channel_name,
+        axes=ax,
+        show=False,
+        show_sensors=False,
+        colors=["w"],
+        legend=False,
+        ylim=lims,
+        ci=0.95,
+    )
+    ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
+    ax.xaxis.set_ticks([0, 11.6, tmax])
+    ax.set_xlabel('Time (s)', fontsize=4)
+    ax.set_ylabel('DeltaHb (uM)', fontsize=4)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.tick_params(labelsize=4)
+
+    plt.savefig(mild_master_root + f"/CASUAL FIGURES/{subject}_block_average_topoplot.png")
+    plt.close(fig)
+
+
+
+
+
 
 
     n_conditions = len(conditions)
@@ -488,12 +583,13 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # raw_haemo_filt_crop.resample(5)
     # raw_haemo_short_crop.resample(5)
     
-    raw_haemo_filt_for_glm = raw_haemo_filt.copy()
+    raw_haemo_filt_for_glm = raw_haemo_filt_no_short.copy()
     
     # drop bad channels from glm
     all_subjects_bad_channels.append([epochs.copy().info['bads']])
     
     raw_haemo_filt_for_glm.drop_channels(epochs.copy().info['bads'])
+    raw_haemo_filt_for_glm.annotations.delete(indices_to_drop)
 
     #raw_haemo_filt_for_glm.annotations.set_durations(glm_dur)
     
@@ -619,10 +715,7 @@ caxis_lim = 0.2
 # -----------------     Topomap of Group Block Averages ---------
 # ---------------------------------------------------------------
 conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
-from mne.preprocessing.nirs import source_detector_distances, _channel_frequencies, \
-    _check_channels_ordered
-from mne.channels.layout import find_layout
-from copy import deepcopy
+
 
 # need a list of channel locations
 layout = find_layout(raw_haemo_filt.info)
@@ -642,11 +735,11 @@ for idx, cond in enumerate(conditions):
     unique_positions = np.unique(positions)
 
     unique_markers = np.zeros(np.shape(unique_positions))
-    for ii in range(len(layout.pos)):
+    for ichannel in range(len(layout.pos)):
 
-        this_channel_name = layout.names[ii]
+        this_channel_name = layout.names[ichannel]
         print(this_channel_name)
-        pos = positions[ii, :]
+        pos = positions[ichannel, :]
 
 
 
@@ -678,7 +771,7 @@ for idx, cond in enumerate(conditions):
         ax.spines['right'].set_visible(False)
         ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
         ax.patch.set_alpha(0)
-        ax.set_title(f'{layout.names[ii][:-4]}', fontsize=3, pad=0)
+        ax.set_title(f'{layout.names[ichannel][:-4]}', fontsize=3, pad=0)
         ax.set_xlabel("")
         ax.set_ylabel("")
         ax.set_facecolor("none")
@@ -698,7 +791,7 @@ for idx, cond in enumerate(conditions):
                 ci=0.95,
             )
     ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
-    ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.xaxis.set_ticks([0, 11.6, tmax])
     ax.yaxis.set_major_locator(plt.MaxNLocator(2))
     ax.set_xlabel('Time (s)', fontsize=4)
     ax.set_ylabel('DeltaHb (uM)', fontsize=4)

@@ -163,7 +163,7 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
             raw_OD_filt = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=filter_limits[1],
                                                       l_trans_bandwidth=filter_limits[0],h_trans_bandwidth=filter_limits[1] / 2,
                                                       method='iir', phase='zero',
-                                                      iir_params={'order': 2, 'ftype': 'butter', 'output': 'sos'})
+                                                      iir_params={'order': 1, 'ftype': 'butter', 'output': 'sos'})
 
         elif filter_type == 'fir':
             raw_OD_filt = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=None,
@@ -217,7 +217,8 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
     # ---------------------------------------------------------------
     # ----      conversion to Hb and remove heart rate        -------
     # ---------------------------------------------------------------
-    raw_haemo_filt = mne_modified_beer_lambert_law(raw_OD_filt)
+    raw_haemo_filt = mne_modified_beer_lambert_law(raw_OD_sc)
+    raw_haemo_filt_no_short = mne_modified_beer_lambert_law(raw_OD_filt)
 
     # if plot_steps:
     #     raw_haemo_filt.plot(n_channels=30,
@@ -246,9 +247,9 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
     # -----------------          Save         ---------
     # ---------------------------------------------------------------
     # fix the event times bc MNE is bugged out >:(
-    # events[:, 0] = events[:, 0] - crop_low * raw_haemo_filt.info['sfreq']
+    events[:, 0] = events[:, 0] - crop_low * raw_haemo_filt.info['sfreq']
 
     if save is True:
         raw_haemo_filt.save(savename, overwrite=True)
 
-    return raw_haemo_filt, events
+    return raw_haemo_filt, raw_haemo_filt_no_short, events

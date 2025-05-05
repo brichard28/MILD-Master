@@ -8,7 +8,7 @@ import os
 import pandas as pd
 from collections import defaultdict
 
-mne.set_config('MNE_BROWSER_BACKEND', 'qt')
+
 #from nirx_movement import mark_aux_movement_bad
 from mne_nirs.experimental_design import make_first_level_design_matrix
 from mne_nirs.statistics import run_glm, statsmodels_to_results
@@ -31,11 +31,11 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Desktop'
+user = 'Home'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
     mild_master_root = 'C:/Users/benri/Documents/GitHub/MILD-Master'
-
+    mne.set_config('MNE_BROWSER_BACKEND', 'qt')
 elif user == 'Desktop':
     data_root = '/home/apclab/Downloads/'
     mild_master_root  = '/home/apclab/Documents/GitHub/MILD-Master'
@@ -193,7 +193,7 @@ data = mne.io.read_raw_nirx(f"{curr_fnirs_data_folders[0]}/{curr_fnirs_data_fold
 data_snirf = mne.io.read_raw_snirf(f"{curr_fnirs_data_folders[0]}/{curr_fnirs_data_folders[0][-14:]}.snirf",
                                     optode_frame="mri", preload=True)
 events, event_dict = mne.events_from_annotations(data, verbose=False)
-raw_haemo_for_plotting, null = preprocess_NIRX(data, data_snirf, event_dict,
+raw_haemo_for_plotting, null, null = preprocess_NIRX(data, data_snirf, event_dict,
                                            save=False,
                                            savename='non.fif',
                                            plot_steps=False,
