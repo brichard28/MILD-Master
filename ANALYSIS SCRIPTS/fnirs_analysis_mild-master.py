@@ -339,7 +339,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.7], filter_transition_bandwidths=[0.005, 0.7/2])
 
 
     if subject != "mild_master_5":
@@ -369,7 +369,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                         baseline= (-5, 0),
                         reject = reject_criteria,
                        # flat = flat_criteria,
-                        preload=True, detrend=None, verbose=True,
+                        preload=True, detrend=1, verbose=True,
                         on_missing='warn')
     #epochs.plot_drop_log()
     #plt.show()
@@ -605,6 +605,13 @@ for ii, subject_num in enumerate(range(n_subjects)):
     design_matrix["Linear"] = np.arange(0, np.shape(design_matrix)[0])
     if subject != "mild_master_5":
         design_matrix["ShortHbO"] = np.mean(raw_haemo_short.copy().pick(picks="hbo").get_data(), axis=0)
+
+
+        fig, ax_short_hbo = plt.subplots(constrained_layout=True)
+        ax_short_hbo.plot(design_matrix["ShortHbO"])
+        ax_short_hbo.set(xlim=(845, 1145), xlabel="Time (s)", ylabel="Amplitude")
+        plt.savefig(mild_master_root + f"/CASUAL FIGURES/{subject}_short_hbo_average.png")
+        plt.close(fig)
     #design_matrix["ShortHbR"] = np.mean(raw_haemo_short.copy().pick(picks="hbr").get_data(), axis=0)
     
     # TODO: Normalize design matrix such that the maximum of each column is 1
