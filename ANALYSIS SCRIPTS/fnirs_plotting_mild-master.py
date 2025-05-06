@@ -338,8 +338,8 @@ group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','
 group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
 
 
-caxis_min = -0.1
-caxis_max = 0.1
+caxis_min = -0.075
+caxis_max = 0.075
 groups_single_chroma = dict(
     Left_Hemisphere=picks_pair_to_idx(raw_haemo_for_plotting.copy().pick(picks='hbo'), left_hem_channels,
                                       on_missing='warning'),
@@ -480,8 +480,8 @@ plt.close(fig)
 # ---------------------------------------------------------------
 # -----------------     Topomap of Mean HbO             ---------
 #----------------------------------------------------------------
-caxis_min = -0.1
-caxis_max = 0.1
+caxis_min = -0.075
+caxis_max = 0.075
 group_mean_hbo_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['mean_hbo'].mean()
 group_mean_hbo_for_topoplot.loc[np.isnan(group_mean_hbo_for_topoplot['mean_hbo']),"mean_hbo"] = 0
 

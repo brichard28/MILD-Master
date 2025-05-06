@@ -168,7 +168,7 @@ curr_subject_ID = ['mild_master_1',
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-glm_dur = 11.6
+glm_dur = 6
 
 n_subjects = len(curr_subject_ID)
 
@@ -339,7 +339,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.06], filter_transition_bandwidths=[0.005, 0.06/2])
+                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.1], filter_transition_bandwidths=[0.005, 0.1/2])
 
 
     if subject != "mild_master_5":
@@ -359,7 +359,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -------------               Epoching                  ---------
     # ---------------------------------------------------------------
-    reject_criteria = dict(hbo=20e-6)#5e-6
+    reject_criteria = dict(hbo=80e-6)#5e-6
     #flat_criteria = dict(hbo=0.05e-6)
     
 
@@ -369,7 +369,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                         baseline= (-5, 0),
                         reject = reject_criteria,
                        # flat = flat_criteria,
-                        preload=True, detrend=1, verbose=True,
+                        preload=True, detrend=None, verbose=True,
                         on_missing='warn')
     #epochs.plot_drop_log()
     #plt.show()
@@ -736,7 +736,7 @@ for idx, cond in enumerate(conditions):
     fig = plt.figure(figsize=(5, 4), dpi=200)
 
     width, height = 0.05, 0.05
-    lims = dict(hbo=[-0.13, 0.13], hbr=[-0.13, 0.13])
+    lims = dict(hbo=[-0.1, 0.1], hbr=[-0.1, 0.1])
     # for each channel
 
     unique_positions = np.unique(positions)
