@@ -94,7 +94,10 @@ data_root + "2025-03-10/2025-03-10_001",
 data_root + "2025-03-12/2025-03-12_001",
 data_root + "2025-03-12/2025-03-12_002",
 data_root + "2025-03-17/2025-03-17_001",
-data_root + "2025-03-18/2025-03-18_001"]
+data_root + "2025-03-18/2025-03-18_001",
+data_root + "2025-04-23/2025-04-23_001",
+data_root + "2025-04-24/2025-04-24_001",
+data_root + "2025-05-08/2025-05-08_001"]
 
 # All subject IDs
 subject_ID = ['mild_master_1',
@@ -130,7 +133,8 @@ subject_ID = ['mild_master_1',
 'mild_master_32',
 'mild_master_33',
 'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
-'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_45']
+'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_45',
+'mild_master_46','mild_master_47','mild_master_48']
 
 
 # The subjects we would like to run right now
@@ -163,12 +167,13 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_32',
 'mild_master_33',
 'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
-'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
+'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_45',
+'mild_master_46','mild_master_47','mild_master_48']
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-glm_dur = 6
+glm_dur = 5
 
 n_subjects = len(curr_subject_ID)
 
@@ -359,7 +364,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -------------               Epoching                  ---------
     # ---------------------------------------------------------------
-    reject_criteria = dict(hbo=80e-6)#5e-6
+    reject_criteria = dict(hbo=20e-6)#5e-6
     #flat_criteria = dict(hbo=0.05e-6)
     
 

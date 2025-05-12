@@ -23,6 +23,12 @@ from mne_nirs.visualisation import plot_glm_group_topo, plot_glm_surface_project
 from plot_nirs import plot_nirs_evoked_error
 
 from scipy import signal
+
+import statsmodels.formula.api as smf
+
+from mne.preprocessing.nirs import source_detector_distances, _channel_frequencies, _check_channels_ordered
+from mne.channels.layout import find_layout
+from copy import deepcopy
 # ---------------------------------------------------------------
 # -----------------          Data Parameters            ---------
 # ---------------------------------------------------------------
@@ -201,7 +207,7 @@ raw_haemo_for_plotting, null, null = preprocess_NIRX(data, data_snirf, event_dic
                                            events_modification=False, reject=True,
                                            short_regression=False, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.3])
+                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.1], filter_transition_bandwidths=[0.005, 0.1/2])
 raw_haemo_for_plotting.info['bads'] = []
 
 
@@ -337,6 +343,8 @@ for ii, subject_num in enumerate(range(n_subjects)):
 group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
 group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
 
+ch_model = smf.mixedlm("theta ~ ch_name:Chroma:Condition",group_results,groups=group_results["ID"]).fit(method="nm")
+ch_model_df = statsmodels_to_results(ch_model)
 
 caxis_min = -0.075
 caxis_max = 0.075
@@ -395,24 +403,140 @@ mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta.png")
 plt.close(fig)
 
+# ---------------------------------------------------------------
+# -----------------     Topomap of beta Value Histograms   ---------
+#----------------------------------------------------------------
+
+layout = find_layout(get_long_channels(raw_haemo_for_plotting).info)
+layout = deepcopy(layout)
+layout.pos[:, :2] -= layout.pos[:, :2].min(0)
+layout.pos[:, :2] /= layout.pos[:, :2].max(0)
+positions = layout.pos[:, :2] * 0.9
+# set up subplots
+fig = plt.figure(figsize=(5, 4), dpi=200)
+
+width, height = 0.05, 0.05
+lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, -0.2])
+# for each channel
+
+unique_positions = np.unique(positions)
+
+unique_markers = np.zeros(np.shape(unique_positions))
+for ichannel in range(len(layout.pos)):
+
+    this_channel_name = layout.names[ichannel]
+    print(this_channel_name)
+    pos = positions[ichannel, :]
+
+    # plot --- [lowerCorner_x, lowerCorner_y, width, height]
+    ax = fig.add_axes([pos[0] + width / 2, pos[1], width, height])
+
+    this_color = "w"
+    if "hbo" in this_channel_name:
+        this_pick = "hbo"
+        this_color = "r"
+    elif "hbr" in this_channel_name:
+        this_pick = "hbr"
+        this_color = "b"
+    plt.hist(group_results.query(f"ch_name in ['{this_channel_name}']").query(f"Chroma in ['{this_pick}']")['theta'], axes=ax, color=this_color, range = [lims['hbo'][0],lims['hbo'][1]])
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
+    ax.set_xlim([lims['hbo'][0],lims['hbo'][1]])
+    ax.set_ylim([0,100])
+    ax.set_title(f'{layout.names[ichannel][:-4]}', fontsize=3, pad=0)
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_facecolor("none")
+
+# add an empty plot with labels
+ax = fig.add_axes([0.5, 0.075, 1.5 * width, 1.5 * height])
+ax.set_xlabel('beta value', fontsize=4)
+ax.set_ylabel('Freq. of occurrence (count)', fontsize=4)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.tick_params(labelsize=4)
+ax.set_xlim([lims['hbo'][0], lims['hbo'][1]])
+ax.set_ylim([0, 100])
+
+
+plt.savefig(mild_master_root + f"/CASUAL FIGURES/beta_value_histograms_topoplot.png")
+plt.close(fig)
+
+
+
+
+
 
 
 # ---------------------------------------------------------------
-# -----------------     Topomap of Mean Beta Contrasts           ---------
+# -----------------     Topomap of t values             ---------
 #----------------------------------------------------------------
-small_itd_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
-large_itd_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
-small_itd_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
-large_itd_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
+caxis_min = -8
+caxis_max = 8
+group_t_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['t'].mean()
+fig, topo_axes = plt.subplots(nrows=1, ncols=4,figsize=(18,10))
 
-small_ild_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
-large_ild_data_left = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['theta'].reset_index(drop=True)
-small_ild_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
-large_ild_data_right = group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['theta'].reset_index(drop=True)
+this_info_left = raw_haemo_for_plotting.copy().pick(picks="hbo")
+this_info_left.drop_channels([val for idx, val in enumerate(this_info_left.ch_names) if val not in left_hem_channel_names])
+this_info_left.drop_channels([i for i in this_info_left.ch_names if i not in np.unique(group_t_for_topoplot['ch_name'])])
+this_info_left = this_info_left.info
+
+this_info_right = raw_haemo_for_plotting.copy().pick(picks="hbo")
+this_info_right.drop_channels([val for idx, val in enumerate(this_info_right.ch_names) if val not in right_hem_channel_names])
+this_info_right.drop_channels([i for i in this_info_right.ch_names if i not in np.unique(group_t_for_topoplot['ch_name'])])
+this_info_right = this_info_right.info
+
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['t'],
+                     this_info_left,sensors=True, axes = topo_axes[0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['t'],
+                     this_info_right,sensors=True, axes = topo_axes[0],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['t'],
+                     this_info_left,sensors=True, axes = topo_axes[1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['t'],
+                     this_info_right,sensors=True, axes = topo_axes[1],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['t'],
+                     this_info_left,sensors=True, axes = topo_axes[2],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['t'],
+                     this_info_right,sensors=True, axes = topo_axes[2],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['t'],
+                     this_info_left,sensors=True, axes = topo_axes[3],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+mne.viz.plot_topomap(group_t_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['t'],
+                     this_info_right,sensors=True, axes = topo_axes[3],contours = 0,
+                     extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_t_values.png")
+plt.close(fig)
 
 
-caxis_min = -0.075
-caxis_max = 0.075
+
+
+# ---------------------------------------------------------------
+# -----------------     Topomap of Mean t-value Contrasts           ---------
+#----------------------------------------------------------------
+small_itd_data_left = group_t_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_left['ch_names']")['t'].reset_index(drop=True)
+large_itd_data_left = group_t_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_left['ch_names']")['t'].reset_index(drop=True)
+small_itd_data_right = group_t_for_topoplot.query("Condition in ['az_itd=5_az=0']").query("ch_name in @this_info_right['ch_names']")['t'].reset_index(drop=True)
+large_itd_data_right = group_t_for_topoplot.query("Condition in ['az_itd=15_az=0']").query("ch_name in @this_info_right['ch_names']")['t'].reset_index(drop=True)
+
+small_ild_data_left = group_t_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_left['ch_names']")['t'].reset_index(drop=True)
+large_ild_data_left = group_t_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_left['ch_names']")['t'].reset_index(drop=True)
+small_ild_data_right = group_t_for_topoplot.query("Condition in ['az_itd=0_az=5']").query("ch_name in @this_info_right['ch_names']")['t'].reset_index(drop=True)
+large_ild_data_right = group_t_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['t'].reset_index(drop=True)
+
+
+caxis_min = -3
+caxis_max = 3
 fig, topo_contrast_axes = plt.subplots(nrows=3, ncols=2,figsize=(18,10))
 
 # Large ITD - Small ITD
@@ -471,8 +595,70 @@ mne.viz.plot_topomap(large_itd_data_right - small_ild_data_right,
                      extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
 topo_contrast_axes[2,1].set_title("Large ITD - Small ILD")
 
-plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta_contrasts.png")
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_t_contrasts.png")
 plt.close(fig)
+
+# ---------------------------------------------------------------
+# -----------------     Topomap of t Value Histograms   ---------
+#----------------------------------------------------------------
+
+layout = find_layout(get_long_channels(raw_haemo_for_plotting).info)
+layout = deepcopy(layout)
+layout.pos[:, :2] -= layout.pos[:, :2].min(0)
+layout.pos[:, :2] /= layout.pos[:, :2].max(0)
+positions = layout.pos[:, :2] * 0.9
+# set up subplots
+fig = plt.figure(figsize=(5, 4), dpi=200)
+
+width, height = 0.05, 0.05
+lims = dict(hbo=[-45, 45], hbr=[-45, 45])
+# for each channel
+
+unique_positions = np.unique(positions)
+
+unique_markers = np.zeros(np.shape(unique_positions))
+for ichannel in range(len(layout.pos)):
+
+    this_channel_name = layout.names[ichannel]
+    print(this_channel_name)
+    pos = positions[ichannel, :]
+
+    # plot --- [lowerCorner_x, lowerCorner_y, width, height]
+    ax = fig.add_axes([pos[0] + width / 2, pos[1], width, height])
+
+    this_color = "w"
+    if "hbo" in this_channel_name:
+        this_pick = "hbo"
+        this_color = "r"
+    elif "hbr" in this_channel_name:
+        this_pick = "hbr"
+        this_color = "b"
+    plt.hist(group_results.query(f"ch_name in ['{this_channel_name}']").query(f"Chroma in ['{this_pick}']")['t'], axes=ax, color=this_color, range = [lims['hbo'][0],lims['hbo'][1]])
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
+    ax.set_title(f'{layout.names[ichannel][:-4]}', fontsize=3, pad=0)
+    ax.set_xlim([lims['hbo'][0], lims['hbo'][1]])
+    ax.set_ylim([0, 70])
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_facecolor("none")
+
+# add an empty plot with labels
+ax = fig.add_axes([0.5, 0.075, 1.5 * width, 1.5 * height])
+ax.set_xlabel('t value', fontsize=4)
+ax.set_ylabel('Freq. of occurrence (count)', fontsize=4)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.tick_params(labelsize=4)
+ax.set_xlim([lims['hbo'][0],lims['hbo'][1]])
+ax.set_ylim([0,70])
+
+
+plt.savefig(mild_master_root + f"/CASUAL FIGURES/t_value_histograms_topoplot.png")
+plt.close(fig)
+
 
 
 
