@@ -49,7 +49,7 @@ elif user == 'Home':
     data_root = '/home/ben/Downloads/'
     mild_master_root = '/home/ben/Documents/GitHub/MILD-Master'
 
-all_fnirs_data_folders = [data_root + "2025-01-16/2025-01-16_001", # 01-16
+all_fnirs_data_folders = [data_root + "2025-01-16/2025-01-16_001",
 data_root + "2025-01-20/2025-01-20_001",
 data_root + "2025-01-20/2025-01-20_002",
 data_root + "2025-01-20/2025-01-20_003",
@@ -91,7 +91,10 @@ data_root + "2025-03-10/2025-03-10_001",
 data_root + "2025-03-12/2025-03-12_001",
 data_root + "2025-03-12/2025-03-12_002",
 data_root + "2025-03-17/2025-03-17_001",
-data_root + "2025-03-18/2025-03-18_001"]
+data_root + "2025-03-18/2025-03-18_001",
+data_root + "2025-04-23/2025-04-23_001",
+data_root + "2025-04-24/2025-04-24_001",
+data_root + "2025-05-08/2025-05-08_001"]
 
 # All subject IDs
 subject_ID = ['mild_master_1',
@@ -127,14 +130,14 @@ subject_ID = ['mild_master_1',
 'mild_master_32',
 'mild_master_33',
 'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
-'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
+'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_45',
+'mild_master_46','mild_master_47','mild_master_48']
 
-# The subjects we would like to run right now
+
 # The subjects we would like to run right now
 curr_subject_ID = ['mild_master_1',
 'mild_master_3',
 'mild_master_4',
-'mild_master_5',
 'mild_master_6',
 'mild_master_8',
 'mild_master_9',
@@ -147,6 +150,7 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_17',
 'mild_master_18',
 'mild_master_19',
+'mild_master_20',
 'mild_master_22',
 'mild_master_23',
 'mild_master_24',
@@ -154,13 +158,12 @@ curr_subject_ID = ['mild_master_1',
 'mild_master_26',
 'mild_master_27',
 'mild_master_28',
-'mild_master_29',
 'mild_master_30',
 'mild_master_31',
 'mild_master_32',
 'mild_master_33',
 'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
-'mild_master_41','mild_master_42','mild_master_43','mild_master_44']
+'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_46','mild_master_47','mild_master_48']
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
@@ -341,13 +344,13 @@ for ii, subject_num in enumerate(range(n_subjects)):
     plt.close(fig)
 
 group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
-group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
+# group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results.csv")
 
 ch_model = smf.mixedlm("theta ~ ch_name:Chroma:Condition",group_results,groups=group_results["ID"]).fit(method="nm")
 ch_model_df = statsmodels_to_results(ch_model)
 
-caxis_min = -0.075
-caxis_max = 0.075
+caxis_min = -0.08
+caxis_max = 0.08
 groups_single_chroma = dict(
     Left_Hemisphere=picks_pair_to_idx(raw_haemo_for_plotting.copy().pick(picks='hbo'), left_hem_channels,
                                       on_missing='warning'),
@@ -666,8 +669,8 @@ plt.close(fig)
 # ---------------------------------------------------------------
 # -----------------     Topomap of Mean HbO             ---------
 #----------------------------------------------------------------
-caxis_min = -0.075
-caxis_max = 0.075
+caxis_min = -0.08
+caxis_max = 0.08
 group_mean_hbo_for_topoplot = group_results.query("Chroma in ['hbo']").groupby(by=['ch_name','Condition'],as_index=False)['mean_hbo'].mean()
 group_mean_hbo_for_topoplot.loc[np.isnan(group_mean_hbo_for_topoplot['mean_hbo']),"mean_hbo"] = 0
 

@@ -56,8 +56,6 @@ def ftest_rel_no_p_custom(*args):
     sem = np.sqrt(var) / np.sqrt(diff.shape[0])
 
     t_stat = mean_diff / sem
-    # before, the above denonminator (sem) was np.sqrt(var / diff.shape[0]), which wouldn't quite be the standard error
-
     f_stat = np.square(t_stat)
 
     # Calculate t-statistics: mean difference divided by standard error

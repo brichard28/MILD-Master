@@ -12,11 +12,11 @@ def mne_cluster_based_permutation_test_cpu(adjacency_sparse, X):
 
     # Use None for threshold to allow permutation-based significance testing
     # Perform the permutation cluster test
-    t, clusters, cluster_p_values, H0 = mne.stats.permutation_cluster_test(
+    F, clusters, cluster_p_values, H0 = mne.stats.permutation_cluster_test(
         X,
-        n_permutations=1024,
+        n_permutations=1000,
         adjacency=adjacency_sparse,
-        stat_fun=ftest_rel_no_p_custom,
+        stat_fun= ftest_rel_no_p_custom,
         n_jobs=1  # Ensures CPU usage
     )
 
@@ -32,4 +32,4 @@ def mne_cluster_based_permutation_test_cpu(adjacency_sparse, X):
         np.concatenate(clusters_temp[sig_clusters]) if is_valid else None
     )
 
-    return t, clusters, cluster_p_values, H0, significant_channels
+    return F, clusters, cluster_p_values, H0, significant_channels

@@ -23,7 +23,7 @@ def mne_cluster_based_adjacency_nirs(info, pos, threshold_mm):
     threshold_distance = threshold_mm
     adjacency_array[distances > threshold_distance] = 0
 
-    adjacency_sparse = csr_matrix(adjacency)
+    adjacency_sparse = csr_matrix(adjacency_array)
 
     plot_adjacency = True
 
@@ -36,6 +36,7 @@ def mne_cluster_based_adjacency_nirs(info, pos, threshold_mm):
         plt.ylabel('Channels')
         plt.colorbar(label='Adjacency (1 = connected, 0 = not connected)')
         plt.show()
+        plt.savefig("/home/ben/Documents/GitHub/MILD-Master/CASUAL FIGURES/adjacency_matrix_heatmap.png")
 
         # Plot the sensors and their thresholded adjacency as lines
         fig, ax = plt.subplots()
@@ -48,5 +49,6 @@ def mne_cluster_based_adjacency_nirs(info, pos, threshold_mm):
                             [nirs_positions_adjacency[ch_idx, 1], nirs_positions_adjacency[neighbor_idx, 1]], 'k-', alpha=0.5)
 
         plt.show()
+        plt.savefig("/home/ben/Documents/GitHub/MILD-Master/CASUAL FIGURES/adjacency_matrix.png")
 
     return adjacency_sparse
