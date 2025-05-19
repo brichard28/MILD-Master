@@ -13,31 +13,11 @@ elseif all(whos_using == 'Bon')
     prepro_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
 end
 
-% 'mild_master_1',...
-%     'mild_master_3',...
-%     'mild_master_4',...
-%     'mild_master_5',...
-%     'mild_master_6',...
-%     'mild_master_8',...
-%     'mild_master_9',...
-%     'mild_master_10',...
-%     'mild_master_11',...
-%     'mild_master_12',...
-%     'mild_master_14',...
-%     'mild_master_15',...
-%     'mild_master_16',...
-%     'mild_master_17',...
-%     'mild_master_18',...
-%     'mild_master_19',...
-%     'mild_master_20',...
-%     'mild_master_22',...
-%     'mild_master_23',...
-%     'mild_master_24',...
+
 
 curr_subject_ID = char('mild_master_1',...
     'mild_master_3',...
     'mild_master_4',...
-    'mild_master_5',...
     'mild_master_6',...
     'mild_master_8',...
     'mild_master_9',...
@@ -50,6 +30,7 @@ curr_subject_ID = char('mild_master_1',...
     'mild_master_17',...
     'mild_master_18',...
     'mild_master_19',...
+    'mild_master_20',...
     'mild_master_22',...
     'mild_master_23',...
     'mild_master_24',...
@@ -60,11 +41,17 @@ curr_subject_ID = char('mild_master_1',...
     'mild_master_29',...
     'mild_master_30',...
     'mild_master_31',...
-    'mild_master_32','mild_master_33','mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40'); % char();
+    'mild_master_32','mild_master_33','mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40', ...
+    'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_46','mild_master_48'); % char();
 
 % Set analysis parameters
+<<<<<<< HEAD
+erp_window_start_time = -25; % 100 ms before onset of word
+erp_window_end_time = 1200; % 750 ms after onset of word
+=======
 erp_window_start_time = -50; % 100 ms before onset of word
 erp_window_end_time = 1500; % 750 ms after onset of word
+>>>>>>> parent of 70d79e5 (yur)
 nsubjects = size(curr_subject_ID,1);
 word_length = 0.3;
 frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
@@ -110,7 +97,7 @@ for isubject = 1:size(curr_subject_ID,1)
 
     % Create empty arrays for info for each ERP
     % Will contain subID, trial, and word (if target)
-    ERP_info = struct('SubID',{},'Trial',{},'Lead_Stream',{},'Lag_Stream',{},'Lead_Word',{},'Lag_Word',{},'Condition',{});
+    ERP_info = struct('SubID',{},'Trial',{},'Lead_Stream',{},'Lag_Stream',{},'Lead_Word',{},'Lag_Word',{},'Target_Direction',{},'Condition',{});
     ERP_info_button_press = struct('SubID',{},'Trial',{});
 
     % Load EEG for this subject
@@ -198,7 +185,11 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
 
+<<<<<<< HEAD
+            if end_time - start_time == 313
+=======
             if end_time - start_time == 396
+>>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 
@@ -240,7 +231,11 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
+<<<<<<< HEAD
+            if end_time - start_time == 313
+=======
             if end_time - start_time == 396
+>>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 
@@ -275,6 +270,13 @@ for isubject = 1:size(curr_subject_ID,1)
                     ERP_info.Lag_Word = [ERP_info.Lag_Word; this_trial_target_words(ionset)];
                 end
                 ERP_info.Condition = [ERP_info.Condition, conditions(itrial)];
+
+                if contains(this_trial_masker,"side=r")
+                    ERP_info.Target_Direction = [ERP_info.Target_Direction;'R'];
+                elseif contains(this_trial_masker,"side=l")
+                    ERP_info.Target_Direction = [ERP_info.Target_Direction;'L'];
+                end
+
             else
                 ERP_info(1).SubID = curr_subject_ID(isubject,:);
                 ERP_info(1).Trial = itrial;
@@ -290,6 +292,12 @@ for isubject = 1:size(curr_subject_ID,1)
                     ERP_info(1).Lag_Word = this_trial_target_words(ionset);
                 end
                 ERP_info(1).Condition = conditions(itrial);
+
+                if contains(this_trial_masker,"side=r")
+                    ERP_info(1).Target_Direction = 'R';
+                elseif contains(this_trial_masker,"side=l")
+                    ERP_info(1).Target_Direction = 'L';
+                end
             end
 
 
@@ -394,7 +402,7 @@ for isubject = 1:size(curr_subject_ID,1)
 
     % Create empty arrays for info for each ERP
     % Will contain subID, trial, and word (if target)
-    ERP_info = struct('SubID',{},'Trial',{},'Lead_Stream',{},'Lag_Stream',{},'Lead_Word',{},'Lag_Word',{},'Condition',{});
+    ERP_info = struct('SubID',{},'Trial',{},'Lead_Stream',{},'Lag_Stream',{},'Lead_Word',{},'Lag_Word',{},'Target_Direction',{},'Condition',{});
     ERP_info_button_press = struct('SubID',{},'Trial',{});
 
     % Load EEG for this subject
@@ -482,7 +490,11 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
 
+<<<<<<< HEAD
+            if end_time - start_time == 313
+=======
             if end_time - start_time == 396
+>>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 
@@ -524,7 +536,11 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
+<<<<<<< HEAD
+            if end_time - start_time == 313
+=======
             if end_time - start_time == 396
+>>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 
@@ -559,6 +575,13 @@ for isubject = 1:size(curr_subject_ID,1)
                     ERP_info.Lag_Word = [ERP_info.Lag_Word; this_trial_target_words(ionset)];
                 end
                 ERP_info.Condition = [ERP_info.Condition, conditions(itrial)];
+
+                if contains(this_trial_masker,"side=r")
+                    ERP_info.Target_Direction = [ERP_info.Target_Direction;'R'];
+                elseif contains(this_trial_masker,"side=l")
+                    ERP_info.Target_Direction = [ERP_info.Target_Direction;'L'];
+                end
+
             else
                 ERP_info(1).SubID = curr_subject_ID(isubject,:);
                 ERP_info(1).Trial = itrial;
@@ -574,6 +597,12 @@ for isubject = 1:size(curr_subject_ID,1)
                     ERP_info(1).Lag_Word = this_trial_target_words(ionset);
                 end
                 ERP_info(1).Condition = conditions(itrial);
+
+                if contains(this_trial_masker,"side=r")
+                    ERP_info(1).Target_Direction = 'R';
+                elseif contains(this_trial_masker,"side=l")
+                    ERP_info(1).Target_Direction = 'L';
+                end
             end
 
 
