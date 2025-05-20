@@ -217,7 +217,7 @@ for ichannel in range(num_channels):
 
 T_obs, clusters, cluster_p_values, H0, significant_channels = (
     mne_cluster_based_permutation_test_cpu(adjacency_sparse=adjacency_sparse,
-                                           X=[beta_large_itd_reind, null_data]))
+                                           X=[beta_large_ild_reind, null_data]))
 
 
 

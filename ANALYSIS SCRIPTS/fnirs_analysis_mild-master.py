@@ -341,7 +341,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=3, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.1], filter_transition_bandwidths=[0.005, 0.1/2])
+                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.1], filter_transition_bandwidths=[0.005, 0.1/2])
 
 
     if subject != "mild_master_5":
