@@ -11,12 +11,42 @@ library(emmeans)
 
 #### Data Preparation ###########
 # Load in Data
-all_data <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\group_results.csv")
+all_data <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\group_results_glm_dur_11.csv")
 colnames(all_data)[which(names(all_data) == "Condition")] <- "Spatialization"
 
 # Organize Factors
 to.factor <- c('Spatialization','ID','ch_name')
 all_data[, to.factor] <- lapply(all_data[, to.factor], as.factor)
+
+all_data_hbo <- subset(all_data,Chroma == "hbo")
+# Define ROIs
+ch_names_unique <- unique(all_data_hbo$ch_name)
+roi_1 <- list("S8_D17 hbo","S8_D16 hbo","S9_D17 hbo","S9_D16 hbo","S9_D15 hbo","S10_D16 hbo","S16_D16 hbo","S16_D17 hbo",
+              "S16_D22 hbo","S16_D23 hbo","S17_D15 hbo","S17_D16 hbo","S17_D17 hbo","S17_D21 hbo",
+              "S17_D22 hbo","S17_D23 hbo","S18_D15 hbo","S18_D16 hbo","S18_D21 hbo","S18_D22 hbo","S18_D23 hbo") # left IFG
+
+roi_2 <- list("S11_D11 hbo","S12_D10 hbo","S12_D11 hbo","S12_D12 hbo","S13_D10 hbo","S13_D11 hbo","S21_D11 hbo",
+              "S21_D12 hbo","S21_D19 hbo","S21_D20 hbo","S22_D10 hbo","S22_D11 hbo","S22_D12 hbo","S22_D19 hbo",
+              "S22_D20 hbo","S23_D10 hbo","S23_D11 hbo","S23_D19 hbo")  # right IFG
+
+roi_3 <- list("S1_D7 hbo","S1_D8 hbo","S2_D6 hbo","S2_D7 hbo","S2_D8 hbo","S3_D5 hbo",
+              "S3_D6 hbo","S3_D7 hbo","S7_D7 hbo","S7_D8 hbo","S7_D17 hbo","S7_D18 hbo",
+              "S8_D6 hbo","S8_D7 hbo","S8_D8 hbo","S8_D18 hbo","S9_D5 hbo","S9_D6 hbo","S9_D7 hbo",
+              "S10_D5 hbo","S10_D6 hbo","S10_D14 hbo","S10_D15 hbo","S10_D21 hbo","S15_D17 hbo",
+              "S15_D18 hbo","S15_D22 hbo","S16_D18 hbo","S19_D14 hbo","S19_D15 hbo","S19_D21 hbo") # left DLPFC
+
+roi_4 <- list("S4_D2 hbo","S4_D3 hbo","S4_D4 hbo","S5_D1 hbo","S5_D2 hbo","S5_D3 hbo",
+              "S6_D1 hbo","S6_D2 hbo","S11_D3 hbo","S11_D4 hbo","S11_D12 hbo","S11_D13 hbo",
+              "S11_D20 hbo","S12_D2 hbo","S12_D3 hbo","S12_D4 hbo","S13_D1 hbo","S13_D2 hbo",
+              "S13_D3 hbo","S13_D9 hbo","S14_D1 hbo","S14_D2 hbo","S14_D9 hbo","S14_D10 hbo",
+              "S20_D12 hbo","S20_D13 hbo","S20_D20 hbo","S23_D9 hbo","S24_D9 hbo","S24_D10 hbo",
+              "S24_D19 hbo") # right DLPFC
+
+all_data_hbo$Roi<- "NA"
+all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_1)] <- 1
+all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_2)] <- 2
+all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_3)] <- 3
+all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_4)] <- 4
 
 
 ### Summary SE function ########
@@ -63,193 +93,70 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 }
 
 
-# Check for normality, remove outliers
-#all_data %>% group_by(Spatialization) %>% shapiro_test(mean_hbo)
-
-
-
-
-
-
-
-
-
-##### LMEM Model HbO #############
-model_hbo <- mixed(mean_hbo ~ Spatialization + (1|ID) + (1|ch_name),
-                       data= subset(all_data, Chroma == "hbo"), 
-                       control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
-model_hbo
-
-
-
-# Pairwise Comparisons (treatment coding)
-
-# ITD5deg as reference
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=5_az=0")
-lmer_itd5deg <- lmer(mean_hbo ~ Spatialization + (1|ID) + (1|ch_name),
-                   data= subset(all_data, Chroma == "hbo"), 
-                              control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_itd5deg)
-
-# ITD15deg as reference
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=15_az=0")
-lmer_itd15deg <- lmer(mean_hbo ~ Spatialization + (1|ID) + (1|ch_name),
-                    data= subset(all_data, Chroma == "hbo"), 
-                   control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_itd15deg)
-
-
-# ILD5deg as reference
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=0_az=5")
-lmer_ild5deg <- lmer(mean_hbo ~ Spatialization + (1|ID) + (1|ch_name),
-                     data= subset(all_data, Chroma == "hbo"), 
-                    control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_ild5deg)
-
-# ILD15deg as reference
-
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=0_az=15")
-lmer_ild15deg <- lmer(mean_hbo ~ Spatialization + (1|ID) + (1|ch_name),
-                        data= subset(all_data, Chroma == "hbo"),
-                     control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_ild15deg)
-
-
-##### Mean HbO Plot ##########
-# One line per channel
-mean_hbo_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="mean_hbo", groupvars=c("ch_name","Spatialization"))
-mean_hbo_data$Spatialization <- ordered(mean_hbo_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
-plothbo <- ggplot(data = mean_hbo_data, aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
-  geom_line(size=1, position=position_dodge(width=0.3)) + 
-  geom_errorbar(aes(x=Spatialization, ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
-  geom_point(aes(x = Spatialization, y = mean_hbo, color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
-  labs(x="",y="Mean \u0394HbO (\u03BCM)") +
-  ylim(-0.15,0.15) +
-  theme_bw() +
-  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
-  theme(legend.position="none")
-grid.arrange(plothbo, ncol=1, widths = c(1))
-
-# One line per subject
-mean_hbo_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="mean_hbo", groupvars=c("ID","Spatialization"))
-mean_hbo_data$Spatialization <- ordered(mean_hbo_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
-plothbo <- ggplot(data = mean_hbo_data, aes(x = Spatialization, y = mean_hbo,group = ID)) +
-  geom_line(size=1, position=position_dodge(width=0.3)) + 
-  geom_errorbar(aes(x=Spatialization, ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
-  geom_point(aes(x = Spatialization, y = mean_hbo, color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
-  labs(x="",y="Mean \u0394HbO (\u03BCM)") +
-  ylim(-0.15,0.15) +
-  theme_bw() +
-  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
-  theme(legend.position="none")
-grid.arrange(plothbo, ncol=1, widths = c(1))
-
-
-
-##### LMEM Model Beta #############
-model_beta <- mixed(theta ~ Spatialization + (1|ID) + (1| ch_name),
-                    data= subset(all_data, Chroma == "hbo"), 
-                    control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
-model_beta
-
-# ITD5deg as reference
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=5_az=0")
-lmer_itd5deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
-                     data= subset(all_data, Chroma == "hbo"), 
-                     control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_itd5deg_beta)
-
-# ITD15deg as reference
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=15_az=0")
-lmer_itd15deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
-                          data= subset(all_data, Chroma == "hbo"), 
-                          control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_itd15deg_beta)
-
-# ILD5deg as reference
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=0_az=5")
-lmer_ild5deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
-                          data= subset(all_data, Chroma == "hbo"), 
-                          control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_ild5deg_beta)
-
-# ILD15deg as reference
-all_data$Spatialization <- relevel(all_data$Spatialization, "az_itd=0_az=15")
-lmer_ild15deg_beta <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
-                          data= subset(all_data, Chroma == "hbo"), 
-                          control = lmerControl(optimizer = "bobyqa"))#
-summary(lmer_ild15deg_beta)
-
-##### Beta Plots ##########
-
-# One line per channel
-beta_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="theta", groupvars=c("Spatialization","ch_name"), na.rm = TRUE)
+### Plot data in each ROI ###
+beta_data <- summarySE(all_data_hbo, measurevar="theta", groupvars=c("Spatialization","ch_name","Roi"), na.rm = TRUE)
 beta_data$Spatialization <- ordered(beta_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
-plot_beta <- ggplot(data = beta_data, aes(x = Spatialization, y = theta,group = ch_name)) +
+plot_roi_1 <- ggplot(data = subset(beta_data, Roi == 1), aes(x = Spatialization, y = theta,group = ch_name)) +
   geom_line(size=1, position=position_dodge(width=0.3)) + 
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(-0.15,0.15) +
+  ylim(-0.05,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
   theme(legend.position="none")
 
-grid.arrange(plot_beta, ncol=1, widths = c(1))
-
-
-# One line per subject
-beta_data <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="theta", groupvars=c("Spatialization","ID"), na.rm = TRUE)
-beta_data$Spatialization <- ordered(beta_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
-plot_beta <- ggplot(data = beta_data, aes(x = Spatialization, y = theta,group = ID)) +
+plot_roi_2 <- ggplot(data = subset(beta_data, Roi == 2), aes(x = Spatialization, y = theta,group = ch_name)) +
   geom_line(size=1, position=position_dodge(width=0.3)) + 
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(-0.15,0.15) +
+  ylim(-0.05,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
   theme(legend.position="none")
 
-grid.arrange(plot_beta, ncol=1, widths = c(1))
-
-
-# mean over everything beta
-beta_data_overall <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="theta", groupvars=c("Spatialization"), na.rm = TRUE)
-beta_data_overall <- beta_data_overall %>% mutate(Spatialization = fct_relevel(Spatialization, "az_itd=5_az=0", "az_itd=15_az=0", "az_itd=0_az=5", "az_itd=0_az=15"))
-plot_beta_overall <- ggplot(data = beta_data_overall, aes(x = Spatialization, y = theta)) +
+plot_roi_3 <- ggplot(data = subset(beta_data, Roi == 3), aes(x = Spatialization, y = theta,group = ch_name)) +
   geom_line(size=1, position=position_dodge(width=0.3)) + 
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(0,0.05) +
+  ylim(-0.05,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
   theme(legend.position="none")
 
-grid.arrange(plot_beta_overall, ncol=1, widths = c(1))
-
-# mean over everything deltahbo
-delta_hbo_data_overall <- summarySE(subset(all_data,Chroma == "hbo"), measurevar="mean_hbo", groupvars=c("Spatialization"), na.rm = TRUE)
-delta_hbo_data_overall <- delta_hbo_data_overall %>% mutate(Spatialization = fct_relevel(Spatialization, "az_itd=5_az=0", "az_itd=15_az=0", "az_itd=0_az=5", "az_itd=0_az=15"))
-plot_beta_overall <- ggplot(data = delta_hbo_data_overall, aes(x = Spatialization, y = mean_hbo)) +
+plot_roi_4 <- ggplot(data = subset(beta_data, Roi == 4), aes(x = Spatialization, y = theta,group = ch_name)) +
   geom_line(size=1, position=position_dodge(width=0.3)) + 
-  geom_errorbar(aes(ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
+  geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
-  labs(x="",y="Mean \u0394HbO (\u03BCM)") +
-  ylim(0,0.05) +
+  labs(x="",y="Mean Beta") +
+  ylim(-0.05,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
   theme(legend.position="none")
 
-grid.arrange(plot_beta_overall, ncol=1, widths = c(1))
+grid.arrange(plot_roi_1,plot_roi_2,plot_roi_3,plot_roi_4, ncol=2, widths = c(1,1))
 
 
 
+##### Wilcoxon signed-rank test between spatialization, within each ROI ##
+beta_data <- summarySE(all_data_hbo, measurevar="theta", groupvars=c("Spatialization","Roi"), na.rm = TRUE)
+roi_1_data <- subset(all_data_hbo, Roi == 1)
+foo <- pairwise.wilcox.test(roi_1_data$theta, roi_1_data$Spatialization, p.adjust.method="bonferroni")
+foo
+broom::tidy(foo)
+
+wilcox.test(roi_1_theta, mu = 0, alternative = "two.sided")
+# follow up tests for ROI 1
+result <- wilcox.test(before, after, paired = TRUE)
+print(result)
+
+wilcox.test(subset(beta_data, Roi == 2)$theta, mu = 0, alternative = "two.sided")
+wilcox.test(subset(beta_data, Roi == 3)$theta, mu = 0, alternative = "two.sided")
+wilcox.test(subset(beta_data, Roi == 4)$theta, mu = 0, alternative = "two.sided")
 
