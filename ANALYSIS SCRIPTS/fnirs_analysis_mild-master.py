@@ -685,7 +685,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                     individual_results['Condition'] == 'az_itd=0_az=15'), "mean_hbr"] = mean_during_stim_ild15_hbr[idx]
 
 
-    individual_results.to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_results.csv")
+    individual_results.to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_results_glm_dur_6.csv")
     #epochs.to_data_frame(long_format=True).to_csv(mild_master_root + "/RESULTS DATA/" + subject + "_epochs.csv")
 
     group_df = pd.concat([group_df, individual_results], ignore_index=True)
@@ -708,7 +708,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
         fig, ax_hrf = plt.subplots(constrained_layout=True)
         ax_hrf.plot(design_matrix["az_itd=5_az=0"])
         ax_hrf.set(xlim=(845, 880), xlabel="Time (s)", ylabel="Amplitude")
-        plt.savefig(mild_master_root + "/CASUAL FIGURES/HRF_used.png")
+        plt.savefig(mild_master_root + "/CASUAL FIGURES/HRF_used_glm_dur_6.png")
         plt.close(fig)
 
         fig, ax_design_matrix = plt.subplots(figsize=(10, 6), constrained_layout=True)
@@ -813,7 +813,7 @@ for idx, cond in enumerate(conditions):
 
 
 group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']")
-group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results_glm_dur_11.csv")
+group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results_glm_dur_6.csv")
 # ---------------------------------------------------------------
 # -----------------     PLotting GLM Averages           ---------
 # ---------------------------------------------------------------
