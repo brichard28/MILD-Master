@@ -171,7 +171,7 @@ curr_subject_ID = ['mild_master_1',
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-glm_dur = 11.6
+glm_dur = 6 # 11.6
 n_subjects = len(curr_subject_ID)
 
 n_long_channels = 101
