@@ -349,8 +349,8 @@ group_results = group_df.query("Condition in ['az_itd=5_az=0','az_itd=15_az=0','
 ch_model = smf.mixedlm("theta ~ ch_name:Chroma:Condition",group_results,groups=group_results["ID"]).fit(method="nm")
 ch_model_df = statsmodels_to_results(ch_model)
 
-caxis_min = -0.08
-caxis_max = 0.08
+caxis_min = -0.05
+caxis_max = 0.05
 groups_single_chroma = dict(
     Left_Hemisphere=picks_pair_to_idx(raw_haemo_for_plotting.copy().pick(picks='hbo'), left_hem_channels,
                                       on_missing='warning'),
@@ -403,7 +403,7 @@ mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=
 mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=15']").query("ch_name in @this_info_right['ch_names']")['theta'],
                      this_info_right,sensors=True, axes = topo_axes[3],contours = 0,
                      extrapolate='local',image_interp='linear',vlim=(caxis_min,caxis_max))
-plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta.png")
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta_glm_dur_11.png")
 plt.close(fig)
 
 # ---------------------------------------------------------------
