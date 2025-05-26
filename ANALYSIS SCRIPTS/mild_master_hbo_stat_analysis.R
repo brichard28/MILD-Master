@@ -101,7 +101,7 @@ plot_roi_1 <- ggplot(data = subset(beta_data, Roi == 1), aes(x = Spatialization,
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(-0.05,0.07) +
+  ylim(-0.07,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
@@ -112,7 +112,7 @@ plot_roi_2 <- ggplot(data = subset(beta_data, Roi == 2), aes(x = Spatialization,
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(-0.05,0.07) +
+  ylim(-0.07,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
@@ -123,7 +123,7 @@ plot_roi_3 <- ggplot(data = subset(beta_data, Roi == 3), aes(x = Spatialization,
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(-0.05,0.07) +
+  ylim(-0.07,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
@@ -134,7 +134,7 @@ plot_roi_4 <- ggplot(data = subset(beta_data, Roi == 4), aes(x = Spatialization,
   geom_errorbar(aes(ymin=theta-se, ymax=theta+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
   geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
   labs(x="",y="Mean Beta") +
-  ylim(-0.05,0.07) +
+  ylim(-0.07,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
   scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
@@ -151,7 +151,7 @@ foo <- pairwise.wilcox.test(roi_1_data$theta, roi_1_data$Spatialization, p.adjus
 foo
 broom::tidy(foo)
 
-wilcox.test(roi_1_theta, mu = 0, alternative = "two.sided")
+wilcox.test(roi_1_data, mu = 0, alternative = "two.sided")
 # follow up tests for ROI 1
 result <- wilcox.test(before, after, paired = TRUE)
 print(result)
@@ -160,3 +160,65 @@ wilcox.test(subset(beta_data, Roi == 2)$theta, mu = 0, alternative = "two.sided"
 wilcox.test(subset(beta_data, Roi == 3)$theta, mu = 0, alternative = "two.sided")
 wilcox.test(subset(beta_data, Roi == 4)$theta, mu = 0, alternative = "two.sided")
 
+## LMEM Tests beta
+model_roi_1_beta <- mixed(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                          data= subset(all_data_hbo, Roi == 1), 
+                          control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
+model_roi_1_beta
+
+# Follow up pairwise comparisons
+all_data_hbo$Spatialization <- relevel(all_data_hbo$Spatialization, "az_itd=0_az=5")
+roi_1_lmer_itd5 <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                              data= subset(all_data_hbo, Roi == 3),
+                              control = lmerControl(optimizer = "bobyqa"))#
+summary(roi_1_lmer_itd5)
+
+### MEAN HBO ###
+
+mean_hbo_data <- summarySE(all_data_hbo, measurevar="mean_hbo", groupvars=c("Spatialization","ch_name","Roi"), na.rm = TRUE)
+mean_hbo_data$Spatialization <- ordered(mean_hbo_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
+plot_roi_1 <- ggplot(data = subset(mean_hbo_data, Roi == 1), aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
+  geom_line(size=1, position=position_dodge(width=0.3)) + 
+  geom_errorbar(aes(ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
+  geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
+  labs(x="",y="Mean mean_hbo") +
+  ylim(-0.1,0.1) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  theme(legend.position="none")
+
+plot_roi_2 <- ggplot(data = subset(mean_hbo_data, Roi == 2), aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
+  geom_line(size=1, position=position_dodge(width=0.3)) + 
+  geom_errorbar(aes(ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
+  geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
+  labs(x="",y="Mean mean_hbo") +
+  ylim(-0.1,0.1) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  theme(legend.position="none")
+
+plot_roi_3 <- ggplot(data = subset(mean_hbo_data, Roi == 3), aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
+  geom_line(size=1, position=position_dodge(width=0.3)) + 
+  geom_errorbar(aes(ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
+  geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
+  labs(x="",y="Mean mean_hbo") +
+  ylim(-0.1,0.1) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  theme(legend.position="none")
+
+plot_roi_4 <- ggplot(data = subset(mean_hbo_data, Roi == 4), aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
+  geom_line(size=1, position=position_dodge(width=0.3)) + 
+  geom_errorbar(aes(ymin=mean_hbo-se, ymax=mean_hbo+se, color=Spatialization), width=.1, position=position_dodge(width=0.3)) +
+  geom_point(aes(color = Spatialization),size = 4, position=position_dodge(width=0.3)) + 
+  labs(x="",y="Mean mean_hbo") +
+  ylim(-0.1,0.1) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  theme(legend.position="none")
+
+grid.arrange(plot_roi_1,plot_roi_2,plot_roi_3,plot_roi_4, ncol=2, widths = c(1,1))
