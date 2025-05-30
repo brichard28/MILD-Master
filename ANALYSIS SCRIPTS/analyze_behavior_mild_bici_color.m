@@ -316,7 +316,12 @@ all_lag_FA_rates = all_lag_FAs./all_num_lag_masker_color;
 all_hit_rates_collapsed_left_and_right = sum([all_hits(attend_right_indices);all_hits(attend_left_indices)],1)./sum([all_num_target_color(attend_right_indices);all_num_target_color(attend_left_indices)],1);
 all_FA_rates_collapsed_left_and_right = sum([all_FAs(attend_right_indices);all_FAs(attend_left_indices)],1)./sum([all_num_masker_color(attend_right_indices);all_num_masker_color(attend_left_indices)],1);
 
+all_hit_rates_collapsed_left_and_right(all_hit_rates_collapsed_left_and_right  == 0) = 0.001;
+all_hit_rates_collapsed_left_and_right (all_hit_rates_collapsed_left_and_right  >= 1) = 0.999;
+all_FA_rates_collapsed_left_and_right(all_FA_rates_collapsed_left_and_right  == 0) = 0.001;
+all_FA_rates_collapsed_left_and_right (all_FA_rates_collapsed_left_and_right  >= 1) = 0.999;
 
+all_d_primes_collapsed_left_and_right = norminv(all_hit_rates_collapsed_left_and_right) - norminv(all_FA_rates_collapsed_left_and_right);
 figure;
 subplot(1,2,1)
 hold on
@@ -338,6 +343,17 @@ ylabel('FA Rate','FontSize',18)
 legend({'Natural ILDs','Magnified ILDs'},'FontSize',18)
 ylim([0,1])
 xlabel('Azimuth (deg.)','FontSize',18)
+
+figure;
+hold on
+scatter(1:length(all_maskers)/4,all_d_primes_collapsed_left_and_right(1:length(all_maskers)/4),'r','filled')
+scatter(1:length(all_maskers)/4,all_d_primes_collapsed_left_and_right(length(all_maskers)/4 + 1:end),'b','filled')
+xticks(1:length(all_maskers)/4);
+xticklabels(10:10:90)
+ylabel("d'",'FontSize',18)
+ylim([0,3.5])
+xlabel('Azimuth (deg.)','FontSize',18)
+
 
 % %% NEW ORDER = itd50 noise, itd500 noise, ildnat noise, ild10 noise, itd50 speech, itd500 speech, ildnat speech, ild10 speech
 % 

@@ -447,9 +447,8 @@ lag_d_primes_collapsed(4,:) = mean(lag_d_primes_all(:,large_ild_cond),2); % itla
 
 %% PLOT ALL
 figure;
-colors_to_use = ["g","m","g","m"];
+colors_to_use = ["#0000FF","#FF8800","#0000FF","#FF8800"];
 
-subplot(1,3,1)
 plot(1:2,d_primes_collapsed(1:2,d_primes_collapsed(1,:) > d_primes_collapsed(2,:)),'-','Color',colors_to_use(1));
 hold on
 plot(1:2,d_primes_collapsed(1:2,d_primes_collapsed(1,:) < d_primes_collapsed(2,:)),'-','Color',colors_to_use(2));
@@ -465,9 +464,14 @@ for iplot = 1:4
 end
 ylabel("d'",'FontSize',18)
 %xticklabels({'50','100','200','400'})
-xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
+xlim([0.5,4.5])
+ylim([0,5])
+xticks(1:4)
+xticklabels({'','','',''})
+%xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
 
-subplot(1,3,2)
+figure;
+subplot(1,2,1)
 plot(1:2,all_hit_rates_collapsed(1:2,all_hit_rates_collapsed(1,:) > all_hit_rates_collapsed(2,:)),'-','Color',colors_to_use(1));
 hold on
 plot(1:2,all_hit_rates_collapsed(1:2,all_hit_rates_collapsed(1,:) < all_hit_rates_collapsed(2,:)),'-','Color',colors_to_use(2));
@@ -485,7 +489,7 @@ ylabel("Hit Rate",'FontSize',18)
 %xticklabels({'50','100','200','400'})
 xticklabels({'5 deg ITDs','15 deg ITDs','5 deg ILDs','15 deg ILDs'})
 
-subplot(1,3,3)
+subplot(1,2,2)
 plot(1:2,all_FA_rates_collapsed(1:2,all_FA_rates_collapsed(1,:) > all_FA_rates_collapsed(2,:)),'-','Color',colors_to_use(1));
 hold on
 plot(1:2,all_FA_rates_collapsed(1:2,all_FA_rates_collapsed(1,:) < all_FA_rates_collapsed(2,:)),'-','Color',colors_to_use(2));
