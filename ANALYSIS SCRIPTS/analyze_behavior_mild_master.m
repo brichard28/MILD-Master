@@ -157,10 +157,10 @@ for isubject = 1:size(subject_ID,1) % For each subject...
         all_num_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_masker_words == "bash");
 
         all_num_lead_target_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_lead_target_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_target_words == "bash" & this_trial_whether_target_lead == 1);
-        all_num_lag_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_lead_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_masker_words == "bash" & this_trial_whether_target_lead == 1);
+        all_num_lag_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_lag_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_masker_words == "bash" & this_trial_whether_target_lead == 1);
 
         all_num_lag_target_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_lag_target_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_target_words == "bash" & this_trial_whether_target_lead == 0);
-        all_num_lead_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_lag_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_masker_words == "bash" & this_trial_whether_target_lead == 0);
+        all_num_lead_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) = all_num_lead_masker_bash(isubject,string(all_maskers) == string(this_trial_masker)) + sum(this_trial_masker_words == "bash" & this_trial_whether_target_lead == 0);
 
         % Find just color times in target and masker
         this_trial_target_bash_times = this_trial_target_times(this_trial_target_words == "bash");

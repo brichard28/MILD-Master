@@ -50,12 +50,18 @@ for isubject = 1:size(curr_subject_ID,1)
         i = 1;
     end
     while i < numel(all_latencies)
-        if all_latencies(i+1) - all_latencies(i) < distance_threshold
-            urevents_to_remove = [urevents_to_remove, i+1];
+        % find any latencies which are within distance_threshold of this
+        % latency
+        z = all_latencies - all_latencies(i);
+        z(z <= 0) = inf;
+        zz = find(z < distance_threshold);
+        if ~isempty(zz)
+            urevents_to_remove = [urevents_to_remove, zz];
         end
-        i = i+1;
+        i = i + 1;
+
     end
-    where_below_threshold = find(all_distances < distance_threshold);
+    urevents_to_remove = unique(urevents_to_remove);
     % find corresponding events to urevents and remove triggers from EEG.event
     % and EEG.urevent
     z = {EEG.event(:).urevent};
