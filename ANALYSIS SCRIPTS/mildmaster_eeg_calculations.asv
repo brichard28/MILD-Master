@@ -72,20 +72,25 @@ for isubject = 1:size(curr_subject_ID,1)
 
     % For P300, only basing on trials that have bash!
 
+    % Lead P1: local maximum betweeen 50 and 150 ms
+    % Lead N1: local minimum between 100 and 200
+    % Lead P3: local maximum between 400 and 600 ms
     [~,lead_p1_start_index] = min(abs(single_onset_time - (60)));
     [~,lead_p1_end_index] = min(abs(single_onset_time - (120)));
     [~,lead_n1_start_index] = min(abs(single_onset_time - (120)));
-    [~,lead_n1_end_index] = min(abs(single_onset_time - (180)));
+    [~,lead_n1_end_index] = min(abs(single_onset_time - (18-)));
     [~,lead_p3_start_index] = min(abs(single_onset_time - (450)));
-    [~,lead_p3_end_index] = min(abs(single_onset_time - (600)));
+    [~,lead_p3_end_index] = min(abs(single_onset_time - (650)));
 
-
-    [~,lag_p1_start_index] = min(abs(single_onset_time - (310)));
-    [~,lag_p1_end_index] = min(abs(single_onset_time - (370)));
-    [~,lag_n1_start_index] = min(abs(single_onset_time - (370)));
-    [~,lag_n1_end_index] = min(abs(single_onset_time - (430)));
+    % Lag P1: local maximum betweeen 300 and 400 ms
+    % Lag N1: local minimum between 350 and 450 ms
+    % Lag P3: local maximum between 650 and 850 ms
+    [~,lag_p1_start_index] = min(abs(single_onset_time - (300)));
+    [~,lag_p1_end_index] = min(abs(single_onset_time - (400)));
+    [~,lag_n1_start_index] = min(abs(single_onset_time - (350)));
+    [~,lag_n1_end_index] = min(abs(single_onset_time - (450)));
     [~,lag_p3_start_index] = min(abs(single_onset_time - (700)));
-    [~,lag_p3_end_index] = min(abs(single_onset_time - (850)));
+    [~,lag_p3_end_index] = min(abs(single_onset_time - (900)));
 
     % take the average
     this_sub_cz_fz_average = squeeze(mean(data_by_pair_onset_baselined([frontocentral_channels],:,:),[1,3]));
@@ -197,9 +202,9 @@ for isubject = 1:size(curr_subject_ID,1)
                 for lead_stream = {'Target','Masker'}
                     for target_direction = {'L','R'}
                         if string(word_position) == 'Lead'
-                            this_p1 =  squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,word_type{1,1}))),[2,3]));
-                            this_n1 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,word_type{1,1}))),[2,3]));
-                            this_p3 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,word_type{1,1}))),[2,3]));
+                            this_p1 =  squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,word_type{1,1}))),[1,2,3]));
+                            this_n1 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,word_type{1,1}))),[1,2,3]));
+                            this_p3 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,word_type{1,1}))),[1,2,3]));
 
                             all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Target_Direction',target_direction,'Lead_Stream',lead_stream,'Word',word_type,'WordPosition',word_position,'Amplitude',this_p1);
                             all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Target_Direction',target_direction,'Lead_Stream',lead_stream,'Word',word_type,'WordPosition',word_position,'Amplitude',this_n1);
@@ -207,9 +212,9 @@ for isubject = 1:size(curr_subject_ID,1)
 
                             structrow = structrow + 1;
                         elseif string(word_position) == 'Lag'
-                            this_p1 =  squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lag_Word,word_type{1,1}))),[2,3]));
-                            this_n1 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lag_Word,word_type{1,1}))),[2,3]));
-                            this_p3 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lag_Word,word_type{1,1}))),[2,3]));
+                            this_p1 =  squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lag_Word,word_type{1,1}))),[1,2,3]));
+                            this_n1 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lag_Word,word_type{1,1}))),[1,2,3]));
+                            this_p3 = squeeze(nanmean(data_by_pair_onset_baselined(:,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Target_Direction,target_direction).*ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lag_Word,word_type{1,1}))),[1,2,3]));
 
                             all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Target_Direction',target_direction,'Lead_Stream',lead_stream,'Word',word_type,'WordPosition',word_position,'Amplitude',this_p1);
                             all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Target_Direction',target_direction,'Lead_Stream',lead_stream,'Word',word_type,'WordPosition',word_position,'Amplitude',this_n1);
