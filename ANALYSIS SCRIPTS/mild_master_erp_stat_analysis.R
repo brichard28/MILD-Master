@@ -8,8 +8,101 @@ library(rstatix)
 library(afex)
 library(dplyr)
 library(rhdf5)
+library(janitor)
+
 # Read the .mat file
-library(R.matlab)
 p1_data <- read.csv('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\all_subs_p1.csv')
 n1_data <- read.csv('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\all_subs_n1.csv')
+p2_data <- read.csv('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\all_subs_p2.csv')
 p3_data <- read.csv('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\all_subs_p3.csv')
+
+
+names(p1_data)[names(p1_data) == "Amplitude"] <- "p1"
+names(n1_data)[names(n1_data) == "Amplitude"] <- "n1"
+names(p2_data)[names(p2_data) == "Amplitude"] <- "p2"
+names(p3_data)[names(p3_data) == "Amplitude"] <- "p3"
+
+# Merge all data frames on the common identifier columns
+all_data <- Reduce(function(x, y) merge(x, y, by = c("S", "Condition", "Target_Direction", "Word", "Lead_Stream", "WordPosition","Electrode")), list(p1_data, n1_data, p2_data, p3_data))
+
+#frontocentral_electrodes <- c("Fp1","AF3","F7","F3","FC1","FC5","FC6","FC2","F4","F8","AF4","Fp2","Fz","Cz")
+frontocentral_electrodes <- c("Fz","Cz")
+parietooccipital_electrodes <- c("P7","P3","Pz","PO3","O1","Oz","O2","PO4","P4","P8")
+
+# Define ERP variables to pivot
+erp_vars <- c("p1", "n1", "p2", "p3")
+
+# For frontocentral electrodes: calculate mean(n1 - p1) per subject and group
+frontocentral_summary <- all_data %>%
+  filter(Electrode %in% frontocentral_electrodes) %>%
+  mutate(diff_n1_p1 = n1 - p1) %>%
+  group_by(S, Condition, Word, Lead_Stream, WordPosition) %>%
+  summarise(mean_diff = mean(diff_n1_p1, na.rm = TRUE)) %>%
+  ungroup()
+
+# Now, calculate mean and sd across subjects for each group (Condition, Word, Lead_Stream, WordPosition)
+frontocentral_group_summary <- frontocentral_summary %>%
+  group_by(Condition, Word, Lead_Stream, WordPosition) %>%
+  summarise(mean_diff_across_subj = mean(mean_diff, na.rm = TRUE),
+            sd_diff_across_subj = sd(mean_diff, na.rm = TRUE)) %>%
+  ungroup()
+
+# For parietooccipital electrodes: calculate mean p3 per subject and group
+parietooccipital_summary <- all_data %>%
+  filter(Electrode %in% parietooccipital_electrodes) %>%
+  group_by(S, Condition, Word, Lead_Stream, WordPosition) %>%
+  summarise(mean_p3 = mean(p3, na.rm = TRUE)) %>%
+  ungroup()
+
+# Then calculate mean and sd across subjects for each group
+parietooccipital_group_summary <- parietooccipital_summary %>%
+  group_by(Condition, Word, Lead_Stream, WordPosition) %>%
+  summarise(mean_p3_across_subj = mean(mean_p3, na.rm = TRUE),
+            sd_p3_across_subj = sd(mean_p3, na.rm = TRUE)) %>%
+  ungroup()
+
+
+ggplot(frontocentral_summary,aes(Word, mean_diff)) +
+  facet_grid(WordPosition~Condition) +  
+  geom_hline(yintercept = 0) +
+  #geom_dotplot(aes(color = S, fill = S), binaxis = 'y', stackdir = 'center', alpha = 0.5) + 
+  geom_point(aes(color = S, fill = S, group = S),alpha = 0.5, show.legend = FALSE) + 
+  geom_line(aes(color = S, group = S), alpha = 0.5, show.legend = FALSE) + 
+  stat_summary(fun.y=mean, geom="point", size=3, group = 1) +
+  stat_summary(fun.y=mean, geom="line", size=0.5, group = 1) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.1) +
+  theme(panel.spacing = unit(0.5, "lines"), 
+        strip.text.y = element_text(angle = 270),
+        axis.text.x = element_text(angle = 30, size = 15, hjust = 1),
+        legend.position = "right",
+        plot.margin = unit(c(0,0,0,0), "cm"),
+        axis.line.y = element_blank(),
+        panel.border = element_rect(colour = "black", fill=NA),
+        axis.ticks.x = element_line(size = 0.5),
+        axis.ticks.y = element_blank()) +
+  labs(title = "N1 - P1 by Condition", 
+       x = "", y = "Amplitude (mV)")
+
+
+
+
+ggplot(parietooccipital_summary,aes(Word, mean_p3)) +
+  facet_grid(WordPosition~Condition) +  
+  geom_hline(yintercept = 0) +
+  #geom_dotplot(aes(color = S, fill = S), binaxis = 'y', stackdir = 'center', alpha = 0.5) + 
+  geom_point(aes(color = S, fill = S, group = S),alpha = 0.5, show.legend = FALSE) + 
+  geom_line(aes(color = S, group = S), alpha = 0.5, show.legend = FALSE) + 
+  stat_summary(fun.y=mean, geom="point", size=3, group = 1) +
+  stat_summary(fun.y=mean, geom="line", size=0.5, group = 1) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.1) +
+  theme(panel.spacing = unit(0.5, "lines"), 
+        strip.text.y = element_text(angle = 270),
+        axis.text.x = element_text(angle = 30, size = 15, hjust = 1),
+        legend.position = "right",
+        plot.margin = unit(c(0,0,0,0), "cm"),
+        axis.line.y = element_blank(),
+        panel.border = element_rect(colour = "black", fill=NA),
+        axis.ticks.x = element_line(size = 0.5),
+        axis.ticks.y = element_blank()) +
+  labs(title = "P3 by Condition", 
+       x = "", y = "Amplitude (mV)")
