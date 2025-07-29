@@ -54,7 +54,8 @@ erp_window_end_time = 1500; % 750 ms after onset of word
 >>>>>>> parent of 70d79e5 (yur)
 nsubjects = size(curr_subject_ID,1);
 word_length = 0.3;
-frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
+frontocentral_channels = [31, 5, 26, 8, 32, 23, 9, 22]; % Fz, FC1, FC2, C3, Cz, C4, CP1, and CP2
+parietooccipital_channels = [12, 13, 14, 15, 16, 17, 18, 19] ;%  P3, Pz, PO3, O1, Oz, O2, PO4, and P4
 fs = 256;
 
 mild_master_root = 'C:\Users\benri\Documents\GitHub\MILD-Master';
