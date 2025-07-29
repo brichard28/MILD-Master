@@ -88,8 +88,8 @@ large_ild_cond = [2,5];
 % %     button_press_delay =0 ;
 % %     single_onset_time = linspace(erp_window_start_time,erp_window_end_time,size(data_by_pair_onset_baselined,2));
 % %     single_onset_time_buttonpress = linspace(erp_window_start_time + button_press_delay,erp_window_end_time,size(data_by_button_press_baselined,2));
-% %     frontocentral_channels = [1,2,3,4,5,6,8,23,25,26,27,28,29,30,31,32];
-% %     parietooccipital_channels = 11:20;
+% %     frontocentral_channels = [31, 5, 26, 8, 32, 23, 9, 22]; % Fz, FC1, FC2, C3, Cz, C4, CP1, and CP2
+% %     parietooccipital_channels = [12, 13, 14, 15, 16, 17, 18, 19] ;%  P3, Pz, PO3, O1, Oz, O2, PO4, and P4
 % %     cz_index = 32;
 % % 
 % %     %% Break up data by position and word type
@@ -311,8 +311,8 @@ large_ild_cond = [2,5];
 %     button_press_delay =0 ;
 %     single_onset_time = linspace(erp_window_start_time,erp_window_end_time,size(data_by_pair_onset_baselined,2));
 %     single_onset_time_buttonpress = linspace(erp_window_start_time + button_press_delay,erp_window_end_time,size(data_by_button_press_baselined,2));
-%     frontocentral_channels = [1,2,3,4,5,6,8,23,25,26,27,28,29,30,31,32];
-%     parietooccipital_channels = 11:20;
+%     frontocentral_channels = [31, 5, 26, 8, 32, 23, 9, 22]; % Fz, FC1, FC2, C3, Cz, C4, CP1, and CP2
+%    parietooccipital_channels = [12, 13, 14, 15, 16, 17, 18, 19] ;%  P3, Pz, PO3, O1, Oz, O2, PO4, and P4
 %     cz_index = 32;
 % 
 %     %% Break up data by position and word type
@@ -904,8 +904,8 @@ for isubject = 1:size(curr_subject_ID,1)
     button_press_delay =0 ;
     single_onset_time = linspace(erp_window_start_time,erp_window_end_time,size(data_by_pair_onset_baselined,2));
     single_onset_time_buttonpress = linspace(erp_window_start_time + button_press_delay,erp_window_end_time,size(data_by_button_press_baselined,2));
-    frontocentral_channels = [1,2,4,5,6,8,9,23,25,26,27,29,31,32];
-    parietooccipital_channels = 11:20;
+    frontocentral_channels = [31, 5, 26, 8, 32, 23, 9, 22]; % Fz, FC1, FC2, C3, Cz, C4, CP1, and CP2
+    parietooccipital_channels = [12, 13, 14, 15, 16, 17, 18, 19] ;%  P3, Pz, PO3, O1, Oz, O2, PO4, and P4
     cz_index = 32;
 
     %% Break up data by position and word type
