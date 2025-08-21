@@ -45,13 +45,10 @@ curr_subject_ID = char('mild_master_1',...
     'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_46','mild_master_48'); % char();
 
 % Set analysis parameters
-<<<<<<< HEAD
-erp_window_start_time = -25; % 100 ms before onset of word
-erp_window_end_time = 1200; % 750 ms after onset of word
-=======
+%erp_window_start_time = -25; % 100 ms before onset of word
+%erp_window_end_time = 1200; % 750 ms after onset of word
 erp_window_start_time = -50; % 100 ms before onset of word
 erp_window_end_time = 1500; % 750 ms after onset of word
->>>>>>> parent of 70d79e5 (yur)
 nsubjects = size(curr_subject_ID,1);
 word_length = 0.3;
 frontocentral_channels = [31, 5, 26, 8, 32, 23, 9, 22]; % Fz, FC1, FC2, C3, Cz, C4, CP1, and CP2
@@ -186,11 +183,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
 
-<<<<<<< HEAD
-            if end_time - start_time == 313
-=======
             if end_time - start_time == 396
->>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 
@@ -232,11 +225,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
-<<<<<<< HEAD
-            if end_time - start_time == 313
-=======
             if end_time - start_time == 396
->>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 
@@ -491,11 +480,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
 
-<<<<<<< HEAD
-            if end_time - start_time == 313
-=======
             if end_time - start_time == 396
->>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 
@@ -537,11 +522,7 @@ for isubject = 1:size(curr_subject_ID,1)
             [~,start_time] = min(abs(eeg_time - (resampled_search_time + erp_window_start_time))); %
             [~,end_time] = min(abs(eeg_time - (resampled_search_time + erp_window_end_time)));%
 
-<<<<<<< HEAD
-            if end_time - start_time == 313
-=======
             if end_time - start_time == 396
->>>>>>> parent of 70d79e5 (yur)
                 end_time = end_time + 1;
             end
 

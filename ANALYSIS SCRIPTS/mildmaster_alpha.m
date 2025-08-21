@@ -1,4 +1,4 @@
-addpath(genpath('C:\Users\benri\Documents\eeglab2023.0'));
+%addpath(genpath('C:\Users\benri\Documents\eeglab2023.0'));
 
 curr_subject_ID = char('mild_master_1',...
     'mild_master_3',...
@@ -31,15 +31,13 @@ curr_subject_ID = char('mild_master_1',...
 
 % Set directories
 
-addpath('C:\Users\benri\Documents\eeglab2023.0');
+%addpath('C:\Users\benri\Documents\eeglab2023.0');
 dir = 'C:\Users\benri\Documents\GitHub\MILD-Master\';
 dir_mildmaster = 'C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\MILD-MASTER Behavior Files\mild-master.xlsx';
 prepro_folder = 'C:\Users\benri\Documents\GitHub\MILD-Master\prepro_epoched_data\';
 
-left_hem_attend_left = nan(size(curr_subject_ID,1),4352);
-left_hem_attend_right = nan(size(curr_subject_ID,1),4352);
-right_hem_attend_left = nan(size(curr_subject_ID,1),4352);
-right_hem_attend_right = nan(size(curr_subject_ID,1),4352);
+left_hem_alpha = nan(size(curr_subject_ID,1),8,4352);
+right_hem_alpha = nan(size(curr_subject_ID,1),8,4352);
 
 for isubject= 1:size(curr_subject_ID,1)
     
@@ -65,14 +63,20 @@ for isubject= 1:size(curr_subject_ID,1)
     BehaviorTable = readtable(dir_mildmaster,'FileType','spreadsheet','Format','auto');
     rows_this_subject = find(BehaviorTable.S == string(curr_subject_ID(isubject,:))); % find the rows in the spreadsheet which belong to this subject
     conditions = BehaviorTable.Condition(rows_this_subject); % conditions by trial for this subject
-    condition_names = {'side=r_itd=500_az=0_mag=0_lpf=0',...
-        'side=r_itd=50_az=0_mag=0_lpf=0',...
-        'side=r_itd=0_az=5_mag=0_lpf=0',...
-        'side=l_itd=0_az=5_mag=1_lpf=0',...
-        'side=l_itd=50_az=0_mag=0_lpf=0',...
-        'side=l_itd=500_az=0_mag=0_lpf=0',...
-        'side=r_itd=0_az= 5_mag=1_lpf=0',...
-        'side=l_itd=0_az=5_mag=0_lpf=0'};
+    ndition_names = {'side=l_itd=0_az_itd=0_az=5_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=0_az=15_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=5_az=0_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=0_az=5_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=0_az=15_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=15_az=0_mag=0_lpf=0',...
+        'side=r_itd=0_az_itd=5_az=0_mag=0_lpf=0',...
+        'side=l_itd=0_az_itd=15_az=0_mag=0_lpf=0'};
+    attend_left_indices = [1,2,3,8];
+    attend_right_indices = [4,5,6,7];
+    small_itd_indices = [3,7];
+    large_itd_indices = [6,8];
+    small_ild_indices = [1,4];
+    large_ild_indices = [2,5];
     this_subject_table = BehaviorTable(rows_this_subject,:);
 
 
@@ -85,8 +89,8 @@ for isubject= 1:size(curr_subject_ID,1)
         conditions(end) = [];
     end
 
-    attend_right_indices = ismember(conditions,[1,2,3,7]);
-    attend_left_indices = ismember(conditions,[4,5,6,8]);
+    
+    
 
 
     fs= all_eeg_epoch.EEG_yes_button_press.srate;
@@ -113,12 +117,12 @@ for isubject= 1:size(curr_subject_ID,1)
 
     lowpass_cutoff = ((lower_alphafreq)/(all_eeg_epoch.EEG_yes_button_press.srate/2)); % normalize frequency
     highpass_cutoff =((higher_alphafreq)/(all_eeg_epoch.EEG_yes_button_press.srate/2));
-    b = fir1(128,[lowpass_cutoff highpass_cutoff]);
+    b = fir1(256,[lowpass_cutoff highpass_cutoff]);
 
     all_alpha_power = nan(size(all_eeg_epoch_data_baselined));
 
     % SUBTRACT MEAN ERP
-    all_eeg_epoch_data_baselined = all_eeg_epoch_data_baselined - mean(all_eeg_epoch_data_baselined,3);
+    %all_eeg_epoch_data_baselined = all_eeg_epoch_data_baselined - mean(all_eeg_epoch_data_baselined,3);
 
 
     for ichannel= 1:numchannels
@@ -136,11 +140,10 @@ for isubject= 1:size(curr_subject_ID,1)
         all_alpha_power(ichannel,:,:) = all_alpha_power(ichannel,:,:) - squeeze(mean(all_alpha_power(ichannel,1:fs,:),'all'));
     end
 
-    left_hem_attend_left(isubject,:) = squeeze(mean(all_alpha_power(p_o_channels([1,2,4,5]),:,attend_left_indices),[1,3])); % left hemisphere attend left
-    left_hem_attend_right(isubject,:) =squeeze(mean(all_alpha_power(p_o_channels([1,2,4,5]),:,attend_right_indices),[1,3])); % left hemisphere attend right
-    right_hem_attend_left(isubject,:) = squeeze(mean(all_alpha_power(p_o_channels(7:10),:,attend_left_indices),[1,3])); % right hemisphere attend left
-    right_hem_attend_right(isubject,:) = squeeze(mean(all_alpha_power(p_o_channels(7:10),:,attend_right_indices),[1,3])); % right hemisphere attend right
-    
+    for icondition = 1:8
+        left_hem_alpha(isubject,icondition,:) = squeeze(mean(all_alpha_power(p_o_channels([1,2,4,5]),:,conditions == icondition),[1,3])); % left hemisphere attend left
+        right_hem_alpha(isubject,icondition,:) = squeeze(mean(all_alpha_power(p_o_channels(7:10),:,conditions == icondition),[1,3])); % right hemisphere attend left
+    end
 
 
 
@@ -318,25 +321,93 @@ end
 
 %% Plot alpha time traces across subjects
 figure
-% Left Hemisphere
-subplot(1,2,1)
+ymin = -3;
+ymax = 2;
+% Left Hemisphere Small ITD
+subplot(4,2,1)
 hold on
 % Attend left
-shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_attend_left,1),nanstd(left_hem_attend_left,[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(small_itd_indices,attend_left_indices),:),[1,2]),nanstd(left_hem_alpha(:,intersect(small_itd_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
 % Attend right
-shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_attend_right,1),nanstd(left_hem_attend_right,[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(small_itd_indices,attend_right_indices),:),1),nanstd(left_hem_alpha(:,intersect(small_itd_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
 legend({'Attend Left','Attend Right'})
 title('Left PO Channels','FontSize',20)
-%ylim([-2,1])
+ylim([ymin,ymax])
 
-% Right Hemisphere
-subplot(1,2,2)
+% Right Hemisphere Small ITD
+subplot(4,2,2)
 hold on
 % Attend left
-shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_attend_left,1),nanstd(right_hem_attend_left,[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(small_itd_indices,attend_left_indices),:),1),nanstd(right_hem_alpha(:,intersect(small_itd_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
 % Attend right
-shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_attend_right,1),nanstd(right_hem_attend_right,[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(small_itd_indices,attend_right_indices),:),1),nanstd(right_hem_alpha(:,intersect(small_itd_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
 legend({'Attend Left','Attend Right'})
 title('Right PO Channels','FontSize',20)
-%ylim([-2,1])
+ylim([ymin,ymax])
 
+% Left Hemisphere Large ITD
+subplot(4,2,3)
+hold on
+% Attend left
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(large_itd_indices,attend_left_indices),:),[1,2]),nanstd(left_hem_alpha(:,intersect(large_itd_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+% Attend right
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(large_itd_indices,attend_right_indices),:),1),nanstd(left_hem_alpha(:,intersect(large_itd_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+legend({'Attend Left','Attend Right'})
+title('Left PO Channels','FontSize',20)
+ylim([ymin,ymax])
+
+% Right Hemisphere Large ITD
+subplot(4,2,4)
+hold on
+% Attend left
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(large_itd_indices,attend_left_indices),:),1),nanstd(right_hem_alpha(:,intersect(large_itd_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+% Attend right
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(large_itd_indices,attend_right_indices),:),1),nanstd(right_hem_alpha(:,intersect(large_itd_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+legend({'Attend Left','Attend Right'})
+title('Right PO Channels','FontSize',20)
+ylim([ymin,ymax])
+
+
+% Left Hemisphere Small ild
+subplot(4,2,5)
+hold on
+% Attend left
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(small_ild_indices,attend_left_indices),:),[1,2]),nanstd(left_hem_alpha(:,intersect(small_ild_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+% Attend right
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(small_ild_indices,attend_right_indices),:),1),nanstd(left_hem_alpha(:,intersect(small_ild_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+legend({'Attend Left','Attend Right'})
+title('Left PO Channels','FontSize',20)
+ylim([ymin,ymax])
+
+% Right Hemisphere Small ild
+subplot(4,2,6)
+hold on
+% Attend left
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(small_ild_indices,attend_left_indices),:),1),nanstd(right_hem_alpha(:,intersect(small_ild_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+% Attend right
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(small_ild_indices,attend_right_indices),:),1),nanstd(right_hem_alpha(:,intersect(small_ild_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+legend({'Attend Left','Attend Right'})
+title('Right PO Channels','FontSize',20)
+ylim([ymin,ymax])
+
+% Left Hemisphere Large ild
+subplot(4,2,7)
+hold on
+% Attend left
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(large_ild_indices,attend_left_indices),:),[1,2]),nanstd(left_hem_alpha(:,intersect(large_ild_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+% Attend right
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(left_hem_alpha(:,intersect(large_ild_indices,attend_right_indices),:),1),nanstd(left_hem_alpha(:,intersect(large_ild_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+legend({'Attend Left','Attend Right'})
+title('Left PO Channels','FontSize',20)
+ylim([ymin,ymax])
+
+% Right Hemisphere Large ild
+subplot(4,2,8)
+hold on
+% Attend left
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(large_ild_indices,attend_left_indices),:),1),nanstd(right_hem_alpha(:,intersect(large_ild_indices,attend_left_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-r')
+% Attend right
+shadedErrorBar(all_eeg_epoch.EEG_yes_button_press.times,nanmean(right_hem_alpha(:,intersect(large_ild_indices,attend_right_indices),:),1),nanstd(right_hem_alpha(:,intersect(large_ild_indices,attend_right_indices),:),[],1)./sqrt(size(curr_subject_ID,1)),'lineProps','-b')
+legend({'Attend Left','Attend Right'})
+title('Right PO Channels','FontSize',20)
+ylim([ymin,ymax])
