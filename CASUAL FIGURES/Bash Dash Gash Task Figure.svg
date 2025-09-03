@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="286.89679mm"
+   height="96.339653mm"
+   viewBox="0 0 286.89679 96.339653"
+   version="1.1"
+   id="svg49086"
+   sodipodi:docname="Bash Dash Gash Task Figure.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   inkscape:export-filename="Bash Dash Gash Task Figure.jpg"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview49088"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.71624578"
+     inkscape:cx="218.50041"
+     inkscape:cy="64.921848"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs49083">
+    <marker
+       style="overflow:visible"
+       id="marker7069"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="TriangleStart"
+       markerWidth="5.3244081"
+       markerHeight="6.155385"
+       viewBox="0 0 5.3244081 6.1553851"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path7067" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="TriangleStart"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="TriangleStart"
+       markerWidth="5.3244081"
+       markerHeight="6.155385"
+       viewBox="0 0 5.3244081 6.1553851"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="RoundedArrow"
+       markerWidth="6.1347523"
+       markerHeight="5.9304948"
+       viewBox="0 0 6.1347524 5.9304951"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid"
+       markerUnits="userSpaceOnUse">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path1367" />
+    </marker>
+    <rect
+       x="488.65906"
+       y="364.40005"
+       width="307.99335"
+       height="38.02227"
+       id="rect6505" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect49272"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect1519"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect31292"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect31296"
+       is_visible="true"
+       lpeversion="1" />
+    <rect
+       x="1254.5413"
+       y="387.69287"
+       width="239.65318"
+       height="94.206734"
+       id="rect29143-5" />
+    <rect
+       x="1254.5413"
+       y="387.69287"
+       width="239.65318"
+       height="94.206734"
+       id="rect29143-5-9" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect7448"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect7448-5"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect7448-1"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect7448-3"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect7448-8"
+       is_visible="true"
+       lpeversion="1" />
+    <rect
+       x="488.65906"
+       y="364.40005"
+       width="121.46668"
+       height="41.885063"
+       id="rect6505-8" />
+    <rect
+       x="488.65906"
+       y="364.40005"
+       width="121.46668"
+       height="41.885063"
+       id="rect6505-7" />
+    <marker
+       style="overflow:visible"
+       id="Stop-66"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="8"
+       viewBox="0 0 1 8"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path171-9" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Stop-6-5"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="8"
+       viewBox="0 0 1 8"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path171-6-8" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Stop-6-5-7"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="8"
+       viewBox="0 0 1 8"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path171-6-8-1" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Stop-66-2"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="8"
+       viewBox="0 0 1 8"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path171-9-9" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Stop-66-4"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="8"
+       viewBox="0 0 1 8"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path171-9-3" />
+    </marker>
+    <rect
+       x="488.65906"
+       y="364.40005"
+       width="121.46668"
+       height="41.885063"
+       id="rect6505-7-8" />
+    <marker
+       style="overflow:visible"
+       id="Stop-6-5-9"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Stop"
+       markerWidth="1"
+       markerHeight="8"
+       viewBox="0 0 1 8"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:context-stroke;stroke-width:1"
+         d="M 0,4 V -4"
+         id="path171-6-8-15" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow-0"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="RoundedArrow"
+       markerWidth="6.1347523"
+       markerHeight="5.9304948"
+       viewBox="0 0 6.1347524 5.9304951"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid"
+       markerUnits="userSpaceOnUse">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path1367-5" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-7.1708183,-7.0525996)">
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="7.92943px"
+       id="text49404-62"
+       style="fill:#1900ff;fill-opacity:1;stroke-width:0.247795;font-weight:400;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif"
+       x="114.77869"
+       y="39.921169"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+         id="tspan656">bash</tspan></text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="700"
+       font-size="32px"
+       id="text49406-3"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#1900ff;fill-opacity:1;stroke-width:0.247795"
+       x="149.97865"
+       y="39.921169">gash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="7.92943px"
+       id="text49408-1"
+       style="fill:#1900ff;fill-opacity:1;stroke-width:0.247795"
+       x="172.55276"
+       y="39.921169">dash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="7.92943px"
+       id="text49404-62-3"
+       style="fill:#1900ff;fill-opacity:1;stroke-width:0.247795"
+       x="193.42632"
+       y="39.921169">dash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="7.92943px"
+       id="text49404-3-8"
+       style="fill:#ff0000;fill-opacity:1;stroke-width:0.247795"
+       x="121.14581"
+       y="73.696579">dash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="7.92943px"
+       id="text49404-3-8-6"
+       style="fill:#ff0000;fill-opacity:1;stroke-width:0.247795"
+       x="199.79335"
+       y="73.696579">gash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="700"
+       font-size="32px"
+       id="text49406-8-2"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff0000;fill-opacity:1;stroke-width:0.247795"
+       x="143.62561"
+       y="73.696579">dash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="700"
+       font-size="32px"
+       id="text49406-3-3"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#1900ff;fill-opacity:1;stroke-width:0.247795"
+       x="226.35687"
+       y="40.300407">gash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="700"
+       font-size="32px"
+       id="text49406-8-2-2"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff0000;fill-opacity:1;stroke-width:0.247795"
+       x="220.00383"
+       y="74.075813">dash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="7.92943px"
+       id="text49408-7-0"
+       style="fill:#ff0000;fill-opacity:1;stroke-width:0.247795;font-weight:400;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif"
+       x="165.14816"
+       y="73.696579"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.92943px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+         id="tspan654">bash</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.7px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:0.2"
+       x="85.588058"
+       y="16.719879"
+       id="text52219"><tspan
+         sodipodi:role="line"
+         id="tspan52217"
+         x="85.588058"
+         y="16.719879"
+         style="stroke-width:0.2">Cue</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.7px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:0.2"
+       x="170.27945"
+       y="16.719879"
+       id="text52219-2"><tspan
+         sodipodi:role="line"
+         id="tspan52217-6"
+         x="170.27945"
+         y="16.719879"
+         style="stroke-width:0.2">Stimulus</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.7px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:0.2"
+       x="269.29477"
+       y="16.065598"
+       id="text52219-2-1"><tspan
+         sodipodi:role="line"
+         id="tspan52217-6-3"
+         x="269.29477"
+         y="16.065598"
+         style="stroke-width:0.2">Wait</tspan></text>
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.798282;stroke-dasharray:0.798282, 4.7897;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 112.50823,7.0525996 V 103.09761"
+       id="path52466-2" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.798282;stroke-dasharray:0.798282, 4.7897;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 245.28358,7.0525996 V 103.09761"
+       id="path52466-2-4" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.798282;stroke-dasharray:0.798282, 4.7897;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 61.320896,7.0525996 V 103.09761"
+       id="path52466-2-0" />
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="45.3814px"
+       id="text49404-6"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.8097px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#1900ff;fill-opacity:1;stroke-width:0.210913"
+       x="65.654327"
+       y="46.201283">bash</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="45.3814px"
+       id="text49404-6-8"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.8097px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff0000;fill-opacity:1;stroke-width:0.210913"
+       x="65.111977"
+       y="87.982887">bash</text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.46666px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="75.358887"
+       y="57.239288"
+       id="text1488"><tspan
+         sodipodi:role="line"
+         id="tspan2027"
+         x="75.358887"
+         y="57.239288"
+         style="stroke-width:0">OR</tspan></text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="45.3814px"
+       id="text49404-6-9"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.7px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#1900ff;fill-opacity:1;stroke-width:0.247795"
+       x="45.566807"
+       y="39.343647">L:</text>
+    <text
+       fill="#ff0000"
+       font-family="Calibri, Calibri_MSFontService, sans-serif"
+       font-weight="400"
+       font-size="45.3814px"
+       id="text49404-6-1-7"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.7px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff0000;fill-opacity:1;stroke-width:0.247795"
+       x="44.521976"
+       y="75.540298">R:</text>
+    <g
+       id="g7048"
+       transform="translate(-0.52241455,0.05386164)">
+      <ellipse
+         style="fill:#acacac;fill-opacity:1;stroke:#000000;stroke-width:0.934209;stroke-dasharray:none;stroke-opacity:1"
+         id="path7319-0"
+         cx="25.386217"
+         cy="71.58902"
+         rx="3.4051445"
+         ry="3.1593909"
+         transform="matrix(0.99961602,0.02770961,-0.00675316,0.9999772,0,0)" />
+      <g
+         id="g49360-3"
+         transform="matrix(0,0.17472853,-0.17472853,0,110.25888,-8.4829184)">
+        <path
+           d="m 255.5,488 c 0,-54.4 46.786,-98.5 104.5,-98.5 57.714,0 104.5,44.1 104.5,98.5 0,54.4 -46.786,98.5 -104.5,98.5 -57.714,0 -104.5,-44.1 -104.5,-98.5 z"
+           stroke="#000000"
+           stroke-linejoin="round"
+           stroke-miterlimit="10"
+           fill-rule="evenodd"
+           id="path49313-6" />
+        <path
+           d="m 341.5,400.5 18.5,-35 18.5,35 z"
+           stroke="#000000"
+           stroke-linejoin="round"
+           stroke-miterlimit="10"
+           fill-rule="evenodd"
+           id="path49315-0" />
+        <path
+           d="m 238.5,488 c 0,-10.217 8.059,-18.5 18,-18.5 9.941,0 18,8.283 18,18.5 0,10.217 -8.059,18.5 -18,18.5 -9.941,0 -18,-8.283 -18,-18.5 z"
+           stroke="#000000"
+           stroke-linejoin="round"
+           stroke-miterlimit="10"
+           fill-rule="evenodd"
+           id="path49317-6" />
+        <path
+           d="m 442.5,488 c 0,-10.217 8.283,-18.5 18.5,-18.5 10.217,0 18.5,8.283 18.5,18.5 0,10.217 -8.283,18.5 -18.5,18.5 -10.217,0 -18.5,-8.283 -18.5,-18.5 z"
+           stroke="#000000"
+           stroke-linejoin="round"
+           stroke-miterlimit="10"
+           fill-rule="evenodd"
+           id="path49319-0" />
+      </g>
+    </g>
+    <g
+       id="g4218"
+       transform="matrix(0.72899621,0,0,0.72899621,73.801511,10.432082)">
+      <image
+         width="47.708206"
+         height="38.898129"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,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 AACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABi BAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIA AMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADEC BAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAA YgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAEC AADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAx AgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEA AGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgB AgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAA MQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAAB AABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAY AQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAA ADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwA AQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACA GAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAA AAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECM AAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAA gBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaA AAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABA jAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AA AIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBG gAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAA QIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNA AACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAg RoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAA AECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAj QAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAA IEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEg AABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQ I0AAAIAYAQIAAMQIEAAAIEaAAAAAMVvHHrCBvHTP/Py7xh4BAMBUeunYAzYKAfI1L2pVLxp7BAAA TDMfwQIAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAj QAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAA 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 Ayoq1M4YgKvgAAAAAElFTkSuQmCC "
+         id="image29035-5"
+         x="244.35335"
+         y="40.923359" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.46667px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         x="268.18658"
+         y="55.041046"
+         id="text5251"><tspan
+           sodipodi:role="line"
+           style="stroke-width:0"
+           x="268.18658"
+           y="55.041046"
+           id="tspan5253" /></text>
+    </g>
+    <g
+       id="g4218-1"
+       transform="matrix(0.40988954,0,0,0.40988954,-34.069113,5.097851)">
+      <image
+         width="47.708206"
+         height="38.898129"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,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 AACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABi BAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIA AMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADEC BAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAA YgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAEC AADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAx AgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEA AGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgB AgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAA MQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAAB AABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAY AQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAA ADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwA AQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACA GAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAA AAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECM AAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAA gBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaA AAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABA jAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AA AIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBG gAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAA QIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNA AACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAg RoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAA AECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAj QAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAA IEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEg AABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQ I0AAAIAYAQIAAMQIEAAAIEaAAAAAMVvHHrCBvHTP/Py7xh4BAMBUeunYAzYKAfI1L2pVLxp7BAAA TDMfwQIAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAj QAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAA 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 Ayoq1M4YgKvgAAAAAElFTkSuQmCC "
+         id="image29035-5-7"
+         x="244.35335"
+         y="40.923359" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.46667px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         x="268.18658"
+         y="55.041046"
+         id="text5251-3"><tspan
+           sodipodi:role="line"
+           style="stroke-width:0"
+           x="268.18658"
+           y="55.041046"
+           id="tspan5253-1" /></text>
+    </g>
+    <g
+       id="g4218-1-9"
+       transform="matrix(0.40988954,0,0,0.40988954,-33.924087,46.302377)">
+      <image
+         width="47.708206"
+         height="38.898129"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,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 AACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABi BAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIA AMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADEC BAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAA YgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAEC AADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAx AgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEA AGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgB AgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAA MQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAAB AABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAY AQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAA ADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwA AQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACA GAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAA AAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECM AAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAA gBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaA AAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABA jAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AA AIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBG gAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAA QIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNA AACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAg RoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAAIEaAAAAAMQIEAACIESAA AECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAj QAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAA IEaAAAAAMQIEAACIESAAAECMAAEAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEg AABAjAABAABiBAgAABAjQAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQ I0AAAIAYAQIAAMQIEAAAIEaAAAAAMVvHHrCBvHTP/Py7xh4BAMBUeunYAzYKAfI1L2pVLxp7BAAA TDMfwQIAAGIECAAAECNAAACAGAECAADECBAAACBGgAAAADECBAAAiBEgAABAjAABAABiBAgAABAj QAAAgBgBAgAAxAgQAAAgRoAAAAAxAgQAAIgRIAAAQIwAAQAAYgQIAAAQI0AAAIAYAQIAAMQIEAAA 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 Ayoq1M4YgKvgAAAAAElFTkSuQmCC "
+         id="image29035-5-7-9"
+         x="244.35335"
+         y="40.923359" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.46667px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         x="268.18658"
+         y="55.041046"
+         id="text5251-3-0"><tspan
+           sodipodi:role="line"
+           style="stroke-width:0"
+           x="268.18658"
+           y="55.041046"
+           id="tspan5253-1-5" /></text>
+    </g>
+    <text
+       xml:space="preserve"
+       transform="matrix(0.38090211,0,0,0.40572835,-66.179033,-58.24746)"
+       id="text6503"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32.3057px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect6505);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"><tspan
+         x="507.08334"
+         y="392.66788"
+         id="tspan7378"><tspan
+           style="display:inline"
+           id="tspan7376">9.6 s (16 word pairs) </tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       transform="matrix(0.38090211,0,0,0.40572835,-121.74529,-57.725045)"
+       id="text6503-0"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32.3057px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect6505-7);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"><tspan
+         x="531.10923"
+         y="392.66788"
+         id="tspan7382"><tspan
+           style="display:inline"
+           id="tspan7380">2 s</tspan></tspan></text>
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-66)"
+       d="m 101.41937,97.450605 h 9.52937"
+       id="path4357-3" />
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-66-2)"
+       d="m 233.61965,97.450605 h 9.52937"
+       id="path4357-3-3" />
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-6-5)"
+       d="M 74.37319,97.450605 H 64.619486"
+       id="path4357-2-4" />
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-6-5-7)"
+       d="m 123.70521,97.450605 h -9.7537"
+       id="path4357-2-4-2" />
+    <path
+       style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:1.59512;stroke-miterlimit:4.1;stroke-dasharray:none;marker-start:url(#RoundedArrow)"
+       d="m 73.568556,28.551703 9.133259,-0.03682"
+       id="path5952" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.38090211,0,0,0.40572835,60.873583,-58.761466)"
+       id="text6503-0-7"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32.3057px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect6505-7-8);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"><tspan
+         x="501.60346"
+         y="392.66788"
+         id="tspan7386"><tspan
+           style="display:inline"
+           id="tspan7384">13-18 s</tspan></tspan></text>
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-66-4)"
+       d="m 288.88665,97.450605 h 4.68096"
+       id="path4357-3-9"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:1.04516;stroke-dasharray:none;marker-end:url(#Stop-6-5-9)"
+       d="m 252.05509,97.450605 h -5.00522"
+       id="path4357-2-4-1"
+       sodipodi:nodetypes="cc" />
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:2;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1"
+       id="rect7214"
+       width="11.820896"
+       height="10.712687"
+       x="263.01492"
+       y="46.914181" />
+    <g
+       id="g5203"
+       transform="rotate(-40.595458,136.12795,30.21108)">
+      <g
+         id="g5197"
+         transform="translate(179.71066,5.7465619)">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;line-height:0;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1"
+           x="-26.184986"
+           y="72.783791"
+           id="text5212"
+           transform="rotate(40.595459)"><tspan
+             sodipodi:role="line"
+             id="tspan5210"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             x="-26.184986"
+             y="72.783791">Lead</tspan></text>
+      </g>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;line-height:0;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1"
+       x="143.59865"
+       y="57.43277"
+       id="text5212-2"><tspan
+         sodipodi:role="line"
+         id="tspan5210-2"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+         x="143.59865"
+         y="57.43277">Lag</tspan></text>
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker7069)"
+       d="m 127.11689,50.332764 -4.24813,-6.095151"
+       id="path5566" />
+    <path
+       style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:1.59512;stroke-miterlimit:4.1;stroke-dasharray:none;marker-start:url(#RoundedArrow-0)"
+       d="m 77.970311,70.222667 -9.13326,-0.03682"
+       id="path5952-6" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleStart)"
+       d="m 143.06102,59.091642 -4.24813,6.095151"
+       id="path5566-8" />
+  </g>
+</svg>
