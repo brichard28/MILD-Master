@@ -28,9 +28,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.0129245"
-     inkscape:cx="790.28595"
-     inkscape:cy="255.20165"
+     inkscape:zoom="2.8649831"
+     inkscape:cx="577.49031"
+     inkscape:cy="270.68222"
      inkscape:window-width="1920"
      inkscape:window-height="991"
      inkscape:window-x="-9"
@@ -728,9 +728,9 @@
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32.3057px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect6505-7);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"><tspan
            x="531.10923"
            y="392.66788"
-           id="tspan9696"><tspan
+           id="tspan10146"><tspan
              style="display:inline"
-             id="tspan9694">2 s</tspan></tspan></text>
+             id="tspan10144">2 s</tspan></tspan></text>
       <path
          style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-6-5)"
          d="M 73.314856,97.450605 H 63.561152"
@@ -749,9 +749,9 @@
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32.3057px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect6505);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"><tspan
            x="507.08334"
            y="392.66788"
-           id="tspan9700"><tspan
+           id="tspan10150"><tspan
              style="display:inline"
-             id="tspan9698">9.6 s (16 word pairs) </tspan></tspan></text>
+             id="tspan10148">9.6 s (16 word pairs) </tspan></tspan></text>
       <path
          style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-66-2)"
          d="m 234.14882,97.450605 h 9.52937"
@@ -774,9 +774,9 @@
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32.3057px;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect6505-7-8);display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"><tspan
            x="501.60346"
            y="392.66788"
-           id="tspan9704"><tspan
+           id="tspan10154"><tspan
              style="display:inline"
-             id="tspan9702">13-18 s</tspan></tspan></text>
+             id="tspan10152">13-18 s</tspan></tspan></text>
       <path
          style="fill:#000000;stroke:#000000;stroke-width:1;stroke-dasharray:none;marker-end:url(#Stop-66-4)"
          d="m 288.88665,97.450605 h 4.68096"
@@ -846,16 +846,16 @@
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.35px;line-height:1;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1"
        x="128.46393"
-       y="84.416893"
+       y="84.94606"
        id="text5212-2-5"><tspan
          sodipodi:role="line"
          id="tspan8304"
          x="128.46393"
-         y="84.416893">300</tspan><tspan
+         y="84.94606">300</tspan><tspan
          sodipodi:role="line"
          id="tspan8306"
          x="128.46393"
-         y="90.766891">ms</tspan></text>
+         y="91.296059">ms</tspan></text>
     <path
        style="fill:#000000;stroke:#000000;stroke-width:0.870657;stroke-dasharray:none;marker-start:url(#Stop-66-0);marker-end:url(#Stop-66-21-5)"
        d="m 113.45636,76.500361 h 7.2237"
@@ -864,16 +864,16 @@
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.35px;line-height:1;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1"
        x="117.00155"
-       y="84.416893"
+       y="84.94606"
        id="text5212-2-5-8"><tspan
          sodipodi:role="line"
          id="tspan8296"
          x="117.00155"
-         y="84.416893">250</tspan><tspan
+         y="84.94606">250</tspan><tspan
          sodipodi:role="line"
          id="tspan8298"
          x="117.00155"
-         y="90.766891">ms</tspan></text>
+         y="91.296059">ms</tspan></text>
     <path
        style="fill:#000000;stroke:#000000;stroke-width:0.870657;stroke-dasharray:none;marker-start:url(#Stop-66-0-9);marker-end:url(#Stop-66-21-5-9)"
        d="m 136.35934,76.500361 h 7.2237"
@@ -882,15 +882,15 @@
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.35px;line-height:1;font-family:Calibri, Calibri_MSFontService, sans-serif;-inkscape-font-specification:'Calibri, Calibri_MSFontService, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1"
        x="139.90454"
-       y="84.416893"
+       y="84.94606"
        id="text5212-2-5-8-9"><tspan
          sodipodi:role="line"
          id="tspan8296-4"
          x="139.90454"
-         y="84.416893">50</tspan><tspan
+         y="84.94606">50</tspan><tspan
          sodipodi:role="line"
          id="tspan8298-0"
          x="139.90454"
-         y="90.766891">ms</tspan></text>
+         y="91.296059">ms</tspan></text>
   </g>
 </svg>
