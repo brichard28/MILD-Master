@@ -329,7 +329,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
 
     if subject != "mild_master_5":
-        this_sub_short_regression = True
+        this_sub_short_regression = False # True
     else:
         this_sub_short_regression = False
 

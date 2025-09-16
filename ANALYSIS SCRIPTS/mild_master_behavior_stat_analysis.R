@@ -51,190 +51,257 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 ##    Hit Rates    ##
 ####################################################
 
-hit_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Hit_Rates.csv")
+lead_hit_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lead_Hit_Rates.csv")
+lag_hit_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lag_Hit_Rates.csv")
 
 # Remove unneeded columns, put in long format
-hit_rates$OriginalVariableNames <- array(0:39)
-colnames(hit_rates) <- c("S","ITD5","ITD15","ILD5","ILD15")
-hit_rates <- pivot_longer(hit_rates, cols=c("ITD5","ITD15","ILD5","ILD15"),
+lead_hit_rates$OriginalVariableNames <- array(0:39)
+colnames(lead_hit_rates) <- c("S","ITD5","ITD15","ILD5","ILD15")
+lead_hit_rates <- pivot_longer(lead_hit_rates, cols=c("ITD5","ITD15","ILD5","ILD15"),
                           names_to = c("Spatialization"), values_to = "HitRate")
 
+# Remove unneeded columns, put in long format
+lag_hit_rates$OriginalVariableNames <- array(0:39)
+colnames(lag_hit_rates) <- c("S","ITD5","ITD15","ILD5","ILD15")
+lag_hit_rates <- pivot_longer(lag_hit_rates, cols=c("ITD5","ITD15","ILD5","ILD15"),
+                          names_to = c("Spatialization"), values_to = "HitRate")
+
+lead_hit_rates$WordPosition <- "Lead"
+lag_hit_rates$WordPosition <- "Lag"
+
+# Merge all data frames on the common identifier columns
+hit_rates <- rbind(lead_hit_rates, lag_hit_rates)
+
 # Organize Factors
-to.factor <- c('S','Spatialization')
+to.factor <- c('S','Spatialization','WordPosition')
 hit_rates[, to.factor] <- lapply(hit_rates[, to.factor], as.factor)
 
-# Summary Statistics
-# hit_rates %>% group_by(Condition, Masker) %>% get_summary_stats(HitRate, type = "mean_sd")
-# 
-# # Boxplot
-# bxp <- ggboxplot(hit_rates, x = "Condition", y = "HitRate", color = "Masker", palette = "jco")
-# bxp
-
-# Check for normality, remove outliers
-# hit_rates %>% group_by(Condition, Masker) %>% shapiro_test(HitRate)
-
-#hit_rates_no_outliers <- hit_rates %>%
-#  group_by(Condition, Masker) %>%
-#  identify_outliers("HitRate") %>%
-#  filter(!is.outlier)
 
 
 
-# Create a QQ plot
-# ggqqplot(hit_rates, "HitRate", ggtheme = theme_bw()) + facet_grid(Condition ~ Masker, labeller = "label_both")
-
-
-model_hitrate <- mixed(HitRate ~ Spatialization + (1|S),
-                       data= hit_rates, 
-                       control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
-
-model_hitrate
-
-
-# Compare All spatializations to each other
-# ITD5 as reference
-hit_rates$Spatialization <- relevel(hit_rates$Spatialization, "ITD5")
-posthoc_hitrate_itd5_speech <- lmer(HitRate ~ Spatialization + (1|S),
-                                     data= hit_rates, 
-                                     control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_hitrate_itd5_speech)
-
-# ITD15 as reference
-hit_rates$Spatialization <- relevel(hit_rates$Spatialization, "ITD15")
-posthoc_hitrate_itd15_speech <- lmer(HitRate ~ Spatialization + (1|S),
-                                    data= hit_rates, 
-                                    control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_hitrate_itd15_speech)
-
-# ILD5 as reference
-hit_rates$Spatialization <- relevel(hit_rates$Spatialization, "ILD5")
-posthoc_hitrate_ild5_speech <- lmer(HitRate ~ Spatialization + (1|S),
-                                    data= hit_rates, 
-                                    control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_hitrate_ild5_speech)
-
-# ILD15 as reference
-hit_rates$Spatialization <- relevel(hit_rates$Spatialization, "ILD15")
-posthoc_hitrate_ild15_speech <- lmer(HitRate ~ Spatialization + (1|S),
-                                    data= hit_rates, 
-                                    control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_hitrate_ild15_speech)
 
 
 ####################################################
 ##    FA Rates    ##
 ####################################################
 
-FA_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_FA_Rates.csv")
-
-FA_rates$OriginalVariableNames <- array(0:39)
-colnames(FA_rates) <- c("S","ITD5","ITD15","ILD5","ILD15")
-FA_rates <- pivot_longer(FA_rates, cols=c("ITD5","ITD15","ILD5","ILD15"),
-                         names_to = c("Spatialization"), values_to = "FARate")
-
-# Organize Factors
-to.factor <- c('S','Spatialization')
-FA_rates[, to.factor] <- lapply(FA_rates[, to.factor], as.factor)
-
-# Create a QQ plot
-# ggqqplot(FA_rates, "FARate", ggtheme = theme_bw()) + facet_grid(Condition ~ Masker, labeller = "label_both")
-
-
-model_FArate <- mixed(FARate ~ Spatialization + (1|S),
-                      data= FA_rates, 
-                      control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
-
-model_FArate
-
-
-# Compare All spatializations to each other
-# ITD5 as reference
-FA_rates$Spatialization <- relevel(FA_rates$Spatialization, "ITD5")
-posthoc_FArate_itd5_speech <- lmer(FARate ~ Spatialization + (1|S),
-                                   data= FA_rates, 
-                                   control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_FArate_itd5_speech)
-
-# ITD15 as reference
-FA_rates$Spatialization <- relevel(FA_rates$Spatialization, "ITD15")
-posthoc_FArate_itd15_speech <- lmer(FARate ~ Spatialization + (1|S),
-                                    data= FA_rates, 
-                                    control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_FArate_itd15_speech)
-
-# ILD5 as reference
-FA_rates$Spatialization <- relevel(FA_rates$Spatialization, "ILD5")
-posthoc_FArate_ild5_speech <- lmer(FARate ~ Spatialization + (1|S),
-                                   data= FA_rates, 
-                                   control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_FArate_ild5_speech)
-
-# ILD15 as reference
-FA_rates$Spatialization <- relevel(FA_rates$Spatialization, "ILD15")
-posthoc_FArate_ild15_speech <- lmer(FARate ~ Spatialization + (1|S),
-                                    data= FA_rates, 
-                                    control = lmerControl(optimizer = "bobyqa"))
-summary(posthoc_FArate_ild15_speech)
-
-
-####################################################
-##    D primes    ##
-####################################################
-
-d_primes <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_d_primes.csv")
+lead_FA_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lead_FA_Rates.csv")
+lag_FA_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lag_FA_Rates.csv")
 
 # Remove unneeded columns, put in long format
-d_primes$OriginalVariableNames <- array(0:39)
-colnames(d_primes) <- c("S","ITD5","ITD15","ILD5","ILD15")
-d_primes <- pivot_longer(d_primes, cols=c("ITD5","ITD15","ILD5","ILD15"),
-                         names_to = c("Spatialization"), values_to = "DPrime")
+lead_FA_rates$OriginalVariableNames <- array(0:39)
+colnames(lead_FA_rates) <- c("S","ITD5","ITD15","ILD5","ILD15")
+lead_FA_rates <- pivot_longer(lead_FA_rates, cols=c("ITD5","ITD15","ILD5","ILD15"),
+                               names_to = c("Spatialization"), values_to = "FARate")
+
+# Remove unneeded columns, put in long format
+lag_FA_rates$OriginalVariableNames <- array(0:39)
+colnames(lag_FA_rates) <- c("S","ITD5","ITD15","ILD5","ILD15")
+lag_FA_rates <- pivot_longer(lag_FA_rates, cols=c("ITD5","ITD15","ILD5","ILD15"),
+                              names_to = c("Spatialization"), values_to = "FARate")
+
+lead_FA_rates$WordPosition <- "Lead"
+lag_FA_rates$WordPosition <- "Lag"
+
+
+
+# Merge all data frames on the common identifier columns
+FA_rates <- rbind(lead_FA_rates, lag_FA_rates)
 
 # Organize Factors
-to.factor <- c('S','Spatialization')
-d_primes[, to.factor] <- lapply(d_primes[, to.factor], as.factor)
-
-# LMEM
-model_dprime <- mixed(DPrime ~ Spatialization + (1|S),data= d_primes,control = lmerControl(optimizer = "bobyqa"))
-
-model_dprime
-
-
-# Post hocs
-# ITD5 as reference
-d_primes$Spatialization <- relevel(d_primes$Spatialization, "ITD5")
-posthoc_dprime_itd5 <- lmer(DPrime ~ Spatialization + (1|S),
-                             data= d_primes, 
-                             control = lmerControl(optimizer = "bobyqa"))
-
-summary(posthoc_dprime_itd5)
-
-
-# ITD15 as reference
-d_primes$Spatialization <- relevel(d_primes$Spatialization, "ITD15")
-posthoc_dprime_itd15 <- lmer(DPrime ~ Spatialization + (1|S),
-                            data= d_primes, 
-                            control = lmerControl(optimizer = "bobyqa"))
-
-summary(posthoc_dprime_itd15)
-
-# ILD5 as reference
-d_primes$Spatialization <- relevel(d_primes$Spatialization, "ILD5")
-posthoc_dprime_ild5 <- lmer(DPrime ~ Spatialization + (1|S),
-                            data= d_primes, 
-                            control = lmerControl(optimizer = "bobyqa"))
-
-summary(posthoc_dprime_ild5)
-
-
-# ITD15 as reference
-d_primes$Spatialization <- relevel(d_primes$Spatialization, "ILD15")
-posthoc_dprime_ild15 <- lmer(DPrime ~ Spatialization + (1|S),
-                             data= d_primes, 
-                             control = lmerControl(optimizer = "bobyqa"))
-
-summary(posthoc_dprime_ild15)
+to.factor <- c('S','Spatialization','WordPosition')
+FA_rates[, to.factor] <- lapply(FA_rates[, to.factor], as.factor)
 
 
 
+
+hit_rates$Spatialization <- factor(hit_rates$Spatialization,
+                                   levels = c("ITD5","ITD15","ILD5","ILD15"))
+FA_rates$Spatialization <- factor(FA_rates$Spatialization,
+                                  levels = c("ITD5","ITD15","ILD5","ILD15"))
+
+# --- Combine all plots with shared legend ---
+# ------------- build interdigitated x positions (by SpatializationGroup) -------------
+library(stringr)
+
+# create SpatializationGroup in the per-measure dataframes
+hit_rates <- hit_rates %>%
+  mutate(SpatializationGroup = case_when(
+    str_detect(Spatialization, "ITD") ~ "ITD",
+    str_detect(Spatialization, "ILD") ~ "ILD"
+  ))
+
+FA_rates <- FA_rates %>%
+  mutate(SpatializationGroup = case_when(
+    str_detect(Spatialization, "ITD") ~ "ITD",
+    str_detect(Spatialization, "ILD") ~ "ILD"
+  ))
+
+# explicit group ordering (change if you want ILD first)
+group_levels <- c("ITD", "ILD")
+
+# spatialization levels (keeps the order you already set)
+spat_levels <- levels(hit_rates$Spatialization)
+
+# build an ordered mapping: for each SpatializationGroup -> (all Leads across that group, then all Lags)
+order_list <- list()
+for (g in group_levels) {
+  spats_in_group <- spat_levels[str_detect(spat_levels, g)]
+  for (wp in c("Lead", "Lag")) {
+    for (s in spats_in_group) {
+      order_list[[length(order_list) + 1]] <- tibble(
+        Spatialization = s,
+        WordPosition = wp,
+        SpatializationGroup = g
+      )
+    }
+  }
+}
+order_df <- bind_rows(order_list) %>%
+  mutate(x_pos = row_number())
+
+# join the new x_pos into your per-measure data frames
+hit_rates <- hit_rates %>%
+  left_join(order_df, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
+
+FA_rates <- FA_rates %>%
+  left_join(order_df, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
+
+# ---------------------------
+# Prepare long-format data (use the new x_pos)
+# ---------------------------
+long_data <- bind_rows(
+  hit_rates %>%
+    select(S, Spatialization, WordPosition, SpatializationGroup, x_pos, Value = HitRate) %>%
+    mutate(Measure = "Hit Rate"),
+  
+  FA_rates %>%
+    select(S, Spatialization, WordPosition, SpatializationGroup, x_pos, Value = FARate) %>%
+    mutate(Measure = "FA Rate")
+)
+
+# Summary statistics
+summary_data <- long_data %>%
+  group_by(Spatialization, WordPosition, x_pos, Measure) %>%
+  summarise(
+    mean_value = mean(Value, na.rm = TRUE),
+    sem_value  = sd(Value, na.rm = TRUE)/sqrt(n()),
+    .groups = "drop"
+  )
+
+# ---------------------------
+# Build breaks and labels so each Spatialization label sits between its Lead/Lag points
+# ---------------------------
+Spatialization_positions <- order_df %>%
+  group_by(Spatialization) %>%
+  summarise(mean_x = x_pos, .groups = "drop") %>%
+  arrange(mean_x)
+
+Spatialization_labels_wrapped <- str_wrap(Spatialization_positions$Spatialization, width = 1)
+
+# ---------------------------
+# Custom y-limits per Measure (re-add so geom_blank() has ymin/ymax)
+# ---------------------------
+y_limits <- tibble(
+  Measure = levels(factor(long_data$Measure)),
+  ymin = c(0, 0),
+  ymax = c(1, 1)
+)
+
+
+
+summary_data <- summary_data %>% left_join(y_limits, by = "Measure")
+long_data    <- long_data %>% left_join(y_limits, by = "Measure")
+
+long_data$Measure <- factor(long_data$Measure,
+                            levels = c("Hit Rate", "FA Rate"))
+summary_data$Measure <- factor(summary_data$Measure,
+                               levels = c("Hit Rate", "FA Rate"))
+
+# ------------------------------------------------------------------------------------
+
+
+p <- ggplot(long_data, aes(x = x_pos, y = Value, color = WordPosition)) +
+  geom_line(aes(group = interaction(S, WordPosition, SpatializationGroup)), alpha = 0.3) +
+  geom_point(aes(group = interaction(S, WordPosition)), alpha = 0.3) +
+  geom_point(data = summary_data,
+             aes(x = x_pos, y = mean_value, color = WordPosition, fill = WordPosition),
+             size = 3, shape = 21, stroke = 1.2, inherit.aes = FALSE) +
+  geom_errorbar(data = summary_data,
+                aes(x = x_pos, ymin = mean_value - sem_value, ymax = mean_value + sem_value, color = WordPosition),
+                width = 0.2, size = 1.2, inherit.aes = FALSE) +
+  geom_blank(data = long_data, aes(y = ymin)) +
+  geom_blank(data = long_data, aes(y = ymax)) +
+  scale_x_continuous(breaks = Spatialization_positions$mean_x,
+                     labels = Spatialization_labels_wrapped) +
+  labs(x = "Spatialization", y = "") +
+  facet_grid(. ~ Measure, scales = "free_y", switch = "y") +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    strip.text = element_text(size = 14, face = "bold"),
+    plot.title = element_text(size = 18, face = "bold"),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y.left = element_text(margin = margin(l = 10), size = 14, face = "bold"),
+    axis.text.y.left = element_text(margin = margin(r = 5), size = 12),
+    axis.text.x = element_text(size = 12),
+    panel.spacing = unit(1, "lines"),
+    plot.margin = unit(c(5,5,5,40), "pt"),
+    strip.placement = "outside",
+    panel.grid.major.x = element_blank(),  # << remove vertical lines
+    panel.grid.minor.x = element_blank()   # << remove vertical minor lines too
+  )
+p
+
+
+
+
+
+
+
+
+
+
+## Refactor for stat analysis
+library(emmeans)
+
+# For hit_rates
+hit_rates <- hit_rates %>%
+  mutate(CueType = str_extract(Spatialization, "[A-Z]+"),   # extract letters
+         CueMagnitude = str_extract(Spatialization, "[0-9]+") %>% as.numeric())  # extract digits
+hit_rates$CueMagnitude <- factor(hit_rates$CueMagnitude)
+
+# For FA_rates
+FA_rates <- FA_rates %>%
+  mutate(CueType = str_extract(Spatialization, "[A-Z]+"),
+         CueMagnitude = str_extract(Spatialization, "[0-9]+") %>% as.numeric())
+FA_rates$CueMagnitude <- factor(FA_rates$CueMagnitude)
+
+# LMEM for Hit Rates
+model_hitrate <- mixed(HitRate ~ CueType*CueMagnitude*WordPosition + (1|S),
+                       data = hit_rates,
+                       control = lmerControl(optimizer = "bobyqa"),
+                       method = 'LRT')
+# significant effect of cue magnitude post hoc
+emm_cue <- emmeans(model_hitrate, ~ CueMagnitude)
+pairs(emm_cue, adjust = "bonferroni")
+
+# Significant effect of Word position post hoc 
+emm_wp <- emmeans(model_hitrate, ~ WordPosition)
+pairs(emm_wp, adjust = "bonferroni")
+
+
+# LMEM for False Alarm Rates
+model_FArate <- mixed(FARate ~ CueType*CueMagnitude*WordPosition + (1|S),
+                       data = FA_rates,
+                       control = lmerControl(optimizer = "bobyqa"),
+                       method = 'LRT')
+
+# Significant interaction between cue type and cue magnitude
+# Get estimated marginal means
+emm_fa <- emmeans(model_FArate, ~ CueMagnitude | CueType)
+
+# Pairwise comparisons of CueMagnitude within each CueType
+pairs(emm_fa, adjust = "bonferroni")
 
 

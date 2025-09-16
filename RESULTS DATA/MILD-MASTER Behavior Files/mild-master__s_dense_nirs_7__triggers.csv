@@ -1,0 +1,20 @@
+S,Trig,Condition
+dense_nirs_7,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_7,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_7,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_7,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_7,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_7,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_7,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_7,11,side=l_itd=0_az=5_mag=0_lpf=0
+dense_nirs_7,1,Inhale
+dense_nirs_7,2,Exhale
+dense_nirs_7,3,Hold_Breath
+dense_nirs_7,4,side=r_itd=500_az=0_mag=0_lpf=0
+dense_nirs_7,5,side=r_itd=50_az=0_mag=0_lpf=0
+dense_nirs_7,6,side=r_itd=0_az=5_mag=0_lpf=0
+dense_nirs_7,7,side=l_itd=0_az=5_mag=1_lpf=0
+dense_nirs_7,8,side=l_itd=50_az=0_mag=0_lpf=0
+dense_nirs_7,9,side=l_itd=500_az=0_mag=0_lpf=0
+dense_nirs_7,10,side=r_itd=0_az= 5_mag=1_lpf=0
+dense_nirs_7,11,side=l_itd=0_az=5_mag=0_lpf=0

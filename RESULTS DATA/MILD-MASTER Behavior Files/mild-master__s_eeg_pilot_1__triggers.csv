@@ -1,0 +1,20 @@
+S,Trig,Condition
+eeg_pilot_1,4,side=r_itd=500_az=0_mag=0_lpf=0
+eeg_pilot_1,5,side=r_itd=50_az=0_mag=0_lpf=0
+eeg_pilot_1,6,side=r_itd=0_az=5_mag=0_lpf=0
+eeg_pilot_1,7,side=l_itd=0_az=5_mag=1_lpf=0
+eeg_pilot_1,8,side=l_itd=50_az=0_mag=0_lpf=0
+eeg_pilot_1,9,side=l_itd=500_az=0_mag=0_lpf=0
+eeg_pilot_1,10,side=r_itd=0_az= 5_mag=1_lpf=0
+eeg_pilot_1,11,side=l_itd=0_az=5_mag=0_lpf=0
+eeg_pilot_1,1,Inhale
+eeg_pilot_1,2,Exhale
+eeg_pilot_1,3,Hold_Breath
+eeg_pilot_1,4,side=r_itd=500_az=0_mag=0_lpf=0
+eeg_pilot_1,5,side=r_itd=50_az=0_mag=0_lpf=0
+eeg_pilot_1,6,side=r_itd=0_az=5_mag=0_lpf=0
+eeg_pilot_1,7,side=l_itd=0_az=5_mag=1_lpf=0
+eeg_pilot_1,8,side=l_itd=50_az=0_mag=0_lpf=0
+eeg_pilot_1,9,side=l_itd=500_az=0_mag=0_lpf=0
+eeg_pilot_1,10,side=r_itd=0_az= 5_mag=1_lpf=0
+eeg_pilot_1,11,side=l_itd=0_az=5_mag=0_lpf=0
