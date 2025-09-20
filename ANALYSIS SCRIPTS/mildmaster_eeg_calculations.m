@@ -52,7 +52,7 @@ for isubject = 1:size(curr_subject_ID,1)
     subID = string(curr_subject_ID(isubject,:));
     disp(subID)
     % Load Data
-    load(append('C:\Users\benri\Documents\GitHub\MILD-Master\ANALYSIS SCRIPTS\Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'_yes_button_press.mat'))
+    load(append('C:\Users\benri\Downloads\Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'_yes_button_press.mat'))
 
     %% Plot all channels, remove noisy ones in time domain
 
@@ -74,124 +74,71 @@ for isubject = 1:size(curr_subject_ID,1)
 
     % For P300, only basing on trials that have bash!
 
-    [~,lead_p1_start_index] = min(abs(single_onset_time - (60)));
-    [~,lead_p1_end_index] = min(abs(single_onset_time - (120)));
+    [~,lead_p1_start_index] = min(abs(single_onset_time - (80)));
+    [~,lead_p1_end_index] = min(abs(single_onset_time - (150)));
     [~,lead_n1_start_index] = min(abs(single_onset_time - (120)));
-    [~,lead_n1_end_index] = min(abs(single_onset_time - (180)));
-    [~,lead_p2_start_index] = min(abs(single_onset_time - (180)));
-    [~,lead_p2_end_index] = min(abs(single_onset_time - (240)));
-    [~,lead_p3_start_index] = min(abs(single_onset_time - (450)));
+    [~,lead_n1_end_index] = min(abs(single_onset_time - (160)));
+    [~,lead_p2_start_index] = min(abs(single_onset_time - (160)));
+    [~,lead_p2_end_index] = min(abs(single_onset_time - (230)));
+    [~,lead_p3_start_index] = min(abs(single_onset_time - (400)));
     [~,lead_p3_end_index] = min(abs(single_onset_time - (600)));
 
 
-    [~,lag_p1_start_index] = min(abs(single_onset_time - (330)));
-    [~,lag_p1_end_index] = min(abs(single_onset_time - (390)));
-    [~,lag_n1_start_index] = min(abs(single_onset_time - (390)));
-    [~,lag_n1_end_index] = min(abs(single_onset_time - (450)));
+    [~,lag_p1_start_index] = min(abs(single_onset_time - (340)));
+    [~,lag_p1_end_index] = min(abs(single_onset_time - (400)));
+    [~,lag_n1_start_index] = min(abs(single_onset_time - (380)));
+    [~,lag_n1_end_index] = min(abs(single_onset_time - (460)));
     [~,lag_p2_start_index] = min(abs(single_onset_time - (430)));
-    [~,lag_p2_end_index] = min(abs(single_onset_time - (490)));
-    [~,lag_p3_start_index] = min(abs(single_onset_time - (700)));
-    [~,lag_p3_end_index] = min(abs(single_onset_time - (850)));
+    [~,lag_p2_end_index] = min(abs(single_onset_time - (520)));
+    [~,lag_p3_start_index] = min(abs(single_onset_time - (650)));
+    [~,lag_p3_end_index] = min(abs(single_onset_time - (900)));
 
     % take the average
-    this_sub_cz_fz_average = squeeze(mean(data_by_pair_onset_baselined([fz_index,cz_index],:,:),[1,3]));
-    this_sub_lead_bash_pz_average = squeeze(mean(data_by_pair_onset_baselined([pz_index],:,ismember(ERP_info(:).Lead_Word,{'bash'})),[1,3]));
-    this_sub_lag_bash_pz_average = squeeze(mean(data_by_pair_onset_baselined([pz_index],:,ismember(ERP_info(:).Lag_Word,{'bash'})),[1,3]));
+    this_sub_cz_fz_average = squeeze(mean(data_by_pair_onset_baselined([frontocentral_channels],:,:),[1,3]));
+    this_sub_lead_bash_pz_average = squeeze(mean(data_by_pair_onset_baselined([parietooccipital_channels],:,ismember(ERP_info(:).Lead_Word,{'bash'})),[1,3]));
+    this_sub_lag_bash_pz_average = squeeze(mean(data_by_pair_onset_baselined([parietooccipital_channels],:,ismember(ERP_info(:).Lag_Word,{'bash'})),[1,3]));
 
     % lead p1
-    this_sub_lead_p1_index = lead_p1_start_index + find(islocalmax(this_sub_cz_fz_average(lead_p1_start_index:lead_p1_end_index)) == 1) + 1;
-    if length(this_sub_lead_p1_index) > 1
-        poss_p1_amps = this_sub_cz_fz_average(this_sub_lead_p1_index);
-        [~,max_p1_amp_index] = max(poss_p1_amps);
-        this_sub_lead_p1_index = this_sub_lead_p1_index(max_p1_amp_index);
-    elseif isempty(this_sub_lead_p1_index)
-        [~,this_sub_lead_p1_index] = max(this_sub_cz_fz_average(lead_p1_start_index:lead_p1_end_index));
-        this_sub_lead_p1_index = lead_p1_start_index + this_sub_lead_p1_index;
-    end
+    [~,this_sub_lead_p1_index] = max(this_sub_cz_fz_average(lead_p1_start_index:lead_p1_end_index));
+    this_sub_lead_p1_index = this_sub_lead_p1_index + lead_p1_start_index - 1;
     this_sub_lead_p1_time = single_onset_time(this_sub_lead_p1_index);
 
     % lead n1
-    this_sub_lead_n1_index = lead_n1_start_index + find(islocalmin(this_sub_cz_fz_average(lead_n1_start_index:lead_n1_end_index)) == 1) + 1;
-    if length(this_sub_lead_n1_index) > 1
-        poss_n1_amps = this_sub_cz_fz_average(this_sub_lead_n1_index);
-        [~,min_n1_amp_index] = max(abs(poss_n1_amps));
-        this_sub_lead_n1_index = this_sub_lead_n1_index(min_n1_amp_index);
-    elseif isempty(this_sub_lead_n1_index)
-        [~,this_sub_lead_n1_index] = min(this_sub_cz_fz_average(lead_n1_start_index:lead_n1_end_index));
-        this_sub_lead_n1_index = lead_n1_start_index + this_sub_lead_n1_index;
-    end
+    [~,this_sub_lead_n1_index] = min(this_sub_cz_fz_average(lead_n1_start_index:lead_n1_end_index));
+    this_sub_lead_n1_index = this_sub_lead_n1_index + lead_n1_start_index - 1;
     this_sub_lead_n1_time = single_onset_time(this_sub_lead_n1_index);
 
     % lead p2
-    this_sub_lead_p2_index = lead_p2_start_index + find(islocalmax(this_sub_cz_fz_average(lead_p2_start_index:lead_p2_end_index)) == 1) + 1;
-    if length(this_sub_lead_p2_index) > 1
-        poss_p2_amps = this_sub_cz_fz_average(this_sub_lead_p2_index);
-        [~,max_p2_amp_index] = max(poss_p2_amps);
-        this_sub_lead_p2_index = this_sub_lead_p2_index(max_p2_amp_index);
-    elseif isempty(this_sub_lead_p2_index)
-        [~,this_sub_lead_p2_index] = max(this_sub_cz_fz_average(lead_p2_start_index:lead_p2_end_index));
-        this_sub_lead_p2_index = lead_p2_start_index + this_sub_lead_p2_index;
-    end
+    [~,this_sub_lead_p2_index] = max(this_sub_cz_fz_average(lead_p2_start_index:lead_p2_end_index));
+    this_sub_lead_p2_index = this_sub_lead_p2_index + lead_p2_start_index - 1;
     this_sub_lead_p2_time = single_onset_time(this_sub_lead_p2_index);
 
+
     % lead p3
-    this_sub_lead_p3_index = lead_p3_start_index + find(islocalmax(this_sub_lead_bash_pz_average(lead_p3_start_index:lead_p3_end_index)) == 1) + 1;
-    if length(this_sub_lead_p3_index) > 1
-        poss_p3_amps = this_sub_cz_fz_average(this_sub_lead_p3_index);
-        [~,max_p3_amp_index] = max(poss_p3_amps);
-        this_sub_lead_p3_index = this_sub_lead_p3_index(max_p3_amp_index);
-    elseif isempty(this_sub_lead_p3_index)
-        [~,this_sub_lead_p3_index] = max(this_sub_cz_fz_average(lead_p3_start_index:lead_p3_end_index));
-        this_sub_lead_p3_index = lead_p3_start_index + this_sub_lead_p3_index;
-    end
+    [~,this_sub_lead_p3_index] = max(this_sub_lead_bash_pz_average(lead_p3_start_index:lead_p3_end_index));
+    this_sub_lead_p3_index = this_sub_lead_p3_index + lead_p3_start_index - 1;
     this_sub_lead_p3_time = single_onset_time(this_sub_lead_p3_index);
 
-    % lag p1
-    this_sub_lag_p1_index = lag_p1_start_index + find(islocalmax(this_sub_cz_fz_average(lag_p1_start_index:lag_p1_end_index)) == 1) + 1;
-    if length(this_sub_lag_p1_index) > 1
-        poss_p1_amps = this_sub_cz_fz_average(this_sub_lag_p1_index);
-        [~,max_p1_amp_index] = max(poss_p1_amps);
-        this_sub_lag_p1_index = this_sub_lag_p1_index(max_p1_amp_index);
-    elseif isempty(this_sub_lag_p1_index)
-        [~,this_sub_lag_p1_index] = max(this_sub_cz_fz_average(lag_p1_start_index:lag_p1_end_index));
-        this_sub_lag_p1_index = lag_p1_start_index + this_sub_lag_p1_index;
-    end
+
+   % lag p1
+    [~,this_sub_lag_p1_index] = max(this_sub_cz_fz_average(lag_p1_start_index:lag_p1_end_index));
+    this_sub_lag_p1_index = this_sub_lag_p1_index + lag_p1_start_index - 1;
     this_sub_lag_p1_time = single_onset_time(this_sub_lag_p1_index);
 
     % lag n1
-    this_sub_lag_n1_index = lag_n1_start_index + find(islocalmin(this_sub_cz_fz_average(lag_n1_start_index:lag_n1_end_index)) == 1) + 1;
-    if length(this_sub_lag_n1_index) > 1
-        poss_n1_amps = this_sub_cz_fz_average(this_sub_lag_n1_index);
-        [~,min_n1_amp_index] = max(abs(poss_n1_amps));
-        this_sub_lag_n1_index = this_sub_lag_n1_index(min_n1_amp_index);
-    elseif isempty(this_sub_lag_n1_index)
-        [~,this_sub_lag_n1_index] = min(this_sub_cz_fz_average(lag_n1_start_index:lag_n1_end_index));
-        this_sub_lag_n1_index = lag_n1_start_index + this_sub_lag_n1_index;
-    end
+    [~,this_sub_lag_n1_index] = min(this_sub_cz_fz_average(lag_n1_start_index:lag_n1_end_index));
+    this_sub_lag_n1_index = this_sub_lag_n1_index + lag_n1_start_index - 1;
     this_sub_lag_n1_time = single_onset_time(this_sub_lag_n1_index);
 
     % lag p2
-    this_sub_lag_p2_index = lag_p2_start_index + find(islocalmax(this_sub_cz_fz_average(lag_p2_start_index:lag_p2_end_index)) == 1) + 1;
-    if length(this_sub_lag_p2_index) > 1
-        poss_p2_amps = this_sub_cz_fz_average(this_sub_lag_p2_index);
-        [~,max_p2_amp_index] = max(poss_p2_amps);
-        this_sub_lag_p2_index = this_sub_lag_p2_index(max_p2_amp_index);
-    elseif isempty(this_sub_lag_p2_index)
-        [~,this_sub_lag_p2_index] = max(this_sub_cz_fz_average(lag_p2_start_index:lag_p2_end_index));
-        this_sub_lag_p2_index = lag_p2_start_index + this_sub_lag_p2_index;
-    end
+    [~,this_sub_lag_p2_index] = max(this_sub_cz_fz_average(lag_p2_start_index:lag_p2_end_index));
+    this_sub_lag_p2_index = this_sub_lag_p2_index + lag_p2_start_index - 1;
     this_sub_lag_p2_time = single_onset_time(this_sub_lag_p2_index);
 
+
     % lag p3
-    this_sub_lag_p3_index = lag_p3_start_index + find(islocalmax(this_sub_lag_bash_pz_average(lag_p3_start_index:lag_p3_end_index)) == 1) + 1;
-    if length(this_sub_lag_p3_index) > 1
-        poss_p3_amps = this_sub_cz_fz_average(this_sub_lag_p3_index);
-        [~,max_p3_amp_index] = max(poss_p3_amps);
-        this_sub_lag_p3_index = this_sub_lag_p3_index(max_p3_amp_index);
-    elseif isempty(this_sub_lag_p3_index)
-        [~,this_sub_lag_p3_index] = max(this_sub_cz_fz_average(lag_p3_start_index:lag_p3_end_index));
-        this_sub_lag_p3_index = lag_p3_start_index + this_sub_lag_p3_index;
-    end
+    [~,this_sub_lag_p3_index] = max(this_sub_lag_bash_pz_average(lag_p3_start_index:lag_p3_end_index));
+    this_sub_lag_p3_index = this_sub_lag_p3_index + lag_p3_start_index - 1;
     this_sub_lag_p3_time = single_onset_time(this_sub_lag_p3_index);
 
     figure(all_subs_fig_p1n1p2)
@@ -245,132 +192,132 @@ for isubject = 1:size(curr_subject_ID,1)
     all_conditions = [small_itd_cond;large_itd_cond;small_ild_cond;large_ild_cond];
     condition_names = {'small_itd','large_itd','small_ild','large_ild'};
 
-    peak_integration_time = 0.080; % s
+    peak_integration_time = 0.008; % s
+
     for ichannel = 1:32
-        for icondition = 1:4
-            these_conditions = all_conditions(icondition,:);
-            for lead_stream = {'Target','Masker'}
+    for icondition = 1:4
+        these_conditions = all_conditions(icondition,:);
+        for lead_stream = {'Target','Masker'}
 
-                
-                if lead_stream == "Target"
-                    % Bash happened in this stream, followed by non-bash,
-                    % want where responded = 1
-                    this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
 
-                    this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+            if lead_stream == "Target"
+                % Bash happened in this stream, followed by non-bash,
+                % want where responded = 1
+                this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
 
-                    all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
-                    all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
-                    all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
-                    all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
-                
-                    structrow = structrow + 1;
-                    % Non-bash happened in this stream, followed by bash,
-                    % want where responded = 0
-                    this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
 
-                    this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
+                all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
+                all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
+                all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
 
-                    all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
-                    all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
-                    all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
-                    all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
-                
-                    structrow = structrow + 1;
+                structrow = structrow + 1;
+                % Non-bash happened in this stream, followed by bash,
+                % want where responded = 0
+                this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
 
-                    % Non-bash happened in this stream, followed by
-                    % non-bash, want where responded = 0
-                    this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
 
-                    this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
+                all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
+                all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
+                all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
 
-                    all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
-                    all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
-                    all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
-                    all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
-                
-                    structrow = structrow + 1;
+                structrow = structrow + 1;
 
-                elseif lead_stream == "Masker"
-                    % Bash happened in this stream, followed by non-bash,
-                    % want where responded = 0
-                    this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                % Non-bash happened in this stream, followed by
+                % non-bash, want where responded = 0
+                this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
 
-                    this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
 
-                    all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
-                    all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
-                    all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
-                    all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
-                
-                    structrow = structrow + 1;
-                    % Non-bash happened in this stream, followed by bash,
-                    % want where responded = 1
-                    this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
+                all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
+                all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
+                all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
 
-                    this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                structrow = structrow + 1;
 
-                    all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
-                    all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
-                    all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
-                    all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
-                
-                    structrow = structrow + 1;
+            elseif lead_stream == "Masker"
+                % Bash happened in this stream, followed by non-bash,
+                % want where responded = 0
+                this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
 
-                    % Non-bash happened in this stream, followed by
-                    % non-bash, want where responded = 0
-                    this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*ismember(ERP_info(:).Lead_Word,"bash"))),[2,3],'omitnan'));
 
-                    this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
-                    this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
+                all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
+                all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
+                all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
 
-                    all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
-                    all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
-                    all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
-                    all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
-                
-                    structrow = structrow + 1;
+                structrow = structrow + 1;
+                % Non-bash happened in this stream, followed by bash,
+                % want where responded = 1
+                this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
 
-                
-                end
+                this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+
+                all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
+                all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
+                all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
+                all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
+
+                structrow = structrow + 1;
+
+                % Non-bash happened in this stream, followed by
+                % non-bash, want where responded = 0
+                this_lead_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p1_index - round(peak_integration_time*fs):this_sub_lead_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_n1_index - round(peak_integration_time*fs):this_sub_lead_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p2_index - round(peak_integration_time*fs):this_sub_lead_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lead_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lead_p3_index - round(peak_integration_time*fs):this_sub_lead_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+
+                this_lag_p1 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p1_index - round(peak_integration_time*fs):this_sub_lag_p1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_n1 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_n1_index - round(peak_integration_time*fs):this_sub_lag_n1_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p2 =  squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p2_index - round(peak_integration_time*fs):this_sub_lag_p2_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+                this_lag_p3 = squeeze(mean(data_by_pair_onset_baselined(ichannel,this_sub_lag_p3_index - round(peak_integration_time*fs):this_sub_lag_p3_index + round(peak_integration_time*fs),logical(ismember(ERP_info(:).Condition,these_conditions)'.*ismember(ERP_info(:).Lead_Stream,lead_stream).*~ismember(ERP_info(:).Lead_Word,"bash").*~ismember(ERP_info(:).Lag_Word,"bash"))),[2,3],'omitnan'));
+
+                all_subs_p1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p1,'Lag_Amplitude',this_lag_p1,'Electrode',electrode_names(ichannel));
+                all_subs_n1(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_n1,'Lag_Amplitude',this_lag_n1,'Electrode',electrode_names(ichannel));
+                all_subs_p2(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p2,'Lag_Amplitude',this_lag_p2,'Electrode',electrode_names(ichannel));
+                all_subs_p3(structrow) = struct('S',subID,'Condition',condition_names(icondition),'Lead_Stream',lead_stream,'Lead_Word',"non-bash",'Lag_Word',"non-bash",'Lead_Amplitude',this_lead_p3,'Lag_Amplitude',this_lag_p3,'Electrode',electrode_names(ichannel));
+
+                structrow = structrow + 1;
+
+
             end
         end
-
+    end
     end
 
 end

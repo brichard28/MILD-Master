@@ -16,93 +16,255 @@ n1_data <- read.csv('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS D
 p2_data <- read.csv('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\all_subs_p2.csv')
 p3_data <- read.csv('C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\all_subs_p3.csv')
 
+names(p1_data)[names(p1_data) == "Lead_Amplitude"] <- "Lead_p1"
+names(n1_data)[names(n1_data) == "Lead_Amplitude"] <- "Lead_n1"
+names(p2_data)[names(p2_data) == "Lead_Amplitude"] <- "Lead_p2"
+names(p3_data)[names(p3_data) == "Lead_Amplitude"] <- "Lead_p3"
 
-names(p1_data)[names(p1_data) == "Amplitude"] <- "p1"
-names(n1_data)[names(n1_data) == "Amplitude"] <- "n1"
-names(p2_data)[names(p2_data) == "Amplitude"] <- "p2"
-names(p3_data)[names(p3_data) == "Amplitude"] <- "p3"
+names(p1_data)[names(p1_data) == "Lag_Amplitude"] <- "Lag_p1"
+names(n1_data)[names(n1_data) == "Lag_Amplitude"] <- "Lag_n1"
+names(p2_data)[names(p2_data) == "Lag_Amplitude"] <- "Lag_p2"
+names(p3_data)[names(p3_data) == "Lag_Amplitude"] <- "Lag_p3"
+
+
+p1_data <- p1_data %>%
+  mutate(Lag_Stream = ifelse(Lead_Stream == "Target", "Masker",
+                             ifelse(Lead_Stream == "Masker", "Target", NA)))
+p2_data <- p2_data %>%
+  mutate(Lag_Stream = ifelse(Lead_Stream == "Target", "Masker",
+                             ifelse(Lead_Stream == "Masker", "Target", NA)))
+n1_data <- n1_data %>%
+  mutate(Lag_Stream = ifelse(Lead_Stream == "Target", "Masker",
+                             ifelse(Lead_Stream == "Masker", "Target", NA)))
+p3_data <- p3_data %>%
+  mutate(Lag_Stream = ifelse(Lead_Stream == "Target", "Masker",
+                             ifelse(Lead_Stream == "Masker", "Target", NA)))
 
 # Merge all data frames on the common identifier columns
-all_data <- Reduce(function(x, y) merge(x, y, by = c("S", "Condition", "Target_Direction", "Word", "Lead_Stream", "WordPosition","Electrode")), list(p1_data, n1_data, p2_data, p3_data))
+all_data <- Reduce(function(x, y) merge(x, y, by = c("S", "Condition", "Lead_Stream", "Lag_Stream", "Lead_Word", "Lag_Word", "Electrode")), list(p1_data, n1_data, p2_data, p3_data))
 
-#frontocentral_electrodes <- c("Fp1","AF3","F7","F3","FC1","FC5","FC6","FC2","F4","F8","AF4","Fp2","Fz","Cz")
-frontocentral_electrodes <- c("Fz","Cz")
-parietooccipital_electrodes <- c("P7","P3","Pz","PO3","O1","Oz","O2","PO4","P4","P8")
+frontocentral_electrodes <- c("Fz","FC1","FC2","C3","Cz","C4","CP1","CP2")
+parietooccipital_electrodes <- c("P3","Pz","PO3","O1","Oz","O2","PO4","P4")
 
 # Define ERP variables to pivot
 erp_vars <- c("p1", "n1", "p2", "p3")
 
-# For frontocentral electrodes: calculate mean(n1 - p1) per subject and group
-frontocentral_summary <- all_data %>%
+# For frontocentral electrodes: calculate mean(n1 - p1) per wordposition, subject, lead word, and lag word
+lead_frontocentral_summary <- all_data %>%
   filter(Electrode %in% frontocentral_electrodes) %>%
-  mutate(diff_n1_p1 = n1 - p1) %>%
-  group_by(S, Condition, Word, Lead_Stream, WordPosition) %>%
-  summarise(mean_diff = mean(diff_n1_p1, na.rm = TRUE)) %>%
+  mutate(p1n1 = Lead_p1 - Lead_n1) %>%
+  group_by(S, Condition, Lead_Word, Lag_Word, Lead_Stream) %>%
+  summarise(mean_p1n1 = mean(p1n1, na.rm = TRUE)) %>%
   ungroup()
 
-# Now, calculate mean and sd across subjects for each group (Condition, Word, Lead_Stream, WordPosition)
-frontocentral_group_summary <- frontocentral_summary %>%
-  group_by(Condition, Word, Lead_Stream, WordPosition) %>%
-  summarise(mean_diff_across_subj = mean(mean_diff, na.rm = TRUE),
-            sd_diff_across_subj = sd(mean_diff, na.rm = TRUE)) %>%
+lag_frontocentral_summary <- all_data %>%
+  filter(Electrode %in% frontocentral_electrodes) %>%
+  mutate(p1n1 = Lag_p1 - Lag_n1) %>%
+  group_by(S, Condition, Lead_Word, Lag_Word, Lag_Stream) %>%
+  summarise(mean_p1n1 = mean(p1n1, na.rm = TRUE)) %>%
   ungroup()
+
+names(lead_frontocentral_summary)[names(lead_frontocentral_summary) == "Lead_Stream"] <- "Stream"
+names(lag_frontocentral_summary)[names(lag_frontocentral_summary) == "Lag_Stream"] <- "Stream"
+
 
 # For parietooccipital electrodes: calculate mean p3 per subject and group
-parietooccipital_summary <- all_data %>%
+lead_parietooccipital_summary <- all_data %>%
   filter(Electrode %in% parietooccipital_electrodes) %>%
-  group_by(S, Condition, Word, Lead_Stream, WordPosition) %>%
+  mutate(p3 = Lead_p3) %>%
+  group_by(S, Condition, Lead_Word, Lag_Word, Lead_Stream) %>%
   summarise(mean_p3 = mean(p3, na.rm = TRUE)) %>%
   ungroup()
 
-# Then calculate mean and sd across subjects for each group
-parietooccipital_group_summary <- parietooccipital_summary %>%
-  group_by(Condition, Word, Lead_Stream, WordPosition) %>%
-  summarise(mean_p3_across_subj = mean(mean_p3, na.rm = TRUE),
-            sd_p3_across_subj = sd(mean_p3, na.rm = TRUE)) %>%
+lag_parietooccipital_summary <- all_data %>%
+  filter(Electrode %in% parietooccipital_electrodes) %>%
+  mutate(p3 = Lag_p3) %>%
+  group_by(S, Condition, Lead_Word, Lag_Word, Lag_Stream) %>%
+  summarise(mean_p3 = mean(p3, na.rm = TRUE)) %>%
   ungroup()
 
-
-ggplot(frontocentral_summary,aes(Word, mean_diff)) +
-  facet_grid(WordPosition~Condition) +  
-  geom_hline(yintercept = 0) +
-  #geom_dotplot(aes(color = S, fill = S), binaxis = 'y', stackdir = 'center', alpha = 0.5) + 
-  geom_point(aes(color = S, fill = S, group = S),alpha = 0.5, show.legend = FALSE) + 
-  geom_line(aes(color = S, group = S), alpha = 0.5, show.legend = FALSE) + 
-  stat_summary(fun.y=mean, geom="point", size=3, group = 1) +
-  stat_summary(fun.y=mean, geom="line", size=0.5, group = 1) +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.1) +
-  theme(panel.spacing = unit(0.5, "lines"), 
-        strip.text.y = element_text(angle = 270),
-        axis.text.x = element_text(angle = 30, size = 15, hjust = 1),
-        legend.position = "right",
-        plot.margin = unit(c(0,0,0,0), "cm"),
-        axis.line.y = element_blank(),
-        panel.border = element_rect(colour = "black", fill=NA),
-        axis.ticks.x = element_line(size = 0.5),
-        axis.ticks.y = element_blank()) +
-  labs(title = "N1 - P1 by Condition", 
-       x = "", y = "Amplitude (mV)")
+names(lead_parietooccipital_summary)[names(lead_parietooccipital_summary) == "Lead_Stream"] <- "Stream"
+names(lag_parietooccipital_summary)[names(lag_parietooccipital_summary) == "Lag_Stream"] <- "Stream"
 
 
 
+## STATISTICAL ANALYSIS
+library(emmeans)
+# Lead p1n1
+lead_p1n1_for_stats <- lead_frontocentral_summary %>%
+  # create combined label for Lead + Lag words
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
+         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
+         CueType = word(Condition, 2, sep = "_"))
 
-ggplot(parietooccipital_summary,aes(Word, mean_p3)) +
-  facet_grid(WordPosition~Condition) +  
-  geom_hline(yintercept = 0) +
-  #geom_dotplot(aes(color = S, fill = S), binaxis = 'y', stackdir = 'center', alpha = 0.5) + 
-  geom_point(aes(color = S, fill = S, group = S),alpha = 0.5, show.legend = FALSE) + 
-  geom_line(aes(color = S, group = S), alpha = 0.5, show.legend = FALSE) + 
-  stat_summary(fun.y=mean, geom="point", size=3, group = 1) +
-  stat_summary(fun.y=mean, geom="line", size=0.5, group = 1) +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.1) +
-  theme(panel.spacing = unit(0.5, "lines"), 
-        strip.text.y = element_text(angle = 270),
-        axis.text.x = element_text(angle = 30, size = 15, hjust = 1),
-        legend.position = "right",
-        plot.margin = unit(c(0,0,0,0), "cm"),
-        axis.line.y = element_blank(),
-        panel.border = element_rect(colour = "black", fill=NA),
-        axis.ticks.x = element_line(size = 0.5),
-        axis.ticks.y = element_blank()) +
-  labs(title = "P3 by Condition", 
-       x = "", y = "Amplitude (mV)")
+model_lead_p1n1 <- mixed(mean_p1n1 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+                         data = lead_p1n1_for_stats,
+                         control = lmerControl(optimizer = "bobyqa"),
+                         method = 'LRT')
+# Significant interaction between Cue magnitude and word pair
+emm_mag_wordpair <- emmeans(model_lead_p1n1, ~ WordPair | CueMagnitude)
+pairs(emm_mag_wordpair, adjust = "bonferroni")
+
+# lag p1n1
+lag_p1n1_for_stats <- lag_frontocentral_summary %>%
+  # create combined label for Lead + Lag words
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
+         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
+         CueType = word(Condition, 2, sep = "_"))
+
+model_lag_p1n1 <- mixed(mean_p1n1 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+                         data = lag_p1n1_for_stats,
+                         control = lmerControl(optimizer = "bobyqa"),
+                         method = 'LRT')
+# Significant effect of Word Pair
+emm_wordpair <- emmeans(model_lag_p1n1, ~ WordPair)
+pairs(emm_wordpair, adjust = "bonferroni")
+
+# Significant effect of Cue Type
+emm_cuetype <- emmeans(model_lag_p1n1, ~ CueType)
+pairs(emm_cuetype, adjust = "bonferroni")
+
+# Significant effect of Stream
+emm_stream <- emmeans(model_lag_p1n1, ~ Stream)
+pairs(emm_stream, adjust = "bonferroni")
+
+
+
+# lead p300
+lead_p3_for_stats <- lead_parietooccipital_summary %>%
+  # create combined label for Lead + Lag words
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
+         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
+         CueType = word(Condition, 2, sep = "_"))
+
+model_lead_p3 <- mixed(mean_p3 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+                         data = lead_p3_for_stats,
+                         control = lmerControl(optimizer = "bobyqa"),
+                         method = 'LRT')
+
+# Significant effect of stream
+emm_stream <- emmeans(model_lead_p3, ~ Stream)
+pairs(emm_stream, adjust = "bonferroni")
+
+# Effect of cue magnitude by cue type within each word pair
+# Get estimated marginal means for the 3-way interaction
+emm <- emmeans(model_lead_p3, ~ CueType * CueMagnitude | WordPair)
+
+pairs_emm <- contrast(emm, interaction = "pairwise", by = "WordPair", adjust = "bonferroni")
+print(pairs_emm)
+
+# Only significant for non-bash_bash
+emm_nb_only <- subset(emm, WordPair == "non-bash_bash")
+pairs(emm_nb_only, by = "CueType", adjust = "bonferroni")
+
+
+
+# lag p300
+lag_p3_for_stats <- lag_parietooccipital_summary %>%
+  # create combined label for Lead + Lag words
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
+         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
+         CueType = word(Condition, 2, sep = "_"))
+
+model_lag_p3 <- mixed(mean_p3 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+                       data = lag_p3_for_stats,
+                       control = lmerControl(optimizer = "bobyqa"),
+                       method = 'LRT')
+
+# Three way interaction between cue type, cue magnitude and word pair
+emm_mag_type <- emmeans(model_lag_p1n1, ~ CueMagnitude*CueType | WordPair)
+# Test simple two-way interactions of cue_type × cue_magnitude within each word_pair
+twoway_tests <- test(interaction = "CueType:CueMagnitude", by = "WordPair", object = emm_mag_type)
+
+# View results
+twoway_tests
+
+## P1-N1 PLOTTING
+library(dplyr)
+library(ggplot2)
+
+# Add a column to indicate whether the row is Lead or Lag
+lead_frontocentral_summary <- lead_frontocentral_summary %>%
+  mutate(Position = "Lead")
+
+lag_frontocentral_summary <- lag_frontocentral_summary %>%
+  mutate(Position = "Lag")
+
+# Combine
+all_summary_p1n1 <- bind_rows(lead_frontocentral_summary, lag_frontocentral_summary)
+
+summary_data_p1n1 <- all_summary_p1n1 %>%
+  group_by(Condition, Stream, Lead_Word, Lag_Word, Position) %>%
+  summarise(
+    mean_value = mean(mean_p1n1, na.rm = TRUE),
+    sem_value  = sd(mean_p1n1, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  ) %>%
+  # create combined label for Lead + Lag words
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
+         # set factor order for x-axis
+         WordPair = factor(WordPair, levels = c("bash_non-bash", "non-bash_bash", "non-bash_non-bash")),
+         # relabel Stream facets
+         Stream = factor(Stream, levels = c("Target", "Masker")),
+         Condition = factor(Condition, levels = c("small_itd","large_itd","small_ild","large_ild")),
+         Position = factor(Position,level = c("Lead","Lag")))
+
+labels_for_column <- c("Lead" = "Response to Lead Word", "Lag" = "Response to Lag Word")
+
+ggplot(summary_data_p1n1, aes(x = WordPair, y = mean_value, color = WordPair, fill = Stream, group = Stream)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3, shape = 21, stroke = 1.2) +
+  geom_errorbar(aes(ymin = mean_value - sem_value, ymax = mean_value + sem_value),
+                width = 0.5, position = position_dodge(width = 0.5)) +
+  facet_grid(Condition ~ Position, labeller = labeller(Position = labels_for_column)) +
+  labs(x = "Lead-Lag Word Pair", y = "Mean P1-N1", color = "WordPair", fill = "Stream") +
+  scale_color_manual(values = c("bash_non-bash" = "blue", "non-bash_bash"="red","non-bash_non-bash"="green")) +
+  scale_fill_manual(values = c("Target" = "black", "Masker" = "white")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+
+## P300 PLOTTING
+library(dplyr)
+library(ggplot2)
+
+# Add a column to indicate whether the row is Lead or Lag
+lead_parietooccipital_summary <- lead_parietooccipital_summary %>%
+  mutate(Position = "Lead")
+
+lag_parietooccipital_summary <- lag_parietooccipital_summary %>%
+  mutate(Position = "Lag")
+
+# Combine
+all_summary_p3 <- bind_rows(lead_parietooccipital_summary, lag_parietooccipital_summary)
+
+summary_data_p3 <- all_summary_p3 %>%
+  group_by(Condition, Stream, Lead_Word, Lag_Word, Position) %>%
+  summarise(
+    mean_value = mean(mean_p3, na.rm = TRUE),
+    sem_value  = sd(mean_p3, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  ) %>%
+  # create combined label for Lead + Lag words
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
+         # set factor order for x-axis
+         WordPair = factor(WordPair, levels = c("bash_non-bash", "non-bash_bash", "non-bash_non-bash")),
+         # relabel Stream facets
+         Stream = factor(Stream, levels = c("Target", "Masker")),
+         Condition = factor(Condition, levels = c("small_itd","large_itd","small_ild","large_ild")),
+         Position = factor(Position,level = c("Lead","Lag")))
+
+labels_for_column <- c("Lead" = "Response to Lead Word", "Lag" = "Response to Lag Word")
+
+ggplot(summary_data_p3, aes(x = WordPair, y = mean_value, color = WordPair, fill = Stream, group = Stream)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3, shape = 21, stroke = 1.2) +
+  geom_errorbar(aes(ymin = mean_value - sem_value, ymax = mean_value + sem_value),
+                width = 0.5, position = position_dodge(width = 0.5)) +
+  facet_grid(Condition ~ Position, labeller = labeller(Position = labels_for_column)) +
+  labs(x = "Lead-Lag Word Pair", y = "Mean P300", color = "WordPair", fill = "Stream") +
+  scale_color_manual(values = c("bash_non-bash" = "blue", "non-bash_bash"="red","non-bash_non-bash"="green")) +
+  scale_fill_manual(values = c("Target" = "black", "Masker" = "white")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))

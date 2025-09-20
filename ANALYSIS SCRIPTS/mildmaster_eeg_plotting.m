@@ -88,7 +88,7 @@ for isubject = 1:size(curr_subject_ID,1)
     subID = string(curr_subject_ID(isubject,:));
     disp(subID)
     % Load Data
-    load(append('Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'_no_button_press.mat'))
+    load(append('C:\Users\benri\Downloads\Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'_yes_button_press.mat'))
 
     %% Plot all channels, remove noisy ones in time domain
 
