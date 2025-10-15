@@ -9,44 +9,6 @@ library(rstatix)
 library(afex)
 library(dplyr)
 
-# SummarySE Function ####
-summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
-                      conf.interval=.95, .drop=TRUE) {
-  library(plyr)
-  
-  # New version of length which can handle NA's: if na.rm==T, don't count them
-  length2 <- function (x, na.rm=FALSE) {
-    if (na.rm) sum(!is.na(x))
-    else       length(x)
-  }
-  
-  # This does the summary. For each group's data frame, return a vector with
-  # N, mean, and sd
-  datac <- ddply(data, groupvars, .drop=.drop,
-                 .fun = function(xx, col) {
-                   c(N    = length2(xx[[col]], na.rm=na.rm),
-                     mean = mean   (xx[[col]], na.rm=na.rm),
-                     sd   = sd     (xx[[col]], na.rm=na.rm)
-                   )
-                 },
-                 measurevar
-  )
-  
-  # Rename the "mean" column    
-  datac <- rename(datac, c("mean" = measurevar))
-  
-  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
-  
-  # Confidence interval multiplier for standard error
-  # Calculate t-statistic for confidence interval: 
-  # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
-  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
-  datac$ci <- datac$se * ciMult
-  
-  return(datac)
-}
-
-
 ####################################################
 ##    Hit Rates    ##
 ####################################################
@@ -159,13 +121,26 @@ for (g in group_levels) {
 }
 order_df <- bind_rows(order_list) %>%
   mutate(x_pos = row_number())
+# --- Combine all plots with shared legend ---
+# ------------- build explicit x positions in desired order -------------
 
-# join the new x_pos into your per-measure data frames
+# Define the explicit desired order
+desired_order <- tibble(
+  Spatialization = rep(c("ITD5", "ITD15", "ILD5", "ILD15"), times = 2),
+  WordPosition   = rep(c("Lead", "Lag"), each = 4)
+) %>%
+  mutate(x_pos = row_number())
+
+# Determine group (ITD vs ILD)
+desired_order <- desired_order %>%
+  mutate(SpatializationGroup = ifelse(grepl("ITD", Spatialization), "ITD", "ILD"))
+
+# Join this ordering into your datasets
 hit_rates <- hit_rates %>%
-  left_join(order_df, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
+  left_join(desired_order, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
 
 FA_rates <- FA_rates %>%
-  left_join(order_df, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
+  left_join(desired_order, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
 
 # ---------------------------
 # Prepare long-format data (use the new x_pos)
@@ -190,14 +165,13 @@ summary_data <- long_data %>%
   )
 
 # ---------------------------
-# Build breaks and labels so each Spatialization label sits between its Lead/Lag points
+# Build x-axis labels (to match your order)
 # ---------------------------
-Spatialization_positions <- order_df %>%
+Spatialization_positions <- desired_order %>%
   group_by(Spatialization) %>%
-  summarise(mean_x = x_pos, .groups = "drop") %>%
-  arrange(mean_x)
+  summarise(mean_x = mean(x_pos), .groups = "drop")
 
-Spatialization_labels_wrapped <- str_wrap(Spatialization_positions$Spatialization, width = 1)
+Spatialization_labels_wrapped <- Spatialization_positions$Spatialization
 
 # ---------------------------
 # Custom y-limits per Measure (re-add so geom_blank() has ymin/ymax)
@@ -265,26 +239,15 @@ p
 ## Refactor for stat analysis
 library(emmeans)
 
-# For hit_rates
-hit_rates <- hit_rates %>%
-  mutate(CueType = str_extract(Spatialization, "[A-Z]+"),   # extract letters
-         CueMagnitude = str_extract(Spatialization, "[0-9]+") %>% as.numeric())  # extract digits
-hit_rates$CueMagnitude <- factor(hit_rates$CueMagnitude)
-
-# For FA_rates
-FA_rates <- FA_rates %>%
-  mutate(CueType = str_extract(Spatialization, "[A-Z]+"),
-         CueMagnitude = str_extract(Spatialization, "[0-9]+") %>% as.numeric())
-FA_rates$CueMagnitude <- factor(FA_rates$CueMagnitude)
 
 # LMEM for Hit Rates
-model_hitrate <- mixed(HitRate ~ CueType*CueMagnitude*WordPosition + (1|S),
+model_hitrate <- mixed(HitRate ~ Spatialization*WordPosition + (1|S),
                        data = hit_rates,
                        control = lmerControl(optimizer = "bobyqa"),
                        method = 'LRT')
-# significant effect of cue magnitude post hoc
-emm_cue <- emmeans(model_hitrate, ~ CueMagnitude)
-pairs(emm_cue, adjust = "bonferroni")
+# significant effect of Spatialization post hoc
+emm_spatialization <- emmeans(model_hitrate, ~ Spatialization)
+pairs(emm_spatialization, adjust = "bonferroni")
 
 # Significant effect of Word position post hoc 
 emm_wp <- emmeans(model_hitrate, ~ WordPosition)
@@ -292,16 +255,13 @@ pairs(emm_wp, adjust = "bonferroni")
 
 
 # LMEM for False Alarm Rates
-model_FArate <- mixed(FARate ~ CueType*CueMagnitude*WordPosition + (1|S),
+model_FArate <- mixed(FARate ~ Spatialization*WordPosition + (1|S),
                        data = FA_rates,
                        control = lmerControl(optimizer = "bobyqa"),
                        method = 'LRT')
 
-# Significant interaction between cue type and cue magnitude
-# Get estimated marginal means
-emm_fa <- emmeans(model_FArate, ~ CueMagnitude | CueType)
-
-# Pairwise comparisons of CueMagnitude within each CueType
+# Significant effect of Spatialization post hoc
+emm_fa <- emmeans(model_FArate, ~ Spatialization)
 pairs(emm_fa, adjust = "bonferroni")
 
 

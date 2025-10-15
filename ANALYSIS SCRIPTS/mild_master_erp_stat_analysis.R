@@ -93,36 +93,28 @@ library(emmeans)
 # Lead p1n1
 lead_p1n1_for_stats <- lead_frontocentral_summary %>%
   # create combined label for Lead + Lag words
-  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
-         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
-         CueType = word(Condition, 2, sep = "_"))
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"))
 
-model_lead_p1n1 <- mixed(mean_p1n1 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+model_lead_p1n1 <- mixed(mean_p1n1 ~ Condition*WordPair*Stream + (1|S),
                          data = lead_p1n1_for_stats,
                          control = lmerControl(optimizer = "bobyqa"),
                          method = 'LRT')
-# Significant interaction between Cue magnitude and word pair
-emm_mag_wordpair <- emmeans(model_lead_p1n1, ~ WordPair | CueMagnitude)
-pairs(emm_mag_wordpair, adjust = "bonferroni")
+# Significant effect of word pair
+emm_wordpair <- emmeans(model_lead_p1n1, ~ WordPair)
+pairs(emm_wordpair, adjust = "bonferroni")
 
 # lag p1n1
 lag_p1n1_for_stats <- lag_frontocentral_summary %>%
   # create combined label for Lead + Lag words
-  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
-         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
-         CueType = word(Condition, 2, sep = "_"))
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"))
 
-model_lag_p1n1 <- mixed(mean_p1n1 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+model_lag_p1n1 <- mixed(mean_p1n1 ~ Condition*WordPair*Stream + (1|S),
                          data = lag_p1n1_for_stats,
                          control = lmerControl(optimizer = "bobyqa"),
                          method = 'LRT')
 # Significant effect of Word Pair
 emm_wordpair <- emmeans(model_lag_p1n1, ~ WordPair)
 pairs(emm_wordpair, adjust = "bonferroni")
-
-# Significant effect of Cue Type
-emm_cuetype <- emmeans(model_lag_p1n1, ~ CueType)
-pairs(emm_cuetype, adjust = "bonferroni")
 
 # Significant effect of Stream
 emm_stream <- emmeans(model_lag_p1n1, ~ Stream)
@@ -133,51 +125,36 @@ pairs(emm_stream, adjust = "bonferroni")
 # lead p300
 lead_p3_for_stats <- lead_parietooccipital_summary %>%
   # create combined label for Lead + Lag words
-  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
-         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
-         CueType = word(Condition, 2, sep = "_"))
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"))
 
-model_lead_p3 <- mixed(mean_p3 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+model_lead_p3 <- mixed(mean_p3 ~ Condition*WordPair*Stream + (1|S),
                          data = lead_p3_for_stats,
                          control = lmerControl(optimizer = "bobyqa"),
                          method = 'LRT')
 
-# Significant effect of stream
-emm_stream <- emmeans(model_lead_p3, ~ Stream)
-pairs(emm_stream, adjust = "bonferroni")
-
-# Effect of cue magnitude by cue type within each word pair
-# Get estimated marginal means for the 3-way interaction
-emm <- emmeans(model_lead_p3, ~ CueType * CueMagnitude | WordPair)
-
-pairs_emm <- contrast(emm, interaction = "pairwise", by = "WordPair", adjust = "bonferroni")
-print(pairs_emm)
-
-# Only significant for non-bash_bash
-emm_nb_only <- subset(emm, WordPair == "non-bash_bash")
-pairs(emm_nb_only, by = "CueType", adjust = "bonferroni")
-
+# Significant interaction between word pair and stream
+emm_wordpair_stream <- emmeans(model_lead_p3, ~ WordPair | Stream)
+pairs(emm_wordpair_stream,adjust="bonferroni")
 
 
 # lag p300
 lag_p3_for_stats <- lag_parietooccipital_summary %>%
   # create combined label for Lead + Lag words
-  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"),
-         CueMagnitude = word(Condition, 1, sep = "_"),   # extract letters
-         CueType = word(Condition, 2, sep = "_"))
+  mutate(WordPair = paste(Lead_Word, Lag_Word, sep = "_"))
 
-model_lag_p3 <- mixed(mean_p3 ~ CueType*CueMagnitude*WordPair*Stream + (1|S),
+model_lag_p3 <- mixed(mean_p3 ~ Condition*WordPair*Stream + (1|S),
                        data = lag_p3_for_stats,
                        control = lmerControl(optimizer = "bobyqa"),
                        method = 'LRT')
 
-# Three way interaction between cue type, cue magnitude and word pair
-emm_mag_type <- emmeans(model_lag_p1n1, ~ CueMagnitude*CueType | WordPair)
-# Test simple two-way interactions of cue_type × cue_magnitude within each word_pair
-twoway_tests <- test(interaction = "CueType:CueMagnitude", by = "WordPair", object = emm_mag_type)
+# Significant interaction between word pair and stream
+emm_wordpair_stream <- emmeans(model_lag_p3, ~ WordPair | Stream)
+pairs(emm_wordpair_stream,adjust="bonferroni")
 
-# View results
-twoway_tests
+
+
+
+
 
 ## P1-N1 PLOTTING
 library(dplyr)
@@ -217,7 +194,7 @@ ggplot(summary_data_p1n1, aes(x = WordPair, y = mean_value, color = WordPair, fi
                 width = 0.5, position = position_dodge(width = 0.5)) +
   facet_grid(Condition ~ Position, labeller = labeller(Position = labels_for_column)) +
   labs(x = "Lead-Lag Word Pair", y = "Mean P1-N1", color = "WordPair", fill = "Stream") +
-  scale_color_manual(values = c("bash_non-bash" = "blue", "non-bash_bash"="red","non-bash_non-bash"="green")) +
+  scale_color_manual(values = c("bash_non-bash" = "blue", "non-bash_bash"="orange","non-bash_non-bash"="green")) +
   scale_fill_manual(values = c("Target" = "black", "Masker" = "white")) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -264,7 +241,7 @@ ggplot(summary_data_p3, aes(x = WordPair, y = mean_value, color = WordPair, fill
                 width = 0.5, position = position_dodge(width = 0.5)) +
   facet_grid(Condition ~ Position, labeller = labeller(Position = labels_for_column)) +
   labs(x = "Lead-Lag Word Pair", y = "Mean P300", color = "WordPair", fill = "Stream") +
-  scale_color_manual(values = c("bash_non-bash" = "blue", "non-bash_bash"="red","non-bash_non-bash"="green")) +
+  scale_color_manual(values = c("bash_non-bash" = "blue", "non-bash_bash"="orange","non-bash_non-bash"="green")) +
   scale_fill_manual(values = c("Target" = "black", "Masker" = "white")) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))

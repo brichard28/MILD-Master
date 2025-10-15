@@ -139,7 +139,7 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
         #print(f"{len(bad_channels_FFT)} channels rejected by FFT")
         # print(f"{len(bad_channels_SCI)} channels rejected by SCI")
         # set the bad channels to what the two methods agree upon
-        raw_od.info['bads'] = list(agree) # list(np.unique(np.concatenate((bad_channels_SCI,bad_channels_FFT))))
+        raw_od.info['bads'] = list(bad_channels_FFT) # list(np.unique(np.concatenate((bad_channels_SCI,bad_channels_FFT))))
         print(f"{len(raw_od.info['bads'])/2} channels rejected")
 
 
@@ -162,9 +162,9 @@ def preprocess_NIRX(data, data_snirf=0, event_dict=0,
     if filter_limits[0] is not None:
         if filter_type == 'iir':
             raw_OD_filt = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=filter_limits[1],
-                                                      l_trans_bandwidth=filter_transition_bandwidths[0],h_trans_bandwidth=filter_transition_bandwidths[1],
+                                                      #l_trans_bandwidth=filter_transition_bandwidths[0],h_trans_bandwidth=filter_transition_bandwidths[1],
                                                       method='iir', phase='zero',
-                                                      iir_params={'order': 1, 'ftype': 'butter', 'output': 'sos'})
+                                                      iir_params={'order': 3, 'ftype': 'butter', 'output': 'sos'})
 
         elif filter_type == 'fir':
             raw_OD_filt = corrected_tddr.filter(l_freq=filter_limits[0], h_freq=None,

@@ -149,9 +149,11 @@ end
 
 
 
-colors = [0, 0.4470, 0.7410;   % Blue
-    0.8500, 0.3250, 0.0980;   % Orange
-    0.4660, 0.6740, 0.1880];  % Green
+colors = [
+    0.000, 0.447, 0.698;   % Blue
+    0.902, 0.624, 0.000;   % Orange
+    0.000, 0.620, 0.451;   % Green
+];
 curr_channel_indices = {[frontocentral_channels],[parietooccipital_channels]}; % Fz, Cz, and Pz
 for i = 1:length(curr_channel_indices)
     curr_channel_index = cell2mat(curr_channel_indices(i));

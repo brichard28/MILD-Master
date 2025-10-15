@@ -41,9 +41,10 @@ wdir = os.path.dirname(__file__)
 # Define Subject Files
 # Define Subject Files
 root = ''
-user = 'Home'
+user = 'Laptop'
 if user == 'Laptop':
     data_root = 'C:/Users/benri/Downloads/'
+    mild_master_root = 'C:/Users/benri/Documents/Github/MILD-Master'
 
 elif user == 'Desktop':
     data_root = '/home/apclab/Downloads/'
@@ -66,7 +67,7 @@ data_root + "2025-01-24/2025-01-24_002",
 data_root + "2025-01-24/2025-01-24_003",
 data_root + "2025-01-27/2025-01-27_003",
 data_root + "2025-01-29/2025-01-29_001",
-data_root + "2025-01-29/2025-01-29_001",
+data_root + "2025-01-29/2025-01-29_002",
 data_root + "2025-01-30/2025-01-30_001",
 data_root + "2025-01-30/2025-01-30_002",
 data_root + "2025-02-04/2025-02-04_001",
@@ -139,39 +140,38 @@ subject_ID = ['mild_master_1',
 
 # The subjects we would like to run right now
 curr_subject_ID = ['mild_master_1',
-'mild_master_3',
-'mild_master_4',
-'mild_master_6',
-'mild_master_8',
-'mild_master_9',
-'mild_master_10',
-'mild_master_11',
-'mild_master_12',
-'mild_master_14',
-'mild_master_15',
-'mild_master_16',
-'mild_master_17',
-'mild_master_18',
-'mild_master_19',
-'mild_master_20',
-'mild_master_22',
-'mild_master_23',
-'mild_master_24',
-'mild_master_25',
-'mild_master_26',
-'mild_master_27',
-'mild_master_28',
-'mild_master_30',
-'mild_master_31',
-'mild_master_32',
-'mild_master_33',
-'mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
-'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_46','mild_master_47','mild_master_48']
+    'mild_master_3',
+    'mild_master_4',
+    'mild_master_6',
+    'mild_master_8',
+    'mild_master_9',
+    'mild_master_10',
+    'mild_master_11',
+    'mild_master_12',
+    'mild_master_14',
+    'mild_master_15',
+    'mild_master_16',
+    'mild_master_17',
+    'mild_master_18',
+    'mild_master_19',
+    'mild_master_20',
+    'mild_master_22',
+    'mild_master_23',
+    'mild_master_24',
+    'mild_master_25',
+    'mild_master_26',
+    'mild_master_27',
+    'mild_master_28',
+    'mild_master_29',
+    'mild_master_30',
+    'mild_master_31',
+    'mild_master_32','mild_master_33','mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',
+    'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_46','mild_master_48']
 
 curr_folder_indices = [index for index, element in enumerate(subject_ID) if np.isin(element,curr_subject_ID)]
 curr_fnirs_data_folders = [all_fnirs_data_folders[i] for i in curr_folder_indices]
 
-glm_dur = 6 # 11.6
+glm_dur = 11.6 # 11.6
 n_subjects = len(curr_subject_ID)
 
 n_long_channels = 101
@@ -267,13 +267,21 @@ for ii, subject_num in enumerate(range(n_subjects)):
     # ---------------------------------------------------------------
     # -----------------      Load the Data        -------------------
     # ---------------------------------------------------------------
-    data = mne.io.read_raw_nirx(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}_config.hdr",
-                                    verbose=False, preload=True)
+    # data = mne.io.read_raw_nirx(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}_config.hdr",
+    #                                 verbose=False, preload=True)
     
-    data_snirf = mne.io.read_raw_snirf(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
+    # data_snirf = mne.io.read_raw_snirf(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
+    #                                 optode_frame="mri", preload=True)
+    
+    # aux_snirf = read_snirf_aux_data(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
+    #                                 data_snirf)
+    
+    data = mne.io.read_raw_nirx(f"C:/Users/benri/Downloads/MILD-MASTER NIRS Files/{subject}/{curr_fnirs_data_folders[ii][-14:]}_config.hdr",
+                                verbose=False, preload=True)
+    data_snirf = mne.io.read_raw_snirf(f"C:/Users/benri/Downloads/MILD-MASTER NIRS Files/{subject}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
                                     optode_frame="mri", preload=True)
     
-    aux_snirf = read_snirf_aux_data(f"{curr_fnirs_data_folders[ii]}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
+    aux_snirf = read_snirf_aux_data(f"C:/Users/benri/Downloads/MILD-MASTER NIRS Files/{subject}/{curr_fnirs_data_folders[ii][-14:]}.snirf",
                                     data_snirf)
 
     # ---------------------------------------------------------------
@@ -329,7 +337,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
 
     if subject != "mild_master_5":
-        this_sub_short_regression = False # True
+        this_sub_short_regression = True # True
     else:
         this_sub_short_regression = False
 
@@ -341,7 +349,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                                            events_modification=False, reject=True,
                                            short_regression=this_sub_short_regression, events_from_snirf=False,
                                            drop_short=False, negative_enhancement=False,
-                                           snr_thres=2, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.1], filter_transition_bandwidths=[0.005, 0.1/2])
+                                           snr_thres=1.5, sci_thres=0.8, filter_type='iir', filter_limits=[0.01,0.07], filter_transition_bandwidths=[0.005, 0.1/2])
 
 
     if subject != "mild_master_5":
@@ -369,7 +377,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
                         event_id=event_dict,  # event_dict_total,
                         tmin=tmin, tmax=tmax,
                         baseline= (-5, 0),
-                        reject = reject_criteria,
+                       # reject = reject_criteria,
                        # flat = flat_criteria,
                         preload=True, detrend=None, verbose=True,
                         on_missing='warn')
@@ -599,7 +607,7 @@ for ii, subject_num in enumerate(range(n_subjects)):
 
     design_matrix = make_first_level_design_matrix(raw_haemo_filt_for_glm,
                                                         drift_model=None,
-                                                        high_pass=0.01,  # Must be specified per experiment
+                                                        high_pass=0.01,  #0.01 # Must be specified per experiment
                                                         hrf_model='spm',
                                                         stim_dur=glm_dur)
     # # add_regs=filtered_signals)
@@ -818,7 +826,7 @@ group_results.to_csv(mild_master_root + "/RESULTS DATA/group_results_glm_dur_6.c
 # -----------------     PLotting GLM Averages           ---------
 # ---------------------------------------------------------------
 
-caxis_lim = 0.08
+caxis_lim = 0.07
 
 groups_single_chroma = dict(
     Left_Hemisphere=picks_pair_to_idx(raw_haemo_filt.copy().pick(picks='hbo'), left_hem_channels,
@@ -877,6 +885,7 @@ mne.viz.plot_topomap(group_theta_for_topoplot.query("Condition in ['az_itd=0_az=
                      this_info_right,sensors=True, axes = topo_axes[3],contours=0,
                      extrapolate='local',image_interp='linear',vlim=(-caxis_lim,caxis_lim))
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta.png")
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_beta.svg",format="svg")
 plt.close(fig)
 
 
@@ -932,33 +941,107 @@ mne.viz.plot_topomap(group_mean_hbo_for_topoplot.query("Condition in ['az_itd=0_
                      this_info_right,sensors=True, axes = topo_axes[3],contours=0,
                      extrapolate='local',image_interp = 'linear',vlim=(-caxis_lim,caxis_lim))
 plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_mean_hbo.png")
+plt.savefig(mild_master_root + "/CASUAL FIGURES/group_topoplot_mean_hbo.svg",format="svg")
 plt.close(fig)
 
 
 # ---------------------------------------------------------------
-# -----------------     Grand Average Group Block Averages ---------
+# -----------------    Topomap Grand Average Group Block Averages ---------
 # ---------------------------------------------------------------
 conditions = ['az_itd=5_az=0','az_itd=15_az=0','az_itd=0_az=5','az_itd=0_az=15']
-n_conditions = len(conditions)
-fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(17, 5))
-lims = dict(hbo=[-0.2, 0.2], hbr=[-0.2, 0.2])
+# need a list of channel locations
+layout = find_layout(raw_haemo_filt.info)
+layout = deepcopy(layout)
+layout.pos[:, :2] -= layout.pos[:, :2].min(0)
+layout.pos[:, :2] /= layout.pos[:, :2].max(0)
+positions = layout.pos[:, :2] * 0.9
 
-for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
-    for idx, cond in enumerate(conditions):
-        mne.viz.plot_compare_evokeds(
-            {cond: all_evokeds[cond]},
-            combine="mean",
-            picks=pick,
-            axes=axes[idx],
+# set up subplots
+fig = plt.figure(figsize=(5, 4), dpi=200)
+
+width, height = 0.05, 0.05
+lims = dict(hbo=[-0.1, 0.1], hbr=[-0.1, 0.1])
+# for each channel
+
+unique_positions = np.unique(positions)
+
+unique_markers = np.zeros(np.shape(unique_positions))
+for ichannel in range(len(layout.pos)):
+
+    this_channel_name = layout.names[ichannel]
+    print(this_channel_name)
+    pos = positions[ichannel, :]
+
+
+
+    # plot --- [lowerCorner_x, lowerCorner_y, width, height]
+    ax = fig.add_axes([pos[0]+width/2, pos[1], width, height])
+    
+    
+    # Flatten all evoked objects into one list
+    evoked_list = []
+    for v in all_evokeds.values():
+        if isinstance(v, list):
+            evoked_list.extend(v)  # add each evoked in the list
+        else:
+            evoked_list.append(v)  # single evoked object
+    
+    # Now combine equally
+    this_evoked = mne.combine_evoked(evoked_list, weights='equal')
+
+
+    this_color = "w"
+    if "hbo" in this_channel_name:
+        this_color = "r"
+    elif "hbr" in this_channel_name:
+        this_color = "b"
+    mne.viz.plot_compare_evokeds(this_evoked,
+        combine=None,
+        picks=this_channel_name,
+        axes=ax,
+        show=False,
+        colors=[this_color],
+        legend=False,
+        show_sensors=False,
+        ylim=lims,
+        ci=0.95,
+    )
+
+    ax.xaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.tick_params(labelsize=0.1, length=2, width=0.5, labelcolor='w')
+    ax.patch.set_alpha(0)
+    ax.set_title(f'{layout.names[ichannel][:-4]}', fontsize=3, pad=0)
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_facecolor("none")
+
+# add an empty plot with labels
+ax = fig.add_axes([0.5, 0.075, 1.5*width, 1.5*height])
+mne.viz.plot_compare_evokeds(this_evoked,
+            combine=None,
+            picks=this_channel_name,
+            axes=ax,
             show=False,
-            colors=[color],
+            show_sensors=False,
+            colors=["w"],
             legend=False,
             ylim=lims,
             ci=0.95,
         )
-        axes[idx].set_title(f"{cond}")
-axes[0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
+ax.set_ylim(bottom=lims['hbo'][0], top=lims['hbo'][1])
+ax.xaxis.set_ticks([0, 11.6, tmax])
+ax.yaxis.set_major_locator(plt.MaxNLocator(2))
+ax.set_xlabel('Time (s)', fontsize=4)
+ax.set_ylabel('DeltaHb (uM)', fontsize=4)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.tick_params(labelsize=4)
+    
 plt.savefig(mild_master_root + "/CASUAL FIGURES/grand_average_block_averages.png")
+plt.savefig(mild_master_root + "/CASUAL FIGURES/grand_average_block_averages.svg",format="svg")
 plt.close(fig)
 
 # ---------------------------------------------------------------

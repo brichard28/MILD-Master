@@ -55,14 +55,14 @@ def raw_nirx_channelwise_fft(raw, plot, snr_thres=3):
         spectro_ch_db = 10 * np.log10(spectro_ch / np.mean(spectro_ch))
 
         # Identify heart rate peak (45-96 bpm = ~0.75-1.6 Hz)
-        hr_indices = (spectro_f > 0.75) & (spectro_f < 1.6)
+        hr_indices = (spectro_f > 0.9) & (spectro_f < 1.6)
         hr_peak_db = np.max(spectro_ch_db[hr_indices])
         hr_peak_idx = np.argmax(spectro_ch_db[hr_indices])
         hr_peak_freq = spectro_f[hr_indices][hr_peak_idx]
 
         # Calculate noise floor around 1.5x heart rate frequency
         noise_center = 1.5 * hr_peak_freq
-        noise_indices = (spectro_f > (noise_center - 0.05)) & (spectro_f < (noise_center + 0.05))
+        noise_indices = (spectro_f > (noise_center - 0.1)) & (spectro_f < (noise_center + 0.1))
         noise_floor_db = np.mean(spectro_ch_db[noise_indices])
 
         # Compute SNR in dB

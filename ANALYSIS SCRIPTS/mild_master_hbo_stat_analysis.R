@@ -11,7 +11,7 @@ library(emmeans)
 
 #### Data Preparation ###########
 # Load in Data
-all_data <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\group_results_glm_dur_11.csv")
+all_data <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\group_results_glm_dur_6.csv")
 colnames(all_data)[which(names(all_data) == "Condition")] <- "Spatialization"
 
 # Organize Factors
@@ -21,32 +21,48 @@ all_data[, to.factor] <- lapply(all_data[, to.factor], as.factor)
 all_data_hbo <- subset(all_data,Chroma == "hbo")
 # Define ROIs
 ch_names_unique <- unique(all_data_hbo$ch_name)
-roi_1 <- list("S8_D17 hbo","S8_D16 hbo","S9_D17 hbo","S9_D16 hbo","S9_D15 hbo","S10_D16 hbo","S16_D16 hbo","S16_D17 hbo",
-              "S16_D22 hbo","S16_D23 hbo","S17_D15 hbo","S17_D16 hbo","S17_D17 hbo","S17_D21 hbo",
-              "S17_D22 hbo","S17_D23 hbo","S18_D15 hbo","S18_D16 hbo","S18_D21 hbo","S18_D22 hbo","S18_D23 hbo") # left IFG
+#roi_1 <- list("S8_D17 hbo","S8_D16 hbo","S9_D17 hbo","S9_D16 hbo","S9_D15 hbo","S10_D16 hbo","S16_D16 hbo","S16_D17 hbo",
+#              "S16_D22 hbo","S16_D23 hbo","S17_D15 hbo","S17_D16 hbo","S17_D17 hbo","S17_D21 hbo",
+#              "S17_D22 hbo","S17_D23 hbo","S18_D15 hbo","S18_D16 hbo","S18_D21 hbo","S18_D22 hbo","S18_D23 hbo") # left IFG
 
-roi_2 <- list("S11_D11 hbo","S12_D10 hbo","S12_D11 hbo","S12_D12 hbo","S13_D10 hbo","S13_D11 hbo","S21_D11 hbo",
+#roi_2 <- list("S11_D11 hbo","S12_D10 hbo","S12_D11 hbo","S12_D12 hbo","S13_D10 hbo","S13_D11 hbo","S21_D11 hbo",
+#              "S21_D12 hbo","S21_D19 hbo","S21_D20 hbo","S22_D10 hbo","S22_D11 hbo","S22_D12 hbo","S22_D19 hbo",
+ #             "S22_D20 hbo","S23_D10 hbo","S23_D11 hbo","S23_D19 hbo")  # right IFG
+
+#roi_3 <- list("S1_D7 hbo","S1_D8 hbo","S2_D6 hbo","S2_D7 hbo","S2_D8 hbo","S3_D5 hbo",
+#              "S3_D6 hbo","S3_D7 hbo","S7_D7 hbo","S7_D8 hbo","S7_D17 hbo","S7_D18 hbo",
+#              "S8_D6 hbo","S8_D7 hbo","S8_D8 hbo","S8_D18 hbo","S9_D5 hbo","S9_D6 hbo","S9_D7 hbo",
+#              "S10_D5 hbo","S10_D6 hbo","S10_D14 hbo","S10_D15 hbo","S10_D21 hbo","S15_D17 hbo",
+ #             "S15_D18 hbo","S15_D22 hbo","S16_D18 hbo","S19_D14 hbo","S19_D15 hbo","S19_D21 hbo") # left DLPFC
+
+#roi_4 <- list("S4_D2 hbo","S4_D3 hbo","S4_D4 hbo","S5_D1 hbo","S5_D2 hbo","S5_D3 hbo",
+#              "S6_D1 hbo","S6_D2 hbo","S11_D3 hbo","S11_D4 hbo","S11_D12 hbo","S11_D13 hbo",
+#              "S11_D20 hbo","S12_D2 hbo","S12_D3 hbo","S12_D4 hbo","S13_D1 hbo","S13_D2 hbo",
+#              "S13_D3 hbo","S13_D9 hbo","S14_D1 hbo","S14_D2 hbo","S14_D9 hbo","S14_D10 hbo",
+#              "S20_D12 hbo","S20_D13 hbo","S20_D20 hbo","S23_D9 hbo","S24_D9 hbo","S24_D10 hbo",
+#              "S24_D19 hbo") # right DLPFC
+
+
+roi_left <- list("S8_D17 hbo","S8_D16 hbo","S9_D17 hbo","S9_D16 hbo","S9_D15 hbo","S10_D16 hbo","S16_D16 hbo","S16_D17 hbo",
+                 "S16_D22 hbo","S16_D23 hbo","S17_D15 hbo","S17_D16 hbo","S17_D17 hbo","S17_D21 hbo",
+                 "S17_D22 hbo","S17_D23 hbo","S18_D15 hbo","S18_D16 hbo","S18_D21 hbo","S18_D22 hbo","S18_D23 hbo",
+                 "S1_D7 hbo","S1_D8 hbo","S2_D6 hbo","S2_D7 hbo","S2_D8 hbo","S3_D5 hbo",
+                  "S3_D6 hbo","S3_D7 hbo","S7_D7 hbo","S7_D8 hbo","S7_D17 hbo","S7_D18 hbo",
+                  "S8_D6 hbo","S8_D7 hbo","S8_D8 hbo","S8_D18 hbo","S9_D5 hbo","S9_D6 hbo","S9_D7 hbo",
+                 "S10_D5 hbo","S10_D6 hbo","S10_D14 hbo","S10_D15 hbo","S10_D21 hbo","S15_D17 hbo",
+                 "S15_D18 hbo","S15_D22 hbo","S16_D18 hbo","S19_D14 hbo","S19_D15 hbo","S19_D21 hbo") 
+
+roi_right <- list("S11_D11 hbo","S12_D10 hbo","S12_D11 hbo","S12_D12 hbo","S13_D10 hbo","S13_D11 hbo","S21_D11 hbo",
               "S21_D12 hbo","S21_D19 hbo","S21_D20 hbo","S22_D10 hbo","S22_D11 hbo","S22_D12 hbo","S22_D19 hbo",
-              "S22_D20 hbo","S23_D10 hbo","S23_D11 hbo","S23_D19 hbo")  # right IFG
-
-roi_3 <- list("S1_D7 hbo","S1_D8 hbo","S2_D6 hbo","S2_D7 hbo","S2_D8 hbo","S3_D5 hbo",
-              "S3_D6 hbo","S3_D7 hbo","S7_D7 hbo","S7_D8 hbo","S7_D17 hbo","S7_D18 hbo",
-              "S8_D6 hbo","S8_D7 hbo","S8_D8 hbo","S8_D18 hbo","S9_D5 hbo","S9_D6 hbo","S9_D7 hbo",
-              "S10_D5 hbo","S10_D6 hbo","S10_D14 hbo","S10_D15 hbo","S10_D21 hbo","S15_D17 hbo",
-              "S15_D18 hbo","S15_D22 hbo","S16_D18 hbo","S19_D14 hbo","S19_D15 hbo","S19_D21 hbo") # left DLPFC
-
-roi_4 <- list("S4_D2 hbo","S4_D3 hbo","S4_D4 hbo","S5_D1 hbo","S5_D2 hbo","S5_D3 hbo",
+             "S22_D20 hbo","S23_D10 hbo","S23_D11 hbo","S23_D19 hbo","S4_D2 hbo","S4_D3 hbo","S4_D4 hbo","S5_D1 hbo","S5_D2 hbo","S5_D3 hbo",
               "S6_D1 hbo","S6_D2 hbo","S11_D3 hbo","S11_D4 hbo","S11_D12 hbo","S11_D13 hbo",
               "S11_D20 hbo","S12_D2 hbo","S12_D3 hbo","S12_D4 hbo","S13_D1 hbo","S13_D2 hbo",
               "S13_D3 hbo","S13_D9 hbo","S14_D1 hbo","S14_D2 hbo","S14_D9 hbo","S14_D10 hbo",
-              "S20_D12 hbo","S20_D13 hbo","S20_D20 hbo","S23_D9 hbo","S24_D9 hbo","S24_D10 hbo",
-              "S24_D19 hbo") # right DLPFC
+              "S20_D12 hbo","S20_D13 hbo","S20_D20 hbo","S23_D9 hbo","S24_D9 hbo","S24_D10 hbo","S24_D19 hbo") # right DLPFC
 
 all_data_hbo$Roi<- "NA"
-all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_1)] <- 1
-all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_2)] <- 2
-all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_3)] <- 3
-all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_4)] <- 4
+all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_left)] <- "Left"
+all_data_hbo$Roi[which(all_data_hbo$ch_name %in% roi_right)] <- "Right"
 
 
 ### Summary SE function ########
@@ -93,83 +109,56 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 }
 
 
+
+
 ### Plot data in each ROI #######
 beta_data <- summarySE(all_data_hbo, measurevar="theta", groupvars=c("Spatialization","ch_name","Roi"), na.rm = TRUE)
 beta_data$Spatialization <- ordered(beta_data$Spatialization, levels = c("az_itd=5_az=0","az_itd=15_az=0","az_itd=0_az=5","az_itd=0_az=15"))
-plot_roi_1 <- ggplot(data = subset(beta_data, Roi == 1), aes(x = Spatialization, y = theta,group = Spatialization)) +
+plot_roi_left <- ggplot(data = subset(beta_data, Roi == "Left"), aes(x = Spatialization, y = theta,group = Spatialization)) +
   geom_violin(fill = "indianred1", color = "white") +
   geom_jitter(width = 0.1, alpha = 0.5, color = "black", size = 1.5) +
   labs(x="",y="Mean Beta") +
   ylim(-0.055,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "Small\nITDs", "az_itd=15_az=0" = "Large\nITDs","az_itd=0_az=5" = "Small\nILDs","az_itd=0_az=15" = "Large\nILDs")) +
   theme(legend.position="none")
 
-plot_roi_2 <- ggplot(data = subset(beta_data, Roi == 2), aes(x = Spatialization, y = theta,group = Spatialization)) +
+plot_roi_right <- ggplot(data = subset(beta_data, Roi == "Right"), aes(x = Spatialization, y = theta,group = Spatialization)) +
   geom_violin(fill = "indianred1", color = "white") +
   geom_jitter(width = 0.1, alpha = 0.5, color = "black", size = 1.5) +
   labs(x="",y="Mean Beta") +
   ylim(-0.055,0.07) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "Small\nITDs", "az_itd=15_az=0" = "Large\nITDs","az_itd=0_az=5" = "Small\nILDs","az_itd=0_az=15" = "Large\nILDs")) +
   theme(legend.position="none")
 
-plot_roi_3 <- ggplot(data = subset(beta_data, Roi == 3), aes(x = Spatialization, y = theta,group = Spatialization)) +
-  geom_violin(fill = "indianred1", color = "white") +
-  geom_jitter(width = 0.1, alpha = 0.5, color = "black", size = 1.5) +
-  labs(x="",y="Mean Beta") +
-  ylim(-0.055,0.07) +
-  theme_bw() +
-  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
-  theme(legend.position="none")
-
-plot_roi_4 <- ggplot(data = subset(beta_data, Roi == 4), aes(x = Spatialization, y = theta,group = Spatialization)) +
-  geom_violin(fill = "indianred1", color = "white") +
-  geom_jitter(width = 0.1, alpha = 0.5, color = "black", size = 1.5) +
-  labs(x="",y="Mean Beta") +
-  ylim(-0.055,0.07) +
-  theme_bw() +
-  theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
-  theme(legend.position="none")
-
-grid.arrange(plot_roi_1,plot_roi_2,plot_roi_3,plot_roi_4, ncol=2, widths = c(1,1))
-
-
-
-##### Wilcoxon signed-rank test between spatialization, within each ROI ##
-roi_1_data <- subset(all_data_hbo, Roi == 1)
-roi_2_data <- subset(all_data_hbo, Roi == 2)
-roi_3_data <- subset(all_data_hbo, Roi == 3)
-roi_4_data <- subset(all_data_hbo, Roi == 4)
-roi_1_wilcox <- pairwise.wilcox.test(roi_1_data$theta, roi_1_data$Spatialization, p.adjust.method="holm")
-broom::tidy(roi_1_wilcox)
-
-roi_2_wilcox <- pairwise.wilcox.test(roi_2_data$theta, roi_2_data$Spatialization, p.adjust.method="holm")
-broom::tidy(roi_2_wilcox)
-
-roi_3_wilcox <- pairwise.wilcox.test(roi_3_data$theta, roi_3_data$Spatialization, p.adjust.method="holm")
-broom::tidy(roi_3_wilcox)
-
-roi_4_wilcox <- pairwise.wilcox.test(roi_4_data$theta, roi_4_data$Spatialization, p.adjust.method="holm")
-broom::tidy(roi_4_wilcox)
+grid.arrange(plot_roi_left,plot_roi_right, ncol=2, widths = c(1,1))
 
 
 ## LMEM Tests beta
-model_roi_1_beta <- mixed(theta ~ Spatialization + (1|ID) + (1|ch_name),
-                          data= subset(all_data_hbo, Roi == 1), 
-                          control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
-model_roi_1_beta
 
-# Follow up pairwise comparisons
-all_data_hbo$Spatialization <- relevel(all_data_hbo$Spatialization, "az_itd=5_az=0")
-roi_1_lmer_itd5 <- lmer(theta ~ Spatialization + (1|ID) + (1|ch_name),
-                              data= subset(all_data_hbo, Roi == 1),
-                              control = lmerControl(optimizer = "bobyqa"))#
-summary(roi_1_lmer_itd5)
+# Left Hemisphere
+model_roi_left_beta <- mixed(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                          data= subset(all_data_hbo, Roi == "Left"), 
+                          control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
+model_roi_left_beta
+
+# Significant effect of Spatialization post hoc
+emm_spatialization <- emmeans(model_roi_left_beta$full_model, ~ Spatialization)
+pairs(emm_spatialization, adjust = "bonferroni")
+
+
+# Right Hemisphere
+model_roi_right_beta <- mixed(theta ~ Spatialization + (1|ID) + (1|ch_name),
+                             data= subset(all_data_hbo, Roi == "Right"), 
+                             control = lmerControl(optimizer = "bobyqa"), method = 'LRT')
+model_roi_right_beta
+
+# Significant effect of Spatialization post hoc
+emm_spatialization <- emmeans(model_roi_right_beta$full_model, ~ Spatialization)
+pairs(emm_spatialization, adjust = "bonferroni")
 
 ### MEAN HBO ###
 
@@ -183,7 +172,7 @@ plot_roi_1 <- ggplot(data = subset(mean_hbo_data, Roi == 1), aes(x = Spatializat
   ylim(-0.055,0.055) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "Small\nITDs", "az_itd=15_az=0" = "Large\nITDs","az_itd=0_az=5" = "Small\nILDs","az_itd=0_az=15" = "Large\nILDs")) +
   theme(legend.position="none")
 
 plot_roi_2 <- ggplot(data = subset(mean_hbo_data, Roi == 2), aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
@@ -194,7 +183,7 @@ plot_roi_2 <- ggplot(data = subset(mean_hbo_data, Roi == 2), aes(x = Spatializat
   ylim(-0.055,0.055) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "Small\nITDs", "az_itd=15_az=0" = "Large\nITDs","az_itd=0_az=5" = "Small\nILDs","az_itd=0_az=15" = "Large\nILDs")) +
   theme(legend.position="none")
 
 plot_roi_3 <- ggplot(data = subset(mean_hbo_data, Roi == 3), aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
@@ -205,7 +194,7 @@ plot_roi_3 <- ggplot(data = subset(mean_hbo_data, Roi == 3), aes(x = Spatializat
   ylim(-0.055,0.055) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "Small\nITDs", "az_itd=15_az=0" = "Large\nITDs","az_itd=0_az=5" = "Small\nILDs","az_itd=0_az=15" = "Large\nILDs")) +
   theme(legend.position="none")
 
 plot_roi_4 <- ggplot(data = subset(mean_hbo_data, Roi == 4), aes(x = Spatialization, y = mean_hbo,group = ch_name)) +
@@ -216,7 +205,7 @@ plot_roi_4 <- ggplot(data = subset(mean_hbo_data, Roi == 4), aes(x = Spatializat
   ylim(-0.055,0.055) +
   theme_bw() +
   theme(plot.title = element_text(size = 18), axis.title=element_text(size=18), axis.text.x= element_text(size=12), axis.text.y= element_text(size=12)) +
-  scale_x_discrete(labels=c("az_itd=5_az=0" = "5 deg\nITDs", "az_itd=15_az=0" = "15deg\nITDs","az_itd=0_az=5" = "5deg\nILDs","az_itd=0_az=15" = "15deg\nILDs")) +
+  scale_x_discrete(labels=c("az_itd=5_az=0" = "Small\nITDs", "az_itd=15_az=0" = "Large\nITDs","az_itd=0_az=5" = "Small\nILDs","az_itd=0_az=15" = "Large\nILDs")) +
   theme(legend.position="none")
 
 grid.arrange(plot_roi_1,plot_roi_2,plot_roi_3,plot_roi_4, ncol=2, widths = c(1,1))

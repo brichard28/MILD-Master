@@ -90,7 +90,7 @@ for isubject = 1:size(curr_subject_ID,1)
     [~,lag_n1_end_index] = min(abs(single_onset_time - (460)));
     [~,lag_p2_start_index] = min(abs(single_onset_time - (430)));
     [~,lag_p2_end_index] = min(abs(single_onset_time - (520)));
-    [~,lag_p3_start_index] = min(abs(single_onset_time - (650)));
+    [~,lag_p3_start_index] = min(abs(single_onset_time - (700)));
     [~,lag_p3_end_index] = min(abs(single_onset_time - (900)));
 
     % take the average
