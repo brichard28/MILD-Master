@@ -13,8 +13,8 @@ library(dplyr)
 ##    Hit Rates    ##
 ####################################################
 
-lead_hit_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lead_Hit_Rates.csv")
-lag_hit_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lag_Hit_Rates.csv")
+lead_hit_rates <- read.csv("/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/MILD-MASTER_Lead_Hit_Rates.csv")
+lag_hit_rates <- read.csv("/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/MILD-MASTER_Lag_Hit_Rates.csv")
 
 # Remove unneeded columns, put in long format
 lead_hit_rates$OriginalVariableNames <- array(0:39)
@@ -47,8 +47,8 @@ hit_rates[, to.factor] <- lapply(hit_rates[, to.factor], as.factor)
 ##    FA Rates    ##
 ####################################################
 
-lead_FA_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lead_FA_Rates.csv")
-lag_FA_rates <- read.csv("C:\\Users\\benri\\Documents\\GitHub\\MILD-Master\\RESULTS DATA\\MILD-MASTER_Lag_FA_Rates.csv")
+lead_FA_rates <- read.csv("/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/MILD-MASTER_Lead_FA_Rates.csv")
+lag_FA_rates <- read.csv("/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/MILD-MASTER_Lag_FA_Rates.csv")
 
 # Remove unneeded columns, put in long format
 lead_FA_rates$OriginalVariableNames <- array(0:39)
@@ -92,6 +92,9 @@ hit_rates <- hit_rates %>%
     str_detect(Spatialization, "ITD") ~ "ITD",
     str_detect(Spatialization, "ILD") ~ "ILD"
   ))
+hit_rates <- hit_rates %>%
+  mutate(MagnitudeGroup = if_else(str_detect(Spatialization, "15"),"15","5")
+  )
 
 FA_rates <- FA_rates %>%
   mutate(SpatializationGroup = case_when(
@@ -99,8 +102,13 @@ FA_rates <- FA_rates %>%
     str_detect(Spatialization, "ILD") ~ "ILD"
   ))
 
+FA_rates <- FA_rates %>%
+  mutate(MagnitudeGroup = if_else(str_detect(Spatialization, "15"),"15","5")
+  )
+
 # explicit group ordering (change if you want ILD first)
 group_levels <- c("ITD", "ILD")
+mag_levels <- c("5","15")
 
 # spatialization levels (keeps the order you already set)
 spat_levels <- levels(hit_rates$Spatialization)
@@ -109,13 +117,17 @@ spat_levels <- levels(hit_rates$Spatialization)
 order_list <- list()
 for (g in group_levels) {
   spats_in_group <- spat_levels[str_detect(spat_levels, g)]
-  for (wp in c("Lead", "Lag")) {
-    for (s in spats_in_group) {
-      order_list[[length(order_list) + 1]] <- tibble(
-        Spatialization = s,
-        WordPosition = wp,
-        SpatializationGroup = g
-      )
+  for (m in mag_levels) {
+    mags_in_group <-  spat_levels[str_detect(mag_levels, m)]
+    for (wp in c("Lead", "Lag")) {
+      for (s in spats_in_group) {
+        order_list[[length(order_list) + 1]] <- tibble(
+          Spatialization = s,
+          WordPosition = wp,
+          SpatializationGroup = g,
+          MagnitudeGroup = m
+        )
+      }
     }
   }
 }
@@ -135,29 +147,32 @@ desired_order <- tibble(
 desired_order <- desired_order %>%
   mutate(SpatializationGroup = ifelse(grepl("ITD", Spatialization), "ITD", "ILD"))
 
+desired_order <- desired_order %>%
+  mutate(MagnitudeGroup = ifelse(grepl("15", Spatialization), "15", "5"))
+
 # Join this ordering into your datasets
 hit_rates <- hit_rates %>%
-  left_join(desired_order, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
+  left_join(desired_order, by = c("Spatialization", "WordPosition", "SpatializationGroup", "MagnitudeGroup"))
 
 FA_rates <- FA_rates %>%
-  left_join(desired_order, by = c("Spatialization", "WordPosition", "SpatializationGroup"))
+  left_join(desired_order, by = c("Spatialization", "WordPosition", "SpatializationGroup", "MagnitudeGroup"))
 
 # ---------------------------
 # Prepare long-format data (use the new x_pos)
 # ---------------------------
 long_data <- bind_rows(
   hit_rates %>%
-    select(S, Spatialization, WordPosition, SpatializationGroup, x_pos, Value = HitRate) %>%
+    select(S, Spatialization, WordPosition, SpatializationGroup, MagnitudeGroup, x_pos, Value = HitRate) %>%
     mutate(Measure = "Hit Rate"),
   
   FA_rates %>%
-    select(S, Spatialization, WordPosition, SpatializationGroup, x_pos, Value = FARate) %>%
+    select(S, Spatialization, WordPosition, SpatializationGroup, MagnitudeGroup, x_pos, Value = FARate) %>%
     mutate(Measure = "FA Rate")
 )
 
 # Summary statistics
 summary_data <- long_data %>%
-  group_by(Spatialization, WordPosition, x_pos, Measure) %>%
+  group_by(Spatialization, WordPosition, x_pos, Measure, SpatializationGroup, MagnitudeGroup) %>%
   summarise(
     mean_value = mean(Value, na.rm = TRUE),
     sem_value  = sd(Value, na.rm = TRUE)/sqrt(n()),
@@ -195,17 +210,19 @@ summary_data$Measure <- factor(summary_data$Measure,
 # ------------------------------------------------------------------------------------
 
 
-p <- ggplot(long_data, aes(x = x_pos, y = Value, color = WordPosition)) +
+p <- ggplot(long_data, aes(x = x_pos, y = Value, shape = WordPosition, fill = MagnitudeGroup)) +
   geom_line(aes(group = interaction(S, WordPosition, SpatializationGroup)), alpha = 0.3) +
   geom_point(aes(group = interaction(S, WordPosition)), alpha = 0.3) +
-  geom_point(data = summary_data,
-             aes(x = x_pos, y = mean_value, color = WordPosition, fill = WordPosition),
-             size = 3, shape = 21, stroke = 1.2, inherit.aes = FALSE) +
   geom_errorbar(data = summary_data,
-                aes(x = x_pos, ymin = mean_value - sem_value, ymax = mean_value + sem_value, color = WordPosition),
+                aes(x = x_pos, ymin = mean_value - sem_value, ymax = mean_value + sem_value),
                 width = 0.2, size = 1.2, inherit.aes = FALSE) +
+  geom_point(data = summary_data,
+             aes(x = x_pos, y = mean_value, fill = MagnitudeGroup, shape = WordPosition),
+            size = 3, stroke = 1.2, inherit.aes = FALSE) +
   geom_blank(data = long_data, aes(y = ymin)) +
   geom_blank(data = long_data, aes(y = ymax)) +
+  scale_shape_manual(values = c("Lead" = 21, "Lag" = 24)) +
+  scale_fill_manual(values = c("5" = "black", "15" = "white")) + 
   scale_x_continuous(breaks = Spatialization_positions$mean_x,
                      labels = Spatialization_labels_wrapped) +
   labs(x = "Spatialization", y = "") +
@@ -227,6 +244,7 @@ p <- ggplot(long_data, aes(x = x_pos, y = Value, color = WordPosition)) +
   )
 p
 
+ggsave("/Users/benrichardson/Documents/GitHub/MILD-Master/PAPER FIGURES/behavior_raw.svg", p, device="svg", width = 11, height = 6, units = "in", bg = "transparent")
 
 
 
