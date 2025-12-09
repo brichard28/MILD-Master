@@ -32,7 +32,7 @@ curr_subject_ID = char('mild_master_1',...
     'mild_master_32','mild_master_33','mild_master_34','mild_master_36','mild_master_37','mild_master_38','mild_master_39','mild_master_40',...
     'mild_master_41','mild_master_42','mild_master_43','mild_master_44','mild_master_46','mild_master_48'); % char();
 num_subjects = size(curr_subject_ID,1);
-mild_master_root = 'C:\Users\benri\Documents\GitHub\MILD-Master\';
+mild_master_root = '/Users/benrichardson/Documents/GitHub/MILD-Master/';
 
 itd5_lead_bash_target_lag_nonbash_masker = [];
 itd5_lead_nonbash_target_lag_bash_masker = [];
@@ -75,10 +75,10 @@ large_itd_cond = [6,8];
 small_ild_cond = [1,4];
 large_ild_cond = [2,5];
 
-all_subs_p1 = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\all_subs_p1.csv');
-all_subs_n1 = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\all_subs_n1.csv');
-all_subs_p2 = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\all_subs_p2.csv');
-all_subs_p3 = readtable('C:\Users\benri\Documents\GitHub\MILD-Master\RESULTS DATA\all_subs_p3.csv');
+all_subs_p1 = readtable('/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/all_subs_p1.csv');
+all_subs_n1 = readtable('/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/all_subs_n1.csv');
+all_subs_p2 = readtable('/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/all_subs_p2.csv');
+all_subs_p3 = readtable('/Users/benrichardson/Documents/GitHub/MILD-Master/RESULTS DATA/all_subs_p3.csv');
 
 
 
@@ -88,7 +88,7 @@ for isubject = 1:size(curr_subject_ID,1)
     subID = string(curr_subject_ID(isubject,:));
     disp(subID)
     % Load Data
-    load(append('C:\Users\benri\Downloads\Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'_yes_button_press.mat'))
+    load(append('/Users/benrichardson/Downloads/results/Results_Subject_',strtrim(string(curr_subject_ID(isubject,:))),'_yes_button_press.mat'))
 
     %% Plot all channels, remove noisy ones in time domain
 
@@ -144,7 +144,8 @@ for isubject = 1:size(curr_subject_ID,1)
 end
 
 
-%% PLOT TIME TRACES: Target (solid line) vs. Masker (dashed line)
+%% PLOT TIME TRACES: Target vs. Masker in Columns 
+% Solid: Lead ERP, Dashed: Lag ERP
 % Color: Bash lead (blue), bash lag (orange), no bash (green)
 
 
@@ -187,786 +188,151 @@ for i = 1:length(curr_channel_indices)
     ymin = -3;
     ymax = 4.5;
 
-    subplot(2,2,1) % Small ITD Time Trace
+    subplot(4,2,1) % Small ITD Time Trace, Target
     hold on
     this_target_lead_bash_data = squeeze(nanmean(itd5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_masker_lead_bash_data = squeeze(nanmean(itd5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-
     this_target_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-
     this_target_no_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
+
+    plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
+    ylim([ymin,ymax])
+    xlim([erp_window_start_time,erp_window_end_time])
+    ylabel('Small ITD Target','FontSize',12)
+    xline(0,':k','LineWidth',2)
+    xline(250,':k','LineWidth',2)
+    xlim([xlim_min,xlim_max])
+
+    subplot(4,2,2) % Small ITD Time Trace, Masker
+    hold on
+    this_masker_lead_bash_data = squeeze(nanmean(itd5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
     this_masker_no_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
-    plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
-    plot2 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','--','LineWidth',1.5);
-    plot3 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
-    plot4 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','--','LineWidth',1.5);
-    plot5 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
-    plot6 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','--','LineWidth',1.5);
+    plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
     ylim([ymin,ymax])
     xlim([erp_window_start_time,erp_window_end_time])
-    ylabel('Voltage (uV)','FontSize',18)
-    title('Small ITD','FontSize',18)
+    ylabel('Small ITD Masker','FontSize',12)
     xline(0,':k','LineWidth',2)
     xline(250,':k','LineWidth',2)
     xlim([xlim_min,xlim_max])
 
 
-    subplot(2,2,2) % Large ITD Time Trace
+    subplot(4,2,3) % Large ITD Time Trace, Target
     hold on
     this_target_lead_bash_data = squeeze(nanmean(itd15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_masker_lead_bash_data = squeeze(nanmean(itd15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-
     this_target_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-
     this_target_no_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
+
+    plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
+    ylim([ymin,ymax])
+    xlim([erp_window_start_time,erp_window_end_time])
+    ylabel('Large ITD Target','FontSize',12)
+    xline(0,':k','LineWidth',2)
+    xline(250,':k','LineWidth',2)
+    xlim([xlim_min,xlim_max])
+
+
+    subplot(4,2,4) % Large ITD Time Trace, Masker
+    hold on
+    this_masker_lead_bash_data = squeeze(nanmean(itd15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
     this_masker_no_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
-    plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
-    plot2 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','--','LineWidth',1.5);
-    plot3 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
-    plot4 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','--','LineWidth',1.5);
-    plot5 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
-    plot6 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','--','LineWidth',1.5);
+    plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
     ylim([ymin,ymax])
     xlim([erp_window_start_time,erp_window_end_time])
-    title('Large ITD','FontSize',18)
+    ylabel('Large ITD Masker','FontSize',12)
     xline(0,':k','LineWidth',2)
     xline(250,':k','LineWidth',2)
     xlim([xlim_min,xlim_max])
 
-
-    subplot(2,2,3) % Small ILD Time Trace
+    subplot(4,2,5) % Small ILD Time Trace, Target
     hold on
     this_target_lead_bash_data = squeeze(nanmean(ild5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_masker_lead_bash_data = squeeze(nanmean(ild5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-
     this_target_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-
     this_target_no_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
+
+    plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
+    ylim([ymin,ymax])
+    xlim([erp_window_start_time,erp_window_end_time])
+    ylabel('Small ILD Target','FontSize',12)
+    xline(0,':k','LineWidth',2)
+    xline(250,':k','LineWidth',2)
+    xlim([xlim_min,xlim_max])
+
+
+    subplot(4,2,6) % Small ILD Time Trace, Masker
+    hold on
+    this_masker_lead_bash_data = squeeze(nanmean(ild5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
     this_masker_no_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
-    plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
-    plot2 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','--','LineWidth',1.5);
-    plot3 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
-    plot4 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','--','LineWidth',1.5);
-    plot5 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
-    plot6 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','--','LineWidth',1.5);
+    plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
     ylim([ymin,ymax])
     xlim([erp_window_start_time,erp_window_end_time])
-    title('Small ILD','FontSize',18)
+    ylabel('Small ILD Masker','FontSize',12)
     xline(0,':k','LineWidth',2)
     xline(250,':k','LineWidth',2)
     xlim([xlim_min,xlim_max])
 
 
-    subplot(2,2,4) % Large ILD Time Trace
+    subplot(4,2,7) % Large ILD Time Trace, Target
     hold on
     this_target_lead_bash_data = squeeze(nanmean(ild15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_masker_lead_bash_data = squeeze(nanmean(ild15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-
     this_target_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
-
     this_target_no_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_masker_no_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
-    plot2 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','--','LineWidth',1.5);
-    plot3 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
-    plot4 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','--','LineWidth',1.5);
-    plot5 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
-    plot6 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','--','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_target_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_target_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
     ylim([ymin,ymax])
     xlim([erp_window_start_time,erp_window_end_time])
-    title('Large ILD','FontSize',18)
+    ylabel('Large ILD Target','FontSize',12)
     xline(0,':k','LineWidth',2)
     xline(250,':k','LineWidth',2)
     xlim([xlim_min,xlim_max])
 
 
-
-
-end
-
-
-
-
-
-%% PLOT ERP Calculations
-% Left column: Lead word response
-% Right column: Lag word response
-for i = 1:length(curr_channel_indices)
-    curr_channel_index = cell2mat(curr_channel_indices(i));
-
-    figure;
+    subplot(4,2,8) % Large ILD Time Trace, Masker
     hold on
-    if sum(ismember(curr_channel_index,frontocentral_channels)) == length(frontocentral_channels) % plot p1-n1
-        ymin = -1.5;
-        ymax = 0.6;
-        % Small ITD Measure
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_itd').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_itd').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_itd').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_itd').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_bash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_bash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        lead_p1n1_to_plot = [];
-        lead_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p1n1_to_plot = [];
-        lag_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,1)
-        hold on
-        h(1) = errorbar(1, mean(lead_p1n1_to_plot(1,:)), std(lead_p1n1_to_plot(1,:))./(sqrt(length(lead_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p1n1_to_plot(2,:)), std(lead_p1n1_to_plot(2,:))./(sqrt(length(lead_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p1n1_to_plot(3,:)), std(lead_p1n1_to_plot(3,:))./(sqrt(length(lead_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p1n1_to_plot(4,:)), std(lead_p1n1_to_plot(4,:))./(sqrt(length(lead_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p1n1_to_plot(5,:)), std(lead_p1n1_to_plot(5,:))./(sqrt(length(lead_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p1n1_to_plot(6,:)), std(lead_p1n1_to_plot(6,:))./(sqrt(length(lead_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,2)
-        hold on
-        h(1) = errorbar(1, mean(lag_p1n1_to_plot(1,:)), std(lag_p1n1_to_plot(1,:))./(sqrt(length(lag_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p1n1_to_plot(2,:)), std(lag_p1n1_to_plot(2,:))./(sqrt(length(lag_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p1n1_to_plot(3,:)), std(lag_p1n1_to_plot(3,:))./(sqrt(length(lag_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p1n1_to_plot(4,:)), std(lag_p1n1_to_plot(4,:))./(sqrt(length(lag_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p1n1_to_plot(5,:)), std(lag_p1n1_to_plot(5,:))./(sqrt(length(lag_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p1n1_to_plot(6,:)), std(lag_p1n1_to_plot(6,:))./(sqrt(length(lag_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-
-
-
-
-
-
-        % Large ITD Measure
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_itd').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_itd').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_itd').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_itd').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_bash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_bash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_itd').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_itd').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        lead_p1n1_to_plot = [];
-        lead_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p1n1_to_plot = [];
-        lag_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,3)
-        hold on
-        h(1) = errorbar(1, mean(lead_p1n1_to_plot(1,:)), std(lead_p1n1_to_plot(1,:))./(sqrt(length(lead_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p1n1_to_plot(2,:)), std(lead_p1n1_to_plot(2,:))./(sqrt(length(lead_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p1n1_to_plot(3,:)), std(lead_p1n1_to_plot(3,:))./(sqrt(length(lead_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p1n1_to_plot(4,:)), std(lead_p1n1_to_plot(4,:))./(sqrt(length(lead_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p1n1_to_plot(5,:)), std(lead_p1n1_to_plot(5,:))./(sqrt(length(lead_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p1n1_to_plot(6,:)), std(lead_p1n1_to_plot(6,:))./(sqrt(length(lead_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,4)
-        hold on
-        h(1) = errorbar(1, mean(lag_p1n1_to_plot(1,:)), std(lag_p1n1_to_plot(1,:))./(sqrt(length(lag_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p1n1_to_plot(2,:)), std(lag_p1n1_to_plot(2,:))./(sqrt(length(lag_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p1n1_to_plot(3,:)), std(lag_p1n1_to_plot(3,:))./(sqrt(length(lag_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p1n1_to_plot(4,:)), std(lag_p1n1_to_plot(4,:))./(sqrt(length(lag_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p1n1_to_plot(5,:)), std(lag_p1n1_to_plot(5,:))./(sqrt(length(lag_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p1n1_to_plot(6,:)), std(lag_p1n1_to_plot(6,:))./(sqrt(length(lag_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-
-        % Small ILD
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_ild').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_ild').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_ild').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_ild').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_bash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_bash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'small_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'small_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        lead_p1n1_to_plot = [];
-        lead_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p1n1_to_plot = [];
-        lag_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,5)
-        hold on
-        h(1) = errorbar(1, mean(lead_p1n1_to_plot(1,:)), std(lead_p1n1_to_plot(1,:))./(sqrt(length(lead_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p1n1_to_plot(2,:)), std(lead_p1n1_to_plot(2,:))./(sqrt(length(lead_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p1n1_to_plot(3,:)), std(lead_p1n1_to_plot(3,:))./(sqrt(length(lead_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p1n1_to_plot(4,:)), std(lead_p1n1_to_plot(4,:))./(sqrt(length(lead_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p1n1_to_plot(5,:)), std(lead_p1n1_to_plot(5,:))./(sqrt(length(lead_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p1n1_to_plot(6,:)), std(lead_p1n1_to_plot(6,:))./(sqrt(length(lead_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,6)
-        hold on
-        h(1) = errorbar(1, mean(lag_p1n1_to_plot(1,:)), std(lag_p1n1_to_plot(1,:))./(sqrt(length(lag_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p1n1_to_plot(2,:)), std(lag_p1n1_to_plot(2,:))./(sqrt(length(lag_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p1n1_to_plot(3,:)), std(lag_p1n1_to_plot(3,:))./(sqrt(length(lag_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p1n1_to_plot(4,:)), std(lag_p1n1_to_plot(4,:))./(sqrt(length(lag_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p1n1_to_plot(5,:)), std(lag_p1n1_to_plot(5,:))./(sqrt(length(lag_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p1n1_to_plot(6,:)), std(lag_p1n1_to_plot(6,:))./(sqrt(length(lag_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-        ylim([ymin,ymax])
-
-
-        % Large ILD
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_ild').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_ild').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_ild').*ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_bash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_ild').*ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_bash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_bash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Target').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_target_lag_nonbash_masker_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Target').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p1 = all_subs_p1(logical(ismember(string(all_subs_p1.Condition),'large_ild').*~ismember(string(all_subs_p1.Lead_Word),'bash').*~ismember(string(all_subs_p1.Lag_Word),'bash').*ismember(string(all_subs_p1.Lead_Stream),'Masker').*ismember(string(all_subs_p1.Electrode),frontocentral_channel_names)),:);
-        lead_nonbash_masker_lag_nonbash_target_n1 = all_subs_n1(logical(ismember(string(all_subs_n1.Condition),'large_ild').*~ismember(string(all_subs_n1.Lead_Word),'bash').*~ismember(string(all_subs_n1.Lag_Word),'bash').*ismember(string(all_subs_n1.Lead_Stream),'Masker').*ismember(string(all_subs_n1.Electrode),frontocentral_channel_names)),:);
-
-
-        lead_p1n1_to_plot = [];
-        lead_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p1n1_to_plot = [];
-        lag_p1n1_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_bash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_bash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_bash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_target_lag_nonbash_masker_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p1n1_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude - groupsummary(lead_nonbash_masker_lag_nonbash_target_n1, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,7)
-        hold on
-        h(1) = errorbar(1, mean(lead_p1n1_to_plot(1,:)), std(lead_p1n1_to_plot(1,:))./(sqrt(length(lead_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p1n1_to_plot(2,:)), std(lead_p1n1_to_plot(2,:))./(sqrt(length(lead_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p1n1_to_plot(3,:)), std(lead_p1n1_to_plot(3,:))./(sqrt(length(lead_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p1n1_to_plot(4,:)), std(lead_p1n1_to_plot(4,:))./(sqrt(length(lead_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p1n1_to_plot(5,:)), std(lead_p1n1_to_plot(5,:))./(sqrt(length(lead_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p1n1_to_plot(6,:)), std(lead_p1n1_to_plot(6,:))./(sqrt(length(lead_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,8)
-        hold on
-        h(1) = errorbar(1, mean(lag_p1n1_to_plot(1,:)), std(lag_p1n1_to_plot(1,:))./(sqrt(length(lag_p1n1_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p1n1_to_plot(2,:)), std(lag_p1n1_to_plot(2,:))./(sqrt(length(lag_p1n1_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p1n1_to_plot(3,:)), std(lag_p1n1_to_plot(3,:))./(sqrt(length(lag_p1n1_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p1n1_to_plot(4,:)), std(lag_p1n1_to_plot(4,:))./(sqrt(length(lag_p1n1_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p1n1_to_plot(5,:)), std(lag_p1n1_to_plot(5,:))./(sqrt(length(lag_p1n1_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p1n1_to_plot(6,:)), std(lag_p1n1_to_plot(6,:))./(sqrt(length(lag_p1n1_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-
-        ylim([ymin,ymax])
-
-
-
-
-    elseif sum(ismember(curr_channel_index,parietooccipital_channels)) == length(parietooccipital_channels) % plot p3-n1
-        ymin = -1.5;
-        ymax = 2;
-        % Small ITD Measure
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_itd').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_itd').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        lead_p3_to_plot = [];
-        lead_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p3_to_plot = [];
-        lag_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,1)
-        hold on
-        h(1) = errorbar(1, mean(lead_p3_to_plot(1,:)), std(lead_p3_to_plot(1,:))./(sqrt(length(lead_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p3_to_plot(2,:)), std(lead_p3_to_plot(2,:))./(sqrt(length(lead_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p3_to_plot(3,:)), std(lead_p3_to_plot(3,:))./(sqrt(length(lead_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p3_to_plot(4,:)), std(lead_p3_to_plot(4,:))./(sqrt(length(lead_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p3_to_plot(5,:)), std(lead_p3_to_plot(5,:))./(sqrt(length(lead_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p3_to_plot(6,:)), std(lead_p3_to_plot(6,:))./(sqrt(length(lead_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,2)
-        hold on
-        h(1) = errorbar(1, mean(lag_p3_to_plot(1,:)), std(lag_p3_to_plot(1,:))./(sqrt(length(lag_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p3_to_plot(2,:)), std(lag_p3_to_plot(2,:))./(sqrt(length(lag_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p3_to_plot(3,:)), std(lag_p3_to_plot(3,:))./(sqrt(length(lag_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p3_to_plot(4,:)), std(lag_p3_to_plot(4,:))./(sqrt(length(lag_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p3_to_plot(5,:)), std(lag_p3_to_plot(5,:))./(sqrt(length(lag_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p3_to_plot(6,:)), std(lag_p3_to_plot(6,:))./(sqrt(length(lag_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-
-        ylim([ymin,ymax])
-
-
-
-
-
-
-        % Large ITD Measure
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_itd').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_itd').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_itd').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        lead_p3_to_plot = [];
-        lead_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p3_to_plot = [];
-        lag_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,3)
-        hold on
-        h(1) = errorbar(1, mean(lead_p3_to_plot(1,:)), std(lead_p3_to_plot(1,:))./(sqrt(length(lead_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p3_to_plot(2,:)), std(lead_p3_to_plot(2,:))./(sqrt(length(lead_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p3_to_plot(3,:)), std(lead_p3_to_plot(3,:))./(sqrt(length(lead_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p3_to_plot(4,:)), std(lead_p3_to_plot(4,:))./(sqrt(length(lead_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p3_to_plot(5,:)), std(lead_p3_to_plot(5,:))./(sqrt(length(lead_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p3_to_plot(6,:)), std(lead_p3_to_plot(6,:))./(sqrt(length(lead_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,4)
-        hold on
-        h(1) = errorbar(1, mean(lag_p3_to_plot(1,:)), std(lag_p3_to_plot(1,:))./(sqrt(length(lag_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p3_to_plot(2,:)), std(lag_p3_to_plot(2,:))./(sqrt(length(lag_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p3_to_plot(3,:)), std(lag_p3_to_plot(3,:))./(sqrt(length(lag_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p3_to_plot(4,:)), std(lag_p3_to_plot(4,:))./(sqrt(length(lag_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p3_to_plot(5,:)), std(lag_p3_to_plot(5,:))./(sqrt(length(lag_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p3_to_plot(6,:)), std(lag_p3_to_plot(6,:))./(sqrt(length(lag_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-
-        % Small ILD
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_ild').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_ild').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'small_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        lead_p3_to_plot = [];
-        lead_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p3_to_plot = [];
-        lag_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,5)
-        hold on
-        h(1) = errorbar(1, mean(lead_p3_to_plot(1,:)), std(lead_p3_to_plot(1,:))./(sqrt(length(lead_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p3_to_plot(2,:)), std(lead_p3_to_plot(2,:))./(sqrt(length(lead_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p3_to_plot(3,:)), std(lead_p3_to_plot(3,:))./(sqrt(length(lead_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p3_to_plot(4,:)), std(lead_p3_to_plot(4,:))./(sqrt(length(lead_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p3_to_plot(5,:)), std(lead_p3_to_plot(5,:))./(sqrt(length(lead_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p3_to_plot(6,:)), std(lead_p3_to_plot(6,:))./(sqrt(length(lead_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,6)
-        hold on
-        h(1) = errorbar(1, mean(lag_p3_to_plot(1,:)), std(lag_p3_to_plot(1,:))./(sqrt(length(lag_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p3_to_plot(2,:)), std(lag_p3_to_plot(2,:))./(sqrt(length(lag_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p3_to_plot(3,:)), std(lag_p3_to_plot(3,:))./(sqrt(length(lag_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p3_to_plot(4,:)), std(lag_p3_to_plot(4,:))./(sqrt(length(lag_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p3_to_plot(5,:)), std(lag_p3_to_plot(5,:))./(sqrt(length(lag_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p3_to_plot(6,:)), std(lag_p3_to_plot(6,:))./(sqrt(length(lag_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        % Large ILD
-
-        % LEAD RESPONSES (WordPosition = Lead)
-        % Lead Bash Target, Lag Non-Bash Masker
-        lead_bash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_ild').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Bash Masker, Lag Non-Bash Target
-        lead_bash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_ild').*ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Target, Lag Bash Masker
-        lead_nonbash_target_lag_bash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-        % Lead Non-Bash Masker, Lag Bash Target
-        lead_nonbash_masker_lag_bash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Target, Lag Non-Bash Masker
-        lead_nonbash_target_lag_nonbash_masker_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Target').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        % Lead Non-Bash Masker, Lag Non-Bash Target
-        lead_nonbash_masker_lag_nonbash_target_p3 = all_subs_p3(logical(ismember(string(all_subs_p3.Condition),'large_ild').*~ismember(string(all_subs_p3.Lead_Word),'bash').*~ismember(string(all_subs_p3.Lag_Word),'bash').*ismember(string(all_subs_p3.Lead_Stream),'Masker').*ismember(string(all_subs_p3.Electrode),parietooccipital_channel_names)),:);
-
-
-        lead_p3_to_plot = [];
-        lead_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-        lead_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lead_Amplitude').mean_Lead_Amplitude;
-
-        lag_p3_to_plot = [];
-        lag_p3_to_plot(1,:) = groupsummary(lead_bash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(2,:) = groupsummary(lead_bash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(3,:) = groupsummary(lead_nonbash_masker_lag_bash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(4,:) = groupsummary(lead_nonbash_target_lag_bash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(5,:) = groupsummary(lead_nonbash_target_lag_nonbash_masker_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-        lag_p3_to_plot(6,:)= groupsummary(lead_nonbash_masker_lag_nonbash_target_p3, 'S','mean','Lag_Amplitude').mean_Lag_Amplitude;
-
-
-
-        subplot(4,2,7)
-        hold on
-        h(1) = errorbar(1, mean(lead_p3_to_plot(1,:)), std(lead_p3_to_plot(1,:))./(sqrt(length(lead_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lead_p3_to_plot(2,:)), std(lead_p3_to_plot(2,:))./(sqrt(length(lead_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lead_p3_to_plot(3,:)), std(lead_p3_to_plot(3,:))./(sqrt(length(lead_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lead_p3_to_plot(4,:)), std(lead_p3_to_plot(4,:))./(sqrt(length(lead_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lead_p3_to_plot(5,:)), std(lead_p3_to_plot(5,:))./(sqrt(length(lead_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lead_p3_to_plot(6,:)), std(lead_p3_to_plot(6,:))./(sqrt(length(lead_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-        subplot(4,2,8)
-        hold on
-        h(1) = errorbar(1, mean(lag_p3_to_plot(1,:)), std(lag_p3_to_plot(1,:))./(sqrt(length(lag_p3_to_plot(1,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', colors(1,:));
-        h(2) = errorbar(2, mean(lag_p3_to_plot(2,:)), std(lag_p3_to_plot(2,:))./(sqrt(length(lag_p3_to_plot(2,:))) - 1), ...
-            'o', 'Color', colors(1,:), 'MarkerFaceColor', 'none');
-        h(3) = errorbar(3, mean(lag_p3_to_plot(3,:)), std(lag_p3_to_plot(3,:))./(sqrt(length(lag_p3_to_plot(3,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', colors(2,:));
-        h(4) = errorbar(4, mean(lag_p3_to_plot(4,:)), std(lag_p3_to_plot(4,:))./(sqrt(length(lag_p3_to_plot(4,:))) - 1), ...
-            'o', 'Color', colors(2,:), 'MarkerFaceColor', 'none');
-        h(5) = errorbar(5, mean(lag_p3_to_plot(5,:)), std(lag_p3_to_plot(5,:))./(sqrt(length(lag_p3_to_plot(5,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', colors(3,:));
-        h(6) = errorbar(6, mean(lag_p3_to_plot(6,:)), std(lag_p3_to_plot(6,:))./(sqrt(length(lag_p3_to_plot(6,:))) - 1), ...
-            'o', 'Color', colors(3,:), 'MarkerFaceColor', 'none');
-
-        ylim([ymin,ymax])
-
-
-
-
+    this_masker_lead_bash_data = squeeze(nanmean(ild15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
+    this_masker_no_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
+
+    plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
+    plot2 = plot(single_onset_time,nanmean(this_masker_lag_bash_data,1),'Color',colors(2,:),'LineStyle','-','LineWidth',1.5);
+    plot3 = plot(single_onset_time,nanmean(this_masker_no_bash_data,1),'Color',colors(3,:),'LineStyle','-','LineWidth',1.5);
+    ylim([ymin,ymax])
+    xlim([erp_window_start_time,erp_window_end_time])
+    ylabel('Large ILD Masker','FontSize',12)
+    xline(0,':k','LineWidth',2)
+    xline(250,':k','LineWidth',2)
+    xlim([xlim_min,xlim_max])
+
+
+    % save as svg
+    fig_width = 6; % inches
+    fig_height = 5; % inches
+    if sum(ismember(curr_channel_index,frontocentral_channels)) == length(curr_channel_index)
+        exportgraphics(gcf,'/Users/benrichardson/Documents/GitHub/MILD-Master/CASUAL FIGURES/frontocentral_time_traces.svg','Resolution',300,'ContentType','vector','BackgroundColor','none','Units','inches','Width',fig_width,'Height',fig_height)
+    elseif sum(ismember(curr_channel_index,parietooccipital_channels)) == length(curr_channel_index)
+        exportgraphics(gcf,'/Users/benrichardson/Documents/GitHub/MILD-Master/CASUAL FIGURES/parietooccipital_time_traces.svg','Resolution',300,'ContentType','vector','BackgroundColor','none','Units','inches','Width',fig_width,'Height',fig_height)
     end
-
-
 end
+
+
 
 %% Plot all button press during experiment
 % button_press_delay = 0;
