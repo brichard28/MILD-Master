@@ -2,7 +2,6 @@
 # plot and conduct statistics for MILD-Master p1,n1, and p3 components experiment 1
 
 library(tidyverse)
-library(ggpubr)
 library(ggplot2)
 library(rstatix)
 library(afex)
