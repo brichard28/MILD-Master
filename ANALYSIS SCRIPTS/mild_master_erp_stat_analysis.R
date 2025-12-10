@@ -258,7 +258,7 @@ model_lead_p3 <- mixed(mean_p3 ~ Condition*WordPair*Lead_Stream + (1|S),
                          method = 'LRT')
 
 # Significant interaction between word pair and stream
-emm_wordpair_stream <- emmeans(model_lead_p3, ~ WordPair | Lead_Stream)
+emm_wordpair_stream <- emmeans(model_lead_p3, ~ Lead_Stream | WordPair)
 pairs(emm_wordpair_stream,adjust="bonferroni")
 
 
@@ -273,7 +273,7 @@ model_lag_p3 <- mixed(mean_p3 ~ Condition*WordPair*Lead_Stream + (1|S),
                        method = 'LRT')
 
 # Significant interaction between word pair and stream
-emm_wordpair_stream <- emmeans(model_lag_p3, ~ WordPair | Lead_Stream)
+emm_wordpair_stream <- emmeans(model_lag_p3, ~ Lead_Stream | WordPair)
 pairs(emm_wordpair_stream,adjust="bonferroni")
 
 

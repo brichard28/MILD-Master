@@ -188,10 +188,10 @@ for i = 1:length(curr_channel_indices)
     ymin = -3;
     ymax = 4.5;
 
-    subplot(4,2,1) % Small ITD Time Trace, Target
+    subplot(4,2,1) % Small ITD Time Trace, Target Leads
     hold on
     this_target_lead_bash_data = squeeze(nanmean(itd5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_target_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
+    this_target_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
     this_target_no_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
@@ -204,10 +204,10 @@ for i = 1:length(curr_channel_indices)
     xline(250,':k','LineWidth',2)
     xlim([xlim_min,xlim_max])
 
-    subplot(4,2,2) % Small ITD Time Trace, Masker
+    subplot(4,2,2) % Small ITD Time Trace, Masker Leads
     hold on
     this_masker_lead_bash_data = squeeze(nanmean(itd5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
     this_masker_no_bash_data = squeeze(nanmean(itd5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
@@ -221,10 +221,10 @@ for i = 1:length(curr_channel_indices)
     xlim([xlim_min,xlim_max])
 
 
-    subplot(4,2,3) % Large ITD Time Trace, Target
+    subplot(4,2,3) % Large ITD Time Trace, Target Leads
     hold on
     this_target_lead_bash_data = squeeze(nanmean(itd15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_target_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
+    this_target_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
     this_target_no_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
@@ -238,10 +238,10 @@ for i = 1:length(curr_channel_indices)
     xlim([xlim_min,xlim_max])
 
 
-    subplot(4,2,4) % Large ITD Time Trace, Masker
+    subplot(4,2,4) % Large ITD Time Trace, Masker Leads
     hold on
     this_masker_lead_bash_data = squeeze(nanmean(itd15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
     this_masker_no_bash_data = squeeze(nanmean(itd15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
@@ -254,10 +254,10 @@ for i = 1:length(curr_channel_indices)
     xline(250,':k','LineWidth',2)
     xlim([xlim_min,xlim_max])
 
-    subplot(4,2,5) % Small ILD Time Trace, Target
+    subplot(4,2,5) % Small ILD Time Trace, Target Leads
     hold on
     this_target_lead_bash_data = squeeze(nanmean(ild5_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_target_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
+    this_target_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
     this_target_no_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
@@ -271,10 +271,10 @@ for i = 1:length(curr_channel_indices)
     xlim([xlim_min,xlim_max])
 
 
-    subplot(4,2,6) % Small ILD Time Trace, Masker
+    subplot(4,2,6) % Small ILD Time Trace, Masker Leads
     hold on
     this_masker_lead_bash_data = squeeze(nanmean(ild5_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
     this_masker_no_bash_data = squeeze(nanmean(ild5_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
@@ -288,10 +288,10 @@ for i = 1:length(curr_channel_indices)
     xlim([xlim_min,xlim_max])
 
 
-    subplot(4,2,7) % Large ILD Time Trace, Target
+    subplot(4,2,7) % Large ILD Time Trace, Target Leads
     hold on
     this_target_lead_bash_data = squeeze(nanmean(ild15_lead_bash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
-    this_target_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
+    this_target_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
     this_target_no_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_nonbash_masker(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_target_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
@@ -305,10 +305,10 @@ for i = 1:length(curr_channel_indices)
     xlim([xlim_min,xlim_max])
 
 
-    subplot(4,2,8) % Large ILD Time Trace, Masker
+    subplot(4,2,8) % Large ILD Time Trace, Masker Leads
     hold on
     this_masker_lead_bash_data = squeeze(nanmean(ild15_lead_bash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
-    this_masker_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_target_lag_bash_masker(:,curr_channel_index,:),2));
+    this_masker_lag_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_bash_target(:,curr_channel_index,:),2));
     this_masker_no_bash_data = squeeze(nanmean(ild15_lead_nonbash_masker_lag_nonbash_target(:,curr_channel_index,:),2));
 
     plot1 = plot(single_onset_time,nanmean(this_masker_lead_bash_data,1),'Color',colors(1,:),'LineStyle','-','LineWidth',1.5);
