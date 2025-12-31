@@ -277,5 +277,3 @@ emm_wordpair_stream <- emmeans(model_lag_p3, ~ Lead_Stream | WordPair)
 pairs(emm_wordpair_stream,adjust="bonferroni")
 
 
-
-
