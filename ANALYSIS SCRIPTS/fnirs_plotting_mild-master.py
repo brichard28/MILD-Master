@@ -3,6 +3,7 @@ import numpy as np
 import mne
 import math
 import matplotlib
+matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 import os
 import pandas as pd
